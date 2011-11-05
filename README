@@ -1,0 +1,7 @@
+Reflexio is an attempt to create a language and virtual machine inspired by
+Io (http://www.iolanguage.com/) and using the COLA object model from
+http://piumarta.com/software/cola/
+
+I have started this project in order to learn about dynamic, reflective
+languages and virtual machines.
+This project is not a fork of Io and does not intend to replace it. 
