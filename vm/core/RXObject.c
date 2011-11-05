@@ -29,8 +29,6 @@ static Eina_Rbtree_Direction RXObject_compareNodes(const RXObjectNode_t *left, c
         : EINA_RBTREE_RIGHT; 
 }
 
-#define SELF_SLOTS RXObject_coreData(self).slots
-
 
 // Public --------------------------------------------------------------
 
@@ -47,10 +45,10 @@ RXObject_t* RXObject_new(void) {
 }
 
 void RXObject_setSlot(RXObject_t* self, const RXSymbol_t* slotName, RXObject_t* value) {
-    Eina_Rbtree* node = eina_rbtree_inline_lookup(SELF_SLOTS, slotName, 0, EINA_RBTREE_CMP_KEY_CB(RXObject_compareKeys), NULL);
+    Eina_Rbtree* node = eina_rbtree_inline_lookup(RXObject_slots(self), slotName, 0, EINA_RBTREE_CMP_KEY_CB(RXObject_compareKeys), NULL);
     if (node == NULL) {
         node = RXMemory_allocate(sizeof(RXObjectNode_t));
-        SELF_SLOTS = eina_rbtree_inline_insert(SELF_SLOTS, node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), slotName);
+        RXObject_slots(self) = eina_rbtree_inline_insert(RXObject_slots(self), node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), slotName);
     }
     ((RXObjectNode_t*)node)->key = slotName;
     ((RXObjectNode_t*)node)->value = value;
@@ -58,7 +56,7 @@ void RXObject_setSlot(RXObject_t* self, const RXSymbol_t* slotName, RXObject_t* 
 }
 
 RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXSymbol_t* slotName) {
-    Eina_Rbtree* node = eina_rbtree_inline_lookup(SELF_SLOTS, slotName, 0, EINA_RBTREE_CMP_KEY_CB(RXObject_compareKeys), NULL);
+    Eina_Rbtree* node = eina_rbtree_inline_lookup(RXObject_slots(self), slotName, 0, EINA_RBTREE_CMP_KEY_CB(RXObject_compareKeys), NULL);
     return (node == NULL)
         ? RXNil_o
         : ((RXObjectNode_t*)node)->value;

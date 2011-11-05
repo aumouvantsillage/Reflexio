@@ -8,19 +8,6 @@
 #include <stdint.h>
 
 /*
- * Core data for an object.
- */
-typedef union {
-    // The object slots are stored in a Red-black binary tree
-    Eina_Rbtree* slots;
-   
-    /* The two least-significant bits are used as flags
-     * - bit 0 = 1 when a slot lookup is in progress
-     * - bit 1 = not used */
-    intptr_t flags;
-} RXObjectData_t;
-
-/*
  * Call this macro at the beginning of a struct
  * representing an object type.
  *
@@ -45,51 +32,51 @@ typedef union {
  * You can define a compatible object type like this:
  *
  * typedef struct {
- *    RX_OBJECT;
+ *    RXObject_declareSlots;
  *    Point_t payload;
  * } PointObject_t;
  *
  * See macro RX_OBJECT_TYPE.
  */
-#define RX_OBJECT RXObjectData_t __rfObjectData__[0]
+#define RXObject_declareSlots Eina_Rbtree* __slots__[0]
 
 /*
  * Create an object type t from a plain C type c.
  */
 #define RXObject_defineType(t, c) \
     typedef struct { \
-        RX_OBJECT; \
+        RXObject_declareSlots; \
         c payload; \
     } t;
 
 /*
  * Accessor to the core data of a given object.
  */
-#define RXObject_coreData(self) ((self)->__rfObjectData__[-1])
+#define RXObject_slots(self) ((self)->__slots__[-1])
 
 /*
  * Allocate memory for a new object with type t.
  * This macro allocates memory for the core object data and the payload.
  */
-#define RXCore_allocateObjectOfType(t) RXMemory_allocate(sizeof(t) + sizeof(RXObjectData_t))
+#define RXCore_allocateObjectOfType(t) RXMemory_allocate(sizeof(t) + sizeof(Eina_Rbtree*))
 
 /*
  * Allocate memory for a new object with a given amount of payload bytes.
  * This macro allocates memory for the core object data and the payload.
  */
-#define RXCore_allocateObjectWithSize(s) RXMemory_allocate(s + sizeof(RXObjectData_t))
+#define RXCore_allocateObjectWithSize(s) RXMemory_allocate(s + sizeof(Eina_Rbtree*))
 
 /*
  * Initialize a newly allocated object.
  * Use this macro to initialize the core object data.
  */
-#define RXObject_initialize(self) RXObject_coreData(self).slots = NULL
+#define RXObject_initialize(self) RXObject_slots(self) = NULL
 
 /*
  * Core object type.
  */
 typedef struct {
-    RX_OBJECT;
+    RXObject_declareSlots;
     // Payload: empty
 } RXObject_t;
 
