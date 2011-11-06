@@ -1,6 +1,8 @@
 
 #include "RXSymbol.h"
 
+#include <Eina.h>
+
 // Private -------------------------------------------------------------
 
 static Eina_Hash* RXSymbol_all;
@@ -9,7 +11,7 @@ static Eina_Hash* RXSymbol_all;
  * Core object type.
  */
 typedef struct RXSymbol_s {
-    RXObject_declareSlots;
+    RXObject_declaration;
     /* Payload: a character string
      * allocated to the appropriate size when creating a new symbol. */
     char payload[0];
