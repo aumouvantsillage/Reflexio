@@ -61,21 +61,21 @@ typedef struct {
 
 #define RXObject_slots(self) RXObject_coreData(self).slots
 
-#define RXObject_flagLookingUp (1<<31)
-#define RXObject_flagFunction (1<<30)
-#define RXObject_flags (RXObject_flagLookingUp | RXObject_flagFunction)
+#define RXObject_flagIsLookingUp (1<<31)
+#define RXObject_flagIsMethod (1<<30)
+#define RXObject_flags (RXObject_flagIsLookingUp | RXObject_flagIsMethod)
 
-#define RXObject_isLookingUp(self) (RXObject_coreData(self).meta & RXObject_flagLookingUp)
+#define RXObject_isLookingUp(self) (RXObject_coreData(self).meta & RXObject_flagIsLookingUp)
 
-#define RXObject_setLookingUp(self, flag) RXObject_coreData(self).meta |= RXObject_flagLookingUp
+#define RXObject_setIsLookingUp(self) RXObject_coreData(self).meta |= RXObject_flagIsLookingUp
 
-#define RXObject_clearLookingUp(self, flag) RXObject_coreData(self).meta &= ~RXObject_flagLookingUp
+#define RXObject_clearIsLookingUp(self) RXObject_coreData(self).meta &= ~RXObject_flagIsLookingUp
 
-#define RXObject_isFunction(self) (RXObject_coreData(self).meta & RXObject_flagFunction)
+#define RXObject_isMethod(self) (RXObject_coreData(self).meta & RXObject_flagIsMethod)
 
-#define RXObject_setFunction(self, flag) RXObject_coreData(self).meta |= RXObject_flagFunction
+#define RXObject_setIsMethod(self) RXObject_coreData(self).meta |= RXObject_flagIsMethod
 
-#define RXObject_clearFunction(self, flag) RXObject_coreData(self).meta &= ~RXObject_flagFunction
+#define RXObject_clearIsMethod(self) RXObject_coreData(self).meta &= ~RXObject_flagIsMethod
 
 #define RXObject_retainCount(self) (RXObject_coreData(self).meta & ~RXObject_flags)
 
