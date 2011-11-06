@@ -2,9 +2,9 @@
 #ifndef __RX_CORE_OBJECT_H__
 #define __RX_CORE_OBJECT_H__
 
-#include "RXMemory.h"
-
+#include <stdlib.h>
 #include <stdint.h>
+#include <Eina.h>
 
 typedef intptr_t RXObjectCoreData_t;
 
@@ -56,26 +56,36 @@ typedef intptr_t RXObjectCoreData_t;
 #define RXObject_coreData(self) (self)->__coreData__[-1]
 
 /*
+ * The core data field is decomposed as follows
+ * - bits 0 and 1: flags
+ * - bits 2 to MSB: pointer to the slots container
+ *
+ * On 32-bit and 64 bit platforms, we assume that bits 0 and 1 of a pointer are always 0.
+ * We use these bits to store flags.
+ */
+#define RXObject_coreFlagsMask ((RXObjectCoreData_t)3)
+#define RXObject_coreSlotsMask ((RXObjectCoreData_t)~RXObject_coreFlagsMask)
+
+#define RXObject_slots(self) (Eina_Rbtree*)(RXObject_coreData(self) & RXObject_coreSlotsMask)
+#define RXObject_flags(self) RXObject_coreData(self) & RXObject_coreFlagsMask
+#define RXObject_setSlots(self, expr) RXObject_coreData(self) = RXObject_flags(self) | (intptr_t)(expr) & RXObject_coreSlotsMask
+
+/*
  * Allocate memory for a new object with type t.
  * This macro allocates memory for the core object data and the payload.
  */
-#define RXCore_allocateObjectOfType(t) (t*)((char*)RXMemory_allocate(sizeof(t) + sizeof(RXObjectCoreData_t)) + sizeof(RXObjectCoreData_t))
-
-/*
- * Deallocate memory for a previously allocated object with type t.
- */
-#define RXCore_deallocateObjectOfType(p, t) RXMemory_deallocate((char*)(p) - sizeof(RXObjectCoreData_t), sizeof(t) + sizeof(RXObjectCoreData_t))
+#define RXCore_allocateObjectOfType(t) (t*)((char*)malloc(sizeof(t) + sizeof(RXObjectCoreData_t)) + sizeof(RXObjectCoreData_t))
 
 /*
  * Allocate memory for a new object with a given amount of payload bytes.
  * This macro allocates memory for the core object data and the payload.
  */
-#define RXCore_allocateObjectWithSize(s) (RXMemory_allocate((s) + sizeof(RXObjectCoreData_t)) + sizeof(RXObjectCoreData_t))
+#define RXCore_allocateObjectWithSize(s) (malloc((s) + sizeof(RXObjectCoreData_t)) + sizeof(RXObjectCoreData_t))
 
 /*
- * Deallocate memory for a previously allocated object with size s.
+ * Deallocate memory for a previously allocated object.
  */
-#define RXCore_deallocateObjectWithSize(p, s) RXMemory_deallocate((p) - sizeof(RXObjectCoreData_t), (s) + sizeof(RXObjectCoreData_t))
+#define RXCore_deallocateObject(p) free((char*)(p) - sizeof(RXObjectCoreData_t))
 
 /*
  * Initialize a newly allocated object.
@@ -86,7 +96,7 @@ typedef intptr_t RXObjectCoreData_t;
 /*
  * Prepare the given object to be deleted
  */
-#define RXObject_finalize(self) // TODO Prepare the given object to be deleted
+#define RXObject_finalize(self) eina_rbtree_delete(RXObject_slots(self), RXObject_deleteSlot, NULL)
 
 /*
  * Core object type.
@@ -120,6 +130,11 @@ RXObject_t* RXObject_new(void);
  * Deallocate and uninitialize an object.
  */
 void RXObject_delete(RXObject_t* self);
+
+/*
+ * Delete a slot.
+ */
+void RXObject_deleteSlot(Eina_Rbtree* node, void* data);
 
 /*
  * Symbol type, defined in RXSymbol.h

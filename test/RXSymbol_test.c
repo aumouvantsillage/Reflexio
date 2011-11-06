@@ -17,6 +17,4 @@ void main(void) {
     RXSymbol_dumpAll();
     
     Reflexio_clean();
-    
-    RXMemory_printStats;
 }

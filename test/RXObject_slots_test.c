@@ -21,7 +21,9 @@ void main(void) {
     RXObject_t* rc = RXObject_valueOfSlot(a, sc);
     assert(c == rc);
     
-    Reflexio_clean();
+    RXObject_delete(a);
+    RXObject_delete(b);
+    RXObject_delete(c);
     
-    RXMemory_printStats;
+    Reflexio_clean();
 }

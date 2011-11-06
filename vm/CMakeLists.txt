@@ -1,7 +1,6 @@
 
 set(VM_SRC
     Reflexio.c
-    core/RXMemory.c
     core/RXObject.c
     core/RXSymbol.c
 )

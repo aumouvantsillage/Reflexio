@@ -17,16 +17,31 @@ typedef struct RXSymbol_s {
     char payload[0];
 } RXSymbol_t;
 
+/*
+ * Unititialize and deallocate the given symbol.
+ */
+static void RXSymbol_delete(RXSymbol_t* self) {
+    RXObject_finalize(self);
+    RXCore_deallocateObject(self);
+}
+
+/*
+ * Print a hash table entry with the given key and data
+ */
+static Eina_Bool RXSymbol_dump(const Eina_Hash* hash, const char* key, const char* data, void* fdata) {
+    printf("%s => %s\n", key, data);
+    return 1;
+}
+
 
 // Public --------------------------------------------------------------
 
 void RXSymbol_setup(void) {
-    RXSymbol_all = eina_hash_string_djb2_new(NULL); // TODO Add callback for object removal
+    RXSymbol_all = eina_hash_string_djb2_new(EINA_FREE_CB(RXSymbol_delete));
 }
 
 void RXSymbol_clean(void) {
-    // TODO delete all symbols
-    // TODO delete symbol hash table
+    eina_hash_free(RXSymbol_all);
 }
 
 RXSymbol_t* RXSymbol_symbolForCString(const char* str) {
@@ -38,16 +53,6 @@ RXSymbol_t* RXSymbol_symbolForCString(const char* str) {
         eina_hash_direct_add(RXSymbol_all, symbol->payload, symbol);
     }
     return symbol;
-}
-
-void RXSymbol_delete(RXSymbol_t* self) {
-    RXObject_finalize(self);
-    RXCore_deallocateObjectWithSize(self, strlen(self->payload + 1));
-}
-
-static Eina_Bool RXSymbol_dump(const Eina_Hash* hash, const char* key, const char* data, void* fdata) {
-    printf("%s => %s\n", key, data);
-    return 1;
 }
 
 void RXSymbol_dumpAll(void) {

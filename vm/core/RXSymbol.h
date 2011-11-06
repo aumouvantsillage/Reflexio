@@ -21,11 +21,6 @@ void RXSymbol_clean(void);
 RXSymbol_t* RXSymbol_symbolForCString(const char* str);
 
 /*
- * Unititialize and deallocate the given symbol.
- */
-void RXSymbol_delete(RXSymbol_t* self);
-
-/*
  * Print the list of registered symbols.
  */
 void RXSymbol_dumpAll(void);

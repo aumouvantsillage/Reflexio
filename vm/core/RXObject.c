@@ -1,8 +1,6 @@
 
 #include "RXObject.h"
 
-#include <Eina.h>
-
 // Private -------------------------------------------------------------
 
 /*
@@ -31,20 +29,6 @@ static Eina_Rbtree_Direction RXObject_compareNodes(const RXObjectNode_t *left, c
         : EINA_RBTREE_RIGHT; 
 }
 
-/*
- * The core data field is decomposed as follows
- * - bits 0 and 1: flags
- * - bits 2 to MSB: pointer to the slots container
- *
- * On 32-bit and 64 bit platforms, we assume that bits 0 and 1 of a pointer are always 0.
- * We use these bits to store flags.
- */
-#define RXObject_coreFlagsMask 3
-#define RXObject_coreSlotsMask (~RXObject_coreFlagsMask)
-
-#define RXObject_slots(self) (Eina_Rbtree*)(RXObject_coreData(self) & RXObject_coreSlotsMask)
-#define RXObject_flags(self) RXObject_coreData(self) & RXObject_coreFlagsMask
-#define RXObject_setSlots(self, expr) RXObject_coreData(self) = RXObject_flags(self) | (intptr_t)(expr) & RXObject_coreSlotsMask
 
 // Public --------------------------------------------------------------
 
@@ -66,13 +50,18 @@ RXObject_t* RXObject_new(void) {
 
 void RXObject_delete(RXObject_t* self) {
     RXObject_finalize(self);
-    RXCore_deallocateObjectOfType(self, RXObject_t);
+    RXCore_deallocateObject(self);
+}
+
+void RXObject_deleteSlot(Eina_Rbtree* node, void* data) {
+    free(node);
+    // TODO delete contained object based on reference counting
 }
 
 void RXObject_setSlot(RXObject_t* self, const RXSymbol_t* slotName, RXObject_t* value) {
     Eina_Rbtree* node = eina_rbtree_inline_lookup(RXObject_slots(self), slotName, 0, EINA_RBTREE_CMP_KEY_CB(RXObject_compareKeys), NULL);
     if (node == NULL) {
-        node = RXMemory_allocate(sizeof(RXObjectNode_t));
+        node = malloc(sizeof(RXObjectNode_t));
         RXObject_setSlots(self, eina_rbtree_inline_insert(RXObject_slots(self), node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), slotName));
     }
     ((RXObjectNode_t*)node)->key = slotName;
