@@ -15,4 +15,8 @@ void main(void) {
     assert(a == d);
     
     RXSymbol_dumpAll();
+    
+    Reflexio_clean();
+    
+    RXMemory_printStats;
 }

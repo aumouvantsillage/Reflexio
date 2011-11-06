@@ -20,4 +20,8 @@ void main(void) {
     
     RXObject_t* rc = RXObject_valueOfSlot(a, sc);
     assert(c == rc);
+    
+    Reflexio_clean();
+    
+    RXMemory_printStats;
 }

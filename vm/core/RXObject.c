@@ -54,10 +54,19 @@ void RXObject_setup(void) {
     RXNil_o = RXObject_new();
 }
 
+void RXObject_clean(void) {
+    RXObject_delete(RXNil_o); 
+}
+
 RXObject_t* RXObject_new(void) {
     RXObject_t* obj = RXCore_allocateObjectOfType(RXObject_t);
     RXObject_initialize(obj);
     return obj;
+}
+
+void RXObject_delete(RXObject_t* self) {
+    RXObject_finalize(self);
+    RXCore_deallocateObjectOfType(self, RXObject_t);
 }
 
 void RXObject_setSlot(RXObject_t* self, const RXSymbol_t* slotName, RXObject_t* value) {

@@ -7,4 +7,6 @@
 
 void Reflexio_setup(void);
 
+void Reflexio_clean(void);
+
 #endif

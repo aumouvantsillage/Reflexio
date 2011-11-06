@@ -59,19 +59,34 @@ typedef intptr_t RXObjectCoreData_t;
  * Allocate memory for a new object with type t.
  * This macro allocates memory for the core object data and the payload.
  */
-#define RXCore_allocateObjectOfType(t) RXMemory_allocate(sizeof(t) + sizeof(RXObjectCoreData_t))
+#define RXCore_allocateObjectOfType(t) (t*)((char*)RXMemory_allocate(sizeof(t) + sizeof(RXObjectCoreData_t)) + sizeof(RXObjectCoreData_t))
+
+/*
+ * Deallocate memory for a previously allocated object with type t.
+ */
+#define RXCore_deallocateObjectOfType(p, t) RXMemory_deallocate((char*)(p) - sizeof(RXObjectCoreData_t), sizeof(t) + sizeof(RXObjectCoreData_t))
 
 /*
  * Allocate memory for a new object with a given amount of payload bytes.
  * This macro allocates memory for the core object data and the payload.
  */
-#define RXCore_allocateObjectWithSize(s) RXMemory_allocate(s + sizeof(RXObjectCoreData_t))
+#define RXCore_allocateObjectWithSize(s) (RXMemory_allocate((s) + sizeof(RXObjectCoreData_t)) + sizeof(RXObjectCoreData_t))
+
+/*
+ * Deallocate memory for a previously allocated object with size s.
+ */
+#define RXCore_deallocateObjectWithSize(p, s) RXMemory_deallocate((p) - sizeof(RXObjectCoreData_t), (s) + sizeof(RXObjectCoreData_t))
 
 /*
  * Initialize a newly allocated object.
  * Use this macro to initialize the core object data.
  */
 #define RXObject_initialize(self) RXObject_coreData(self) = 0
+
+/*
+ * Prepare the given object to be deleted
+ */
+#define RXObject_finalize(self) // TODO Prepare the given object to be deleted
 
 /*
  * Core object type.
@@ -92,9 +107,19 @@ extern RXObject_t* RXNil_o;
 void RXObject_setup(void);
 
 /*
+ * Delete all objects created by this module.
+ */
+void RXObject_clean(void);
+
+/*
  * Allocate and initialize a new object.
  */
 RXObject_t* RXObject_new(void);
+
+/*
+ * Deallocate and uninitialize an object.
+ */
+void RXObject_delete(RXObject_t* self);
 
 /*
  * Symbol type, defined in RXSymbol.h

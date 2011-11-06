@@ -24,6 +24,11 @@ void RXSymbol_setup(void) {
     RXSymbol_all = eina_hash_string_djb2_new(NULL); // TODO Add callback for object removal
 }
 
+void RXSymbol_clean(void) {
+    // TODO delete all symbols
+    // TODO delete symbol hash table
+}
+
 RXSymbol_t* RXSymbol_symbolForCString(const char* str) {
     RXSymbol_t* symbol = eina_hash_find(RXSymbol_all, str);
     if(symbol == NULL) {
@@ -33,6 +38,11 @@ RXSymbol_t* RXSymbol_symbolForCString(const char* str) {
         eina_hash_direct_add(RXSymbol_all, symbol->payload, symbol);
     }
     return symbol;
+}
+
+void RXSymbol_delete(RXSymbol_t* self) {
+    RXObject_finalize(self);
+    RXCore_deallocateObjectWithSize(self, strlen(self->payload + 1));
 }
 
 static Eina_Bool RXSymbol_dump(const Eina_Hash* hash, const char* key, const char* data, void* fdata) {

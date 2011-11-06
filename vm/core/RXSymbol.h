@@ -10,10 +10,20 @@
 void RXSymbol_setup(void);
 
 /*
+ * Delete all objects created by this module.
+ */
+void RXSymbol_clean(void);
+
+/*
  * Return the symbol that corresponds to the given string.
  * If no such symbol exists, create a new one.
  */
 RXSymbol_t* RXSymbol_symbolForCString(const char* str);
+
+/*
+ * Unititialize and deallocate the given symbol.
+ */
+void RXSymbol_delete(RXSymbol_t* self);
 
 /*
  * Print the list of registered symbols.

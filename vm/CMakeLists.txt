@@ -1,6 +1,4 @@
 
-add_definitions(-DRX_DEBUG_MEMORY)
-
 set(VM_SRC
     Reflexio.c
     core/RXMemory.c
