@@ -54,18 +54,22 @@ void RXObject_delete(RXObject_t* self) {
 }
 
 void RXObject_deleteSlot(Eina_Rbtree* node, void* data) {
+    RXObject_release(((RXObjectNode_t*)node)->value);
     free(node);
-    // TODO delete contained object based on reference counting
 }
 
 void RXObject_setSlot(RXObject_t* self, const RXSymbol_t* slotName, RXObject_t* value) {
     Eina_Rbtree* node = eina_rbtree_inline_lookup(RXObject_slots(self), slotName, 0, EINA_RBTREE_CMP_KEY_CB(RXObject_compareKeys), NULL);
     if (node == NULL) {
         node = malloc(sizeof(RXObjectNode_t));
-        RXObject_setSlots(self, eina_rbtree_inline_insert(RXObject_slots(self), node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), slotName));
+        RXObject_slots(self) = eina_rbtree_inline_insert(RXObject_slots(self), node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), slotName);
+    }
+    else {
+        RXObject_release(((RXObjectNode_t*)node)->value);
     }
     ((RXObjectNode_t*)node)->key = slotName;
     ((RXObjectNode_t*)node)->value = value;
+    RXObject_retain(value);
     // TODO remove cache entry if applicable
 }
 

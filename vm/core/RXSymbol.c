@@ -47,8 +47,9 @@ void RXSymbol_clean(void) {
 RXSymbol_t* RXSymbol_symbolForCString(const char* str) {
     RXSymbol_t* symbol = eina_hash_find(RXSymbol_all, str);
     if(symbol == NULL) {
-        symbol = RXCore_allocateObjectWithSize(strlen(str) + 1);
+        symbol = RXCore_allocateObjectWithSize(RXSymbol_t, strlen(str) + 1);
         RXObject_initialize(symbol);
+        RXObject_retain(symbol);
         strcpy(symbol->payload, str);
         eina_hash_direct_add(RXSymbol_all, symbol->payload, symbol);
     }

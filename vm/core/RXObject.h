@@ -4,9 +4,13 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <Eina.h>
 
-typedef intptr_t RXObjectCoreData_t;
+typedef struct {
+    Eina_Rbtree* slots;
+    uint32_t meta;
+} RXObjectCoreData_t;
 
 /*
  * Call this macro at the beginning of a struct
@@ -55,20 +59,33 @@ typedef intptr_t RXObjectCoreData_t;
  */
 #define RXObject_coreData(self) (self)->__coreData__[-1]
 
-/*
- * The core data field is decomposed as follows
- * - bits 0 and 1: flags
- * - bits 2 to MSB: pointer to the slots container
- *
- * On 32-bit and 64 bit platforms, we assume that bits 0 and 1 of a pointer are always 0.
- * We use these bits to store flags.
- */
-#define RXObject_coreFlagsMask ((RXObjectCoreData_t)3)
-#define RXObject_coreSlotsMask ((RXObjectCoreData_t)~RXObject_coreFlagsMask)
+#define RXObject_slots(self) RXObject_coreData(self).slots
 
-#define RXObject_slots(self) (Eina_Rbtree*)(RXObject_coreData(self) & RXObject_coreSlotsMask)
-#define RXObject_flags(self) RXObject_coreData(self) & RXObject_coreFlagsMask
-#define RXObject_setSlots(self, expr) RXObject_coreData(self) = RXObject_flags(self) | (intptr_t)(expr) & RXObject_coreSlotsMask
+#define RXObject_flagLookingUp (1<<31)
+#define RXObject_flagFunction (1<<30)
+#define RXObject_flags (RXObject_flagLookingUp | RXObject_flagFunction)
+
+#define RXObject_isLookingUp(self) (RXObject_coreData(self).meta & RXObject_flagLookingUp)
+
+#define RXObject_setLookingUp(self, flag) RXObject_coreData(self).meta |= RXObject_flagLookingUp
+
+#define RXObject_clearLookingUp(self, flag) RXObject_coreData(self).meta &= ~RXObject_flagLookingUp
+
+#define RXObject_isFunction(self) (RXObject_coreData(self).meta & RXObject_flagFunction)
+
+#define RXObject_setFunction(self, flag) RXObject_coreData(self).meta |= RXObject_flagFunction
+
+#define RXObject_clearFunction(self, flag) RXObject_coreData(self).meta &= ~RXObject_flagFunction
+
+#define RXObject_retainCount(self) (RXObject_coreData(self).meta & ~RXObject_flags)
+
+#define RXObject_retain(self) RXObject_coreData(self).meta++
+
+#define RXObject_release(self) \
+    RXObject_coreData(self).meta--; \
+    if (!RXObject_retainCount(self)) { \
+        /* TODO send "delete" message to self */ \
+    }
 
 /*
  * Allocate memory for a new object with type t.
@@ -80,7 +97,7 @@ typedef intptr_t RXObjectCoreData_t;
  * Allocate memory for a new object with a given amount of payload bytes.
  * This macro allocates memory for the core object data and the payload.
  */
-#define RXCore_allocateObjectWithSize(s) (malloc((s) + sizeof(RXObjectCoreData_t)) + sizeof(RXObjectCoreData_t))
+#define RXCore_allocateObjectWithSize(t, s) (t*)((char*)malloc((s) + sizeof(RXObjectCoreData_t)) + sizeof(RXObjectCoreData_t))
 
 /*
  * Deallocate memory for a previously allocated object.
@@ -91,7 +108,9 @@ typedef intptr_t RXObjectCoreData_t;
  * Initialize a newly allocated object.
  * Use this macro to initialize the core object data.
  */
-#define RXObject_initialize(self) RXObject_coreData(self) = 0
+#define RXObject_initialize(self) \
+    RXObject_slots(self) = NULL; \
+    RXObject_coreData(self).meta = 0;
 
 /*
  * Prepare the given object to be deleted

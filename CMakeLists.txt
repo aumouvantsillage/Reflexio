@@ -3,7 +3,7 @@ project(Reflectio)
 
 set(CMAKE_MODULE_PATH  ${PROJECT_SOURCE_DIR}/cmake-extensions/ )
 
-add_definitions(-std=gnu99 -D_GNU_SOURCE)
+add_definitions(-std=gnu99 -D_GNU_SOURCE -g)
 
 add_subdirectory(vm)
 add_subdirectory(tools)
