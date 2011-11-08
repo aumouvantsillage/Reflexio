@@ -4,6 +4,7 @@
 
 #include "core/RXObject.h"
 #include "core/RXSymbol.h"
+#include "core/RXMethod.h"
 
 void Reflexio_setup(void);
 

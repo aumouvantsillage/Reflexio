@@ -52,7 +52,7 @@ typedef struct {
     typedef struct { \
         RXObject_declaration; \
         c payload; \
-    } t;
+    } t
 
 /*
  * Accessor to the core data of a given object.
@@ -62,8 +62,8 @@ typedef struct {
 #define RXObject_slots(self) RXObject_coreData(self).slots
 
 #define RXObject_flagIsLookingUp (1<<31)
-#define RXObject_flagIsMethod (1<<30)
-#define RXObject_flags (RXObject_flagIsLookingUp | RXObject_flagIsMethod)
+#define RXObject_flagIsNativeMethod (1<<30)
+#define RXObject_flags (RXObject_flagIsLookingUp | RXObject_flagIsNativeMethod)
 
 #define RXObject_isLookingUp(self) (RXObject_coreData(self).meta & RXObject_flagIsLookingUp)
 
@@ -71,11 +71,11 @@ typedef struct {
 
 #define RXObject_clearIsLookingUp(self) RXObject_coreData(self).meta &= ~RXObject_flagIsLookingUp
 
-#define RXObject_isMethod(self) (RXObject_coreData(self).meta & RXObject_flagIsMethod)
+#define RXObject_isNativeMethod(self) (RXObject_coreData(self).meta & RXObject_flagIsNativeMethod)
 
-#define RXObject_setIsMethod(self) RXObject_coreData(self).meta |= RXObject_flagIsMethod
+#define RXObject_setIsNativeMethod(self) RXObject_coreData(self).meta |= RXObject_flagIsNativeMethod
 
-#define RXObject_clearIsMethod(self) RXObject_coreData(self).meta &= ~RXObject_flagIsMethod
+#define RXObject_clearIsNativeMethod(self) RXObject_coreData(self).meta &= ~RXObject_flagIsNativeMethod
 
 #define RXObject_retainCount(self) (RXObject_coreData(self).meta & ~RXObject_flags)
 
@@ -87,22 +87,24 @@ typedef struct {
         /* TODO send "delete" message to self */ \
     }
 
+#define RXObject_sizeOfCoreData sizeof(RXObjectCoreData_t)
+
 /*
  * Allocate memory for a new object with type t.
  * This macro allocates memory for the core object data and the payload.
  */
-#define RXCore_allocateObjectOfType(t) (t*)((char*)malloc(sizeof(t) + sizeof(RXObjectCoreData_t)) + sizeof(RXObjectCoreData_t))
+#define RXCore_allocateObjectOfType(t) (t*)((char*)malloc(sizeof(t) + RXObject_sizeOfCoreData) + RXObject_sizeOfCoreData)
 
 /*
  * Allocate memory for a new object with a given amount of payload bytes.
  * This macro allocates memory for the core object data and the payload.
  */
-#define RXCore_allocateObjectWithSize(t, s) (t*)((char*)malloc((s) + sizeof(RXObjectCoreData_t)) + sizeof(RXObjectCoreData_t))
+#define RXCore_allocateObjectWithSize(t, s) (t*)((char*)malloc((s) + RXObject_sizeOfCoreData) + RXObject_sizeOfCoreData)
 
 /*
  * Deallocate memory for a previously allocated object.
  */
-#define RXCore_deallocateObject(p) free((char*)(p) - sizeof(RXObjectCoreData_t))
+#define RXCore_deallocateObject(p) free((char*)(p) - RXObject_sizeOfCoreData)
 
 /*
  * Initialize a newly allocated object.
@@ -123,7 +125,7 @@ typedef struct {
 typedef struct {
     RXObject_declaration;
     // Payload: empty
-} RXObject_t;
+}  RXObject_t;
 
 /*
  * Predefined object: nil
@@ -169,5 +171,10 @@ void RXObject_setSlot(RXObject_t* self, const RXSymbol_t* slotName, RXObject_t* 
  * Return the value of a slot in the given object.
  */
 RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXSymbol_t* slotName);
+
+/*
+ * Respond to a message.
+ */
+RXObject_t* RXObject_respondTo(RXObject_t* self, const RXSymbol_t* messageName, RXObject_t* context, const int argumentCount, RXObject_t* arguments);
 
 #endif

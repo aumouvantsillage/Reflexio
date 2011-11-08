@@ -36,8 +36,14 @@ static Eina_Bool RXSymbol_dump(const Eina_Hash* hash, const char* key, const cha
 
 // Public --------------------------------------------------------------
 
+RXSymbol_t* RXSymbol_activate_o;
+RXSymbol_t* RXSymbol_lookup_o;
+
+
 void RXSymbol_setup(void) {
     RXSymbol_all = eina_hash_string_djb2_new(EINA_FREE_CB(RXSymbol_delete));
+    RXSymbol_activate_o = RXSymbol_symbolForCString("activate");
+    RXSymbol_lookup_o = RXSymbol_symbolForCString("lookup");
 }
 
 void RXSymbol_clean(void) {

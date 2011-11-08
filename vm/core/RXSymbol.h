@@ -5,6 +5,13 @@
 #include "RXObject.h"
 
 /*
+ * Type RXSymbol_t is defined in RXObject.h
+ */
+
+extern RXSymbol_t* RXSymbol_activate_o;
+extern RXSymbol_t* RXSymbol_lookup_o;
+
+/*
  * Create predefined objects used in this module.
  */
 void RXSymbol_setup(void);
