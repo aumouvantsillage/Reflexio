@@ -175,6 +175,6 @@ RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXSymbol_t* slotN
 /*
  * Respond to a message.
  */
-RXObject_t* RXObject_respondTo(RXObject_t* self, const RXSymbol_t* messageName, RXObject_t* context, const int argumentCount, RXObject_t* arguments);
+RXObject_t* RXObject_respondTo(RXObject_t* self, const RXSymbol_t* messageName);
 
 #endif

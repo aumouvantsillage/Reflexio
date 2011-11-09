@@ -102,22 +102,38 @@ static RXObject_t* RXObject_lookup(RXObject_t* self, const RXSymbol_t* slotName)
     // If a lookup method exists in the receiver, send an "activate" message to that method and return the result.
     node = eina_rbtree_inline_lookup(RXObject_slots(self), RXSymbol_lookup_o, 0, EINA_RBTREE_CMP_KEY_CB(RXObject_compareKeys), NULL);
     if (node != NULL) {
-        RXObject_t* arguments[2] = {self, (RXObject_t*)slotName};
-        return RXObject_respondTo(((RXObjectNode_t*)node)->value, RXSymbol_activate_o, RXNil_o, 2, arguments);
+        RXNativeMethod_push((RXObject_t*)slotName);
+        RXNativeMethod_push(self);
+        return RXObject_respondTo(((RXObjectNode_t*)node)->value, RXSymbol_activate_o);
+        RXNativeMethod_pop(2);
     }
 
     return RXNil_o;
 }
 
-RXObject_t* RXObject_respondTo(RXObject_t* self, const RXSymbol_t* messageName, RXObject_t* context, const int argumentCount, RXObject_t* arguments) {
+RXObject_t* RXObject_respondTo(RXObject_t* self, const RXSymbol_t* messageName) {
     RXObject_t* method = RXObject_lookup(self, messageName);
-    if (method == RXNil_o) {
-        return self;
+    // If a method has been found, run it by sending an "activate" message
+    if (method != RXNil_o) {
+        RXNativeMethod_push(self);
+        RXObject_t* result = RXObject_respondTo(method, RXSymbol_activate_o);
+        RXNativeMethod_pop(1);
+        return result;        
     }
-    else if (RXObject_isNativeMethod(method)) {
-        return RXNativeMethod_activate((RXNativeMethod_t*)method, self, context, argumentCount, arguments);
+    // If no method has been found and the current message is "activate"
+    else if (messageName == RXSymbol_activate_o) {
+        // If self is a native method, execute it directly
+        // else return the receiver
+        if (RXObject_isNativeMethod(self)) {
+            return RXNativeMethod_activate((RXNativeMethod_t*)method, self);
+        }
+        else {
+            return self;        
+        }
     }
-    else {
-        return RXObject_respondTo(method, RXSymbol_activate_o, RXNil_o, 2, arguments);
+    // If no method has been found and the current message is not activate,
+    // return nil
+    else { 
+        return RXNil_o;
     }
 }
