@@ -1,7 +1,7 @@
 
 #include "RXObject.h"
 #include "RXSymbol.h"
-#include "RXMethod.h"
+#include "RXNativeMethod.h"
 
 // Private -------------------------------------------------------------
 
@@ -115,7 +115,7 @@ RXObject_t* RXObject_respondTo(RXObject_t* self, const RXSymbol_t* messageName, 
         return self;
     }
     else if (RXObject_isNativeMethod(method)) {
-        return RXMethod_activate((RXMethod_t*)method, self, context, argumentCount, arguments);
+        return RXNativeMethod_activate((RXNativeMethod_t*)method, self, context, argumentCount, arguments);
     }
     else {
         return RXObject_respondTo(method, RXSymbol_activate_o, RXNil_o, 2, arguments);
