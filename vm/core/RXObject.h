@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <Eina.h>
+#include "RXSymbol.h"
 
 typedef struct {
     Eina_Rbtree* slots;
@@ -54,70 +55,7 @@ typedef struct {
         c payload; \
     } t
 
-/*
- * Accessor to the core data of a given object.
- */
-#define RXObject_coreData(self) (self)->__coreData__[-1]
 
-#define RXObject_slots(self) RXObject_coreData(self).slots
-
-#define RXObject_flagIsLookingUp (1<<31)
-#define RXObject_flagIsNativeMethod (1<<30)
-#define RXObject_flags (RXObject_flagIsLookingUp | RXObject_flagIsNativeMethod)
-
-#define RXObject_isLookingUp(self) (RXObject_coreData(self).meta & RXObject_flagIsLookingUp)
-
-#define RXObject_setIsLookingUp(self) RXObject_coreData(self).meta |= RXObject_flagIsLookingUp
-
-#define RXObject_clearIsLookingUp(self) RXObject_coreData(self).meta &= ~RXObject_flagIsLookingUp
-
-#define RXObject_isNativeMethod(self) (RXObject_coreData(self).meta & RXObject_flagIsNativeMethod)
-
-#define RXObject_setIsNativeMethod(self) RXObject_coreData(self).meta |= RXObject_flagIsNativeMethod
-
-#define RXObject_clearIsNativeMethod(self) RXObject_coreData(self).meta &= ~RXObject_flagIsNativeMethod
-
-#define RXObject_retainCount(self) (RXObject_coreData(self).meta & ~RXObject_flags)
-
-#define RXObject_retain(self) RXObject_coreData(self).meta++
-
-#define RXObject_release(self) \
-    RXObject_coreData(self).meta--; \
-    if (!RXObject_retainCount(self)) { \
-        /* TODO send "delete" message to self */ \
-    }
-
-#define RXObject_sizeOfCoreData sizeof(RXObjectCoreData_t)
-
-/*
- * Allocate memory for a new object with type t.
- * This macro allocates memory for the core object data and the payload.
- */
-#define RXCore_allocateObjectOfType(t) (t*)((char*)malloc(sizeof(t) + RXObject_sizeOfCoreData) + RXObject_sizeOfCoreData)
-
-/*
- * Allocate memory for a new object with a given amount of payload bytes.
- * This macro allocates memory for the core object data and the payload.
- */
-#define RXCore_allocateObjectWithSize(t, s) (t*)((char*)malloc((s) + RXObject_sizeOfCoreData) + RXObject_sizeOfCoreData)
-
-/*
- * Deallocate memory for a previously allocated object.
- */
-#define RXCore_deallocateObject(p) free((char*)(p) - RXObject_sizeOfCoreData)
-
-/*
- * Initialize a newly allocated object.
- * Use this macro to initialize the core object data.
- */
-#define RXObject_initialize(self) \
-    RXObject_slots(self) = NULL; \
-    RXObject_coreData(self).meta = 0;
-
-/*
- * Prepare the given object to be deleted
- */
-#define RXObject_finalize(self) eina_rbtree_delete(RXObject_slots(self), RXObject_deleteSlot, NULL)
 
 /*
  * Core object type.
@@ -127,40 +65,12 @@ typedef struct {
     // Payload: empty
 }  RXObject_t;
 
+extern RXObject_t* RXObject_o;
+
 /*
  * Predefined object: nil
  */
 extern RXObject_t* RXNil_o;
-
-/*
- * Create predefined objects used in this module.
- */
-void RXObject_setup(void);
-
-/*
- * Delete all objects created by this module.
- */
-void RXObject_clean(void);
-
-/*
- * Allocate and initialize a new object.
- */
-RXObject_t* RXObject_new(void);
-
-/*
- * Deallocate and uninitialize an object.
- */
-void RXObject_delete(RXObject_t* self);
-
-/*
- * Delete a slot.
- */
-void RXObject_deleteSlot(Eina_Rbtree* node, void* data);
-
-/*
- * Symbol type, defined in RXSymbol.h
- */
-typedef struct RXSymbol_s RXSymbol_t;
 
 /*
  * Assign a value to a slot of the given object.
@@ -172,9 +82,13 @@ void RXObject_setSlot(RXObject_t* self, const RXSymbol_t* slotName, RXObject_t* 
  */
 RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXSymbol_t* slotName);
 
+void RXObject_deleteSlot(RXObject_t* self, const RXSymbol_t* slotName);
+
 /*
  * Respond to a message.
  */
 RXObject_t* RXObject_respondTo(RXObject_t* self, const RXSymbol_t* messageName);
+
+#include "RXObject_inline.h"
 
 #endif

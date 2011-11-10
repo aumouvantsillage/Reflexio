@@ -7,12 +7,14 @@
 /*
  * Function type for native method bodies.
  */
-typedef RXObject_t* (*RXNativeMethodBody_t) (RXObject_t* self, ...);
+typedef RXObject_t* (*RXNativeMethodBody_t) (RXObject_t* self);
 
 /*
  * A native method is an object with a reference to a C function.
  */
 RXObject_defineType(RXNativeMethod_t, RXNativeMethodBody_t);
+
+extern RXNativeMethod_t* RXNativeMethod_o;
 
 /*
  * The standard function name for methods attached to predefined object types.
@@ -44,8 +46,12 @@ RXObject_defineType(RXNativeMethod_t, RXNativeMethodBody_t);
  * MyType_t* MyType_o = MyType_new();
  * RXNativeMethod_attach(MyType, someMessage)
  */
-#define RXNativeMethod_attach(type, name) \
-    RXObject_setSlot((RXObject_t*)type##_o, RXSymbol_symbolForCString(#name), (RXObject_t*)RXNativeMethod_new(RXNativeMethod_functionName(type, name)))
+#define RXNativeMethod_attach(type, name) ({ \
+    RXNativeMethod_t* method = RXNativeMethod_new(RXNativeMethod_functionName(type, name)); \
+    RXObject_setSlot((RXObject_t*)type##_o, RXSymbol_symbolForCString(#name), (RXObject_t*)method); \
+    RXObject_setSlot((RXObject_t*)method, RXSymbol_delegate_o, (RXObject_t*)RXNativeMethod_o); \
+    method; \
+})
 
 void RXNativeMethod_setup(void);
 

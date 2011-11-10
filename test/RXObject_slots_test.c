@@ -6,12 +6,13 @@
 void main(void) {
     Reflexio_setup();
     
-    RXObject_t* a = RXObject_new();
-    RXObject_t* b = RXObject_new();
-    RXObject_t* c = RXObject_new();
+    RXObject_t* a = RXObject_respondTo(RXObject_o, RXSymbol_new_o);
+    RXObject_retain(a);
+    
+    RXObject_t* b = RXObject_respondTo(RXObject_o, RXSymbol_new_o);
+    RXObject_t* c = RXObject_respondTo(RXObject_o, RXSymbol_new_o);
     RXSymbol_t* sb = RXSymbol_symbolForCString("basile");
     RXSymbol_t* sc = RXSymbol_symbolForCString("carla");
-    
     RXObject_setSlot(a, sb, b);
     RXObject_setSlot(a, sc, c);
     
@@ -21,9 +22,7 @@ void main(void) {
     RXObject_t* rc = RXObject_valueOfSlot(a, sc);
     assert(c == rc);
     
-    RXObject_delete(a);
-    RXObject_delete(b);
-    RXObject_delete(c);
+    RXObject_release(a);
     
     Reflexio_clean();
 }

@@ -1,5 +1,7 @@
 
 #include "RXSymbol.h"
+#include "RXObject.h"
+#include "RXNativeMethod.h"
 
 #include <Eina.h>
 
@@ -18,14 +20,6 @@ typedef struct RXSymbol_s {
 } RXSymbol_t;
 
 /*
- * Unititialize and deallocate the given symbol.
- */
-static void RXSymbol_delete(RXSymbol_t* self) {
-    RXObject_finalize(self);
-    RXCore_deallocateObject(self);
-}
-
-/*
  * Print a hash table entry with the given key and data
  */
 static Eina_Bool RXSymbol_dump(const Eina_Hash* hash, const char* key, const char* data, void* fdata) {
@@ -33,31 +27,29 @@ static Eina_Bool RXSymbol_dump(const Eina_Hash* hash, const char* key, const cha
     return 1;
 }
 
-
 // Public --------------------------------------------------------------
 
-RXSymbol_t* RXSymbol_activate_o;
-RXSymbol_t* RXSymbol_lookup_o;
-
-
 void RXSymbol_setup(void) {
-    RXSymbol_all = eina_hash_string_djb2_new(EINA_FREE_CB(RXSymbol_delete));
-    RXSymbol_activate_o = RXSymbol_symbolForCString("activate");
-    RXSymbol_lookup_o = RXSymbol_symbolForCString("lookup");
+    RXSymbol_all = eina_hash_string_djb2_new(NULL);
 }
 
 void RXSymbol_clean(void) {
     eina_hash_free(RXSymbol_all);
 }
 
+RXSymbol_t* RXSymbol_new(const char* str) {
+    RXSymbol_t* self = (RXSymbol_t*)RXCore_allocateObjectWithSize(strlen(str) + 1);
+    RXObject_initialize((RXObject_t*)self);
+    strcpy(self->payload, str);
+    eina_hash_direct_add(RXSymbol_all, self->payload, self);
+    return self;
+}
+
 RXSymbol_t* RXSymbol_symbolForCString(const char* str) {
     RXSymbol_t* symbol = eina_hash_find(RXSymbol_all, str);
     if(symbol == NULL) {
-        symbol = RXCore_allocateObjectWithSize(RXSymbol_t, strlen(str) + 1);
-        RXObject_initialize(symbol);
-        RXObject_retain(symbol);
-        strcpy(symbol->payload, str);
-        eina_hash_direct_add(RXSymbol_all, symbol->payload, symbol);
+        symbol = RXSymbol_new(str);
+        RXObject_setSlot((RXObject_t*)symbol, RXSymbol_delegate_o, (RXObject_t*)RXSymbol_o);
     }
     return symbol;
 }

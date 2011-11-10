@@ -13,16 +13,16 @@ extern RXObject_t** RXNativeMethod_stackTop;
 #endif
 
 inline static void RXNativeMethod_push(RXObject_t* object) {
-    assert(RXNativeMethod_stackBottom - RXNativeMethod_stackTop < RX_STACK_SIZE);
+    assert(RXNativeMethod_stackTop - RXNativeMethod_stackBottom < RX_STACK_SIZE);
     *RXNativeMethod_stackTop++ = object;
 }
 
 inline static void RXNativeMethod_pop(int offset) {
-    assert(RXNativeMethod_stackBottom - RXNativeMethod_stackTop >= offset);
+    assert(RXNativeMethod_stackTop - RXNativeMethod_stackBottom >= offset);
     RXNativeMethod_stackTop -= offset;
 }
 
 inline static RXObject_t* RXNativeMethod_argumentAt(int index) {
-    assert(RXNativeMethod_stackBottom - RXNativeMethod_stackTop >= index);
-    return *(RXNativeMethod_stackTop - index);
+    assert(RXNativeMethod_stackTop - RXNativeMethod_stackBottom > index);
+    return *(RXNativeMethod_stackTop - index - 1);
 }
