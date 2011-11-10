@@ -8,7 +8,6 @@ extern RXSymbol_t* RXSymbol_o;
 extern RXSymbol_t* RXSymbol_activate_o;
 extern RXSymbol_t* RXSymbol_delegate_o;
 extern RXSymbol_t* RXSymbol_lookup_o;
-extern RXSymbol_t* RXSymbol_new_o;
 
 /*
  * Create predefined objects used in this module.

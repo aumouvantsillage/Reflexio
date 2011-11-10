@@ -6,6 +6,8 @@
 void main(void) {
     Reflexio_setup();
     
+    RXSymbol_t* RXSymbol_new_o = RXSymbol_symbolForCString("new");
+    
     RXObject_t* a = RXObject_respondTo(RXObject_o, RXSymbol_new_o);
     RXObject_retain(a);
     

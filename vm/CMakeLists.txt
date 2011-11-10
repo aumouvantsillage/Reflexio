@@ -1,9 +1,11 @@
 
 set(VM_SRC
     Reflexio.c
+    core/RXCore.c
     core/RXObject.c
     core/RXSymbol.c
     core/RXNativeMethod.c
+    lib/RXObject.c
 )
 
 find_package(Eina)
