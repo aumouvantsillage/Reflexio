@@ -8,6 +8,9 @@
 #include <Eina.h>
 #include "RXSymbol.h"
 
+/*
+ * Common data for all objects.
+ */
 typedef struct {
     Eina_Rbtree* slots;
     uint32_t meta;
@@ -55,8 +58,6 @@ typedef struct {
         c payload; \
     } t
 
-
-
 /*
  * Core object type.
  */
@@ -82,6 +83,9 @@ void RXObject_setSlot(RXObject_t* self, const RXSymbol_t* slotName, RXObject_t* 
  */
 RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXSymbol_t* slotName);
 
+/*
+ * Delete a slot with the given name from the given object.
+ */
 void RXObject_deleteSlot(RXObject_t* self, const RXSymbol_t* slotName);
 
 /*

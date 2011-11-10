@@ -1,6 +1,6 @@
 
-#ifndef __RX_NATIVE_METHOD_H__
-#define __RX_NATIVE METHOD_H__
+#ifndef __RX_CORE_NATIVE_METHOD_H__
+#define __RX_CORE_NATIVE METHOD_H__
 
 #include "RXObject.h"
 
@@ -14,6 +14,9 @@ typedef RXObject_t* (*RXNativeMethodBody_t) (RXObject_t* self);
  */
 RXObject_defineType(RXNativeMethod_t, RXNativeMethodBody_t);
 
+/*
+ * The common delegate object for all native methods.
+ */
 extern RXNativeMethod_t* RXNativeMethod_o;
 
 /*

@@ -49,10 +49,8 @@ void Reflexio_setup(void) {
 
     RXNativeMethod_attach(RXObject, new);
     
-    // These symbols are not assigned currently
+    // These objects are not assigned to slots, so they will be released manually
     RXObject_retain(RXNil_o);
-    RXObject_retain((RXObject_t*)RXSymbol_lookup_o);
-    RXObject_retain((RXObject_t*)RXSymbol_activate_o);
 }
 
 void Reflexio_clean(void) {
@@ -62,9 +60,8 @@ void Reflexio_clean(void) {
     RXObject_deleteSlot((RXObject_t*)RXSymbol_delegate_o, RXSymbol_delegate_o);
     RXObject_deleteSlot((RXObject_t*)RXNativeMethod_o, RXSymbol_delegate_o);
 
+    // These objects are not assigned to slots, so they will be released manually
     RXObject_release(RXNil_o);
-    RXObject_release((RXObject_t*)RXSymbol_lookup_o);
-    RXObject_release((RXObject_t*)RXSymbol_activate_o);
 
     RXSymbol_clean();
     RXNativeMethod_clean();
