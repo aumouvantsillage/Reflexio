@@ -67,6 +67,7 @@ void RXObject_deleteSlot(RXObject_t* self, const RXSymbol_t* slotName) {
         RXObject_coreData(self).slots = eina_rbtree_inline_remove(RXObject_coreData(self).slots, node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), NULL);
         RXObject_deleteNode(node, NULL);
     }
+    // TODO remove cache entry if applicable
 }
 
 void RXObject_deleteNode(Eina_Rbtree* node, void* data) {
@@ -82,6 +83,8 @@ void RXObject_deleteNode(Eina_Rbtree* node, void* data) {
  * If the receiver has a "delegate" slot, recursively look up in the delegate.
  */
 static RXObject_t* RXObject_lookup(RXObject_t* self, const RXSymbol_t* slotName) {
+    // TODO lookup cache entry
+    
     // Prevent infinite recursion in cyclic delegate chains
     if (RXObject_isLookingUp(self)) {
         return RXNil_o;
