@@ -7,8 +7,10 @@ void main(void) {
     Reflexio_setup();
     
     RXSymbol_t* RXSymbol_new_o = RXSymbol_symbolForCString("new");
+    RXSymbol_t* RXSymbol_print_o = RXSymbol_symbolForCString("print");
     
     RXObject_t* a = RXObject_respondTo(RXObject_o, RXSymbol_new_o);
+    assert(a != RXNil_o);
     RXObject_retain(a);
     
     RXObject_t* b = RXObject_respondTo(RXObject_o, RXSymbol_new_o);
@@ -23,6 +25,13 @@ void main(void) {
     
     RXObject_t* rc = RXObject_valueOfSlot(a, sc);
     assert(c == rc);
+    
+    RXObject_respondTo(a, RXSymbol_print_o);
+    RXObject_respondTo((RXObject_t*)sb, RXSymbol_print_o);
+    
+    RXNativeMethod_push((RXObject_t*)sb);
+    RXObject_respondTo(RXObject_valueOfSlot(RXObject_o, RXSymbol_print_o), RXSymbol_activate_o);
+    RXNativeMethod_pop(1);
     
     RXObject_release(a);
     

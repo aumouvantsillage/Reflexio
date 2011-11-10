@@ -45,7 +45,6 @@ void RXObject_setSlot(RXObject_t* self, const RXSymbol_t* slotName, RXObject_t* 
         node = malloc(sizeof(RXObjectNode_t));
         RXObject_coreData(self).slots = eina_rbtree_inline_insert(RXObject_coreData(self).slots, node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), slotName);
         ((RXObjectNode_t*)node)->key = slotName;
-        RXObject_retain((RXObject_t*)slotName);
     }
     else {
         RXObject_release(((RXObjectNode_t*)node)->value);
@@ -71,7 +70,6 @@ void RXObject_deleteSlot(RXObject_t* self, const RXSymbol_t* slotName) {
 }
 
 void RXObject_deleteNode(Eina_Rbtree* node, void* data) {
-    RXObject_release((RXObject_t*)((RXObjectNode_t*)node)->key);
     RXObject_release(((RXObjectNode_t*)node)->value);
     free(node);
 }

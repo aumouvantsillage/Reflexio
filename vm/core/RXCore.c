@@ -39,9 +39,9 @@ void RXCore_setup(void) {
     RXNativeMethod_o = RXNativeMethod_new(RXNativeMethod_functionName(RXNativeMethod, default));
     RXObject_setSlot((RXObject_t*)RXNativeMethod_o, RXSymbol_delegate_o, RXObject_o);
 
-    
     // These objects are not assigned to slots, so they will be released manually
     RXObject_retain(RXNil_o);
+    RXObject_retain((RXObject_t*)RXNativeMethod_o);
 }
 
 void RXCore_clean(void) {
@@ -53,6 +53,7 @@ void RXCore_clean(void) {
 
     // These objects are not assigned to slots, so they will be released manually
     RXObject_release(RXNil_o);
+    RXObject_release((RXObject_t*)RXNativeMethod_o);
 
     RXSymbol_clean();
     RXNativeMethod_clean();
