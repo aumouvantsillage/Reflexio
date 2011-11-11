@@ -6,11 +6,13 @@ static RXNativeMethod_define(RXSymbol, asString) {
 }
 
 static RXNativeMethod_define(RXSymbol, print) {
-    puts((char*)self);
+    fputs((char*)self, stdout);
     return self;
 }
 
-void RXSymbol_attachMethods() {
+void RXSymbol_libSetup(void) {
+    RXObject_setSlot(RXObject_o, RXSymbol_o, (RXObject_t*)RXSymbol_o);
+    
     RXNativeMethod_attach(RXSymbol, asString);
     RXNativeMethod_attach(RXSymbol, print);
 }

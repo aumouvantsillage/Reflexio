@@ -101,7 +101,7 @@ static RXObject_t* RXObject_lookup(RXObject_t* self, const RXSymbol_t* slotName)
     if (node != NULL) {
         RXNativeMethod_push((RXObject_t*)slotName);
         RXNativeMethod_push(self);
-        RXObject_t* result = RXObject_respondTo(((RXObjectNode_t*)node)->value, RXSymbol_activate_o);
+        RXObject_t* result = RXObject_respondTo(((RXObjectNode_t*)node)->value, RXSymbol_activate_o, 2);
         RXNativeMethod_pop(2);
         return result;
     }
@@ -118,13 +118,13 @@ static RXObject_t* RXObject_lookup(RXObject_t* self, const RXSymbol_t* slotName)
     return RXNil_o;
 }
 
-RXObject_t* RXObject_respondTo(RXObject_t* self, const RXSymbol_t* messageName) {
+RXObject_t* RXObject_respondTo(RXObject_t* self, const RXSymbol_t* messageName, int argumentCount) {
     RXObject_t* method = RXObject_lookup(self, messageName);
 
     // If a method has been found, run it by sending an "activate" message
     if (method != RXNil_o) {
         RXNativeMethod_push(self);
-        RXObject_t* result = RXObject_respondTo(method, RXSymbol_activate_o);
+        RXObject_t* result = RXObject_respondTo(method, RXSymbol_activate_o, argumentCount + 1);
         RXNativeMethod_pop(1);
         return result;        
     }
@@ -133,7 +133,7 @@ RXObject_t* RXObject_respondTo(RXObject_t* self, const RXSymbol_t* messageName) 
         // If self is a native method, execute it directly
         // else return the receiver
         if (RXObject_isNativeMethod(self)) {
-            return RXNativeMethod_activate((RXNativeMethod_t*)self, RXNativeMethod_argumentAt(0));
+            return RXNativeMethod_activate((RXNativeMethod_t*)self, RXNativeMethod_argumentAt(0), argumentCount);
         }
         else {
             return self;        

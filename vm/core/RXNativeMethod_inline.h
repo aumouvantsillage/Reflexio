@@ -4,8 +4,8 @@
 /*
  * Execute a given native method on the given receiver.
  */
-inline static RXObject_t* RXNativeMethod_activate(RXNativeMethod_t* self, RXObject_t* receiver) {
-    return self->payload(receiver);
+inline static RXObject_t* RXNativeMethod_activate(RXNativeMethod_t* self, RXObject_t* receiver, int argumentCount) {
+    return self->payload(receiver, argumentCount);
 }
 
 /*

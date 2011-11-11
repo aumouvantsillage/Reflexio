@@ -7,6 +7,7 @@ set(VM_SRC
     core/RXNativeMethod.c
     lib/RXObject.c
     lib/RXSymbol.c
+    lib/RXList.c
 )
 
 find_package(Eina)

@@ -91,7 +91,7 @@ void RXObject_deleteSlot(RXObject_t* self, const RXSymbol_t* slotName);
 /*
  * Respond to a message.
  */
-RXObject_t* RXObject_respondTo(RXObject_t* self, const RXSymbol_t* messageName);
+RXObject_t* RXObject_respondTo(RXObject_t* self, const RXSymbol_t* messageName, int argumentCount);
 
 #include "RXObject_inline.h"
 
