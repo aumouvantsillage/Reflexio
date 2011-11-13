@@ -4,12 +4,12 @@
 RXObject_t* RXNil_o;
 RXObject_t* RXObject_o;
 
-RXSymbol_t* RXSymbol_o;
-RXSymbol_t* RXSymbol_activate_o;
-RXSymbol_t* RXSymbol_delegate_o;
-RXSymbol_t* RXSymbol_lookup_o;
+RXObject_t* RXSymbol_o;
+RXObject_t* RXSymbol_activate_o;
+RXObject_t* RXSymbol_delegate_o;
+RXObject_t* RXSymbol_lookup_o;
 
-RXNativeMethod_t* RXNativeMethod_o;
+RXObject_t* RXNativeMethod_o;
 
 static RXNativeMethod_define(RXNativeMethod, default) {
     return self;
@@ -25,8 +25,8 @@ void RXCore_setup(void) {
     // Bootstrap root symbol and delegate symbol
     RXSymbol_o = RXSymbol_new("Symbol");
     RXSymbol_delegate_o = RXSymbol_new("delegate");    
-    RXObject_setSlot((RXObject_t*)RXSymbol_o, RXSymbol_delegate_o, RXObject_o);
-    RXObject_setSlot((RXObject_t*)RXSymbol_delegate_o, RXSymbol_delegate_o, (RXObject_t*)RXSymbol_o);
+    RXObject_setSlot(RXSymbol_o, RXSymbol_delegate_o, RXObject_o);
+    RXObject_setSlot(RXSymbol_delegate_o, RXSymbol_delegate_o, RXSymbol_o);
 
     // Set delegates of Object and nil
     RXObject_setSlot(RXObject_o, RXSymbol_delegate_o, RXObject_o);
@@ -37,23 +37,23 @@ void RXCore_setup(void) {
     RXSymbol_lookup_o = RXSymbol_symbolForCString("lookup");
 
     RXNativeMethod_o = RXNativeMethod_new(RXNativeMethod_functionName(RXNativeMethod, default));
-    RXObject_setSlot((RXObject_t*)RXNativeMethod_o, RXSymbol_delegate_o, RXObject_o);
+    RXObject_setSlot(RXNativeMethod_o, RXSymbol_delegate_o, RXObject_o);
 
     // These objects are not assigned to slots, so they will be released manually
     RXObject_retain(RXNil_o);
-    RXObject_retain((RXObject_t*)RXNativeMethod_o);
+    RXObject_retain(RXNativeMethod_o);
 }
 
 void RXCore_clean(void) {
     RXObject_deleteSlot(RXObject_o, RXSymbol_delegate_o);
     RXObject_deleteSlot(RXNil_o, RXSymbol_delegate_o);
-    RXObject_deleteSlot((RXObject_t*)RXSymbol_o, RXSymbol_delegate_o);
-    RXObject_deleteSlot((RXObject_t*)RXSymbol_delegate_o, RXSymbol_delegate_o);
-    RXObject_deleteSlot((RXObject_t*)RXNativeMethod_o, RXSymbol_delegate_o);
+    RXObject_deleteSlot(RXSymbol_o, RXSymbol_delegate_o);
+    RXObject_deleteSlot(RXSymbol_delegate_o, RXSymbol_delegate_o);
+    RXObject_deleteSlot(RXNativeMethod_o, RXSymbol_delegate_o);
 
     // These objects are not assigned to slots, so they will be released manually
     RXObject_release(RXNil_o);
-    RXObject_release((RXObject_t*)RXNativeMethod_o);
+    RXObject_release(RXNativeMethod_o);
 
     RXSymbol_clean();
     RXNativeMethod_clean();

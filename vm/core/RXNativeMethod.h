@@ -10,14 +10,9 @@
 typedef RXObject_t* (*RXNativeMethodBody_t) (RXObject_t* self, int argumentCount);
 
 /*
- * A native method is an object with a reference to a C function.
- */
-RXObject_defineType(RXNativeMethod_t, RXNativeMethodBody_t);
-
-/*
  * The common delegate object for all native methods.
  */
-extern RXNativeMethod_t* RXNativeMethod_o;
+extern RXObject_t* RXNativeMethod_o;
 
 /*
  * The standard function name for methods attached to predefined object types.
@@ -50,9 +45,9 @@ extern RXNativeMethod_t* RXNativeMethod_o;
  * RXNativeMethod_attach(MyType, someMessage)
  */
 #define RXNativeMethod_attach(type, name) ({ \
-    RXNativeMethod_t* method = RXNativeMethod_new(RXNativeMethod_functionName(type, name)); \
-    RXObject_setSlot((RXObject_t*)type##_o, RXSymbol_symbolForCString(#name), (RXObject_t*)method); \
-    RXObject_setSlot((RXObject_t*)method, RXSymbol_delegate_o, (RXObject_t*)RXNativeMethod_o); \
+    RXObject_t* method = RXNativeMethod_new(RXNativeMethod_functionName(type, name)); \
+    RXObject_setSlot(type##_o, RXSymbol_symbolForCString(#name), method); \
+    RXObject_setSlot(method, RXSymbol_delegate_o, RXNativeMethod_o); \
     method; \
 })
 
@@ -65,7 +60,7 @@ void RXNativeMethod_clean(void);
  *
  * Use macro RXNativeMethod_attach to create a method and attach it to an object.
  */
-RXNativeMethod_t* RXNativeMethod_new(RXNativeMethodBody_t body);
+RXObject_t* RXNativeMethod_new(RXNativeMethodBody_t body);
 
 #include "RXNativeMethod_inline.h"
 

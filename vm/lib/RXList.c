@@ -7,27 +7,24 @@
 
 // Private -------------------------------------------------------------
 
-struct RXList_s {
-    RXObject_declaration;
-    Eina_List* payload;
-};
-
-inline static RXList_t* RXList_new(void) {
-    RXList_t* self = (RXList_t*)RXCore_allocateObjectOfType(RXList_t);
-    RXObject_initialize((RXObject_t*)self);
-    self->payload = NULL;
-    return self;
-}
+RXObject_defineType(RXList_t, Eina_List*);
 
 #define RXList_payload(self) ((RXList_t*)self)->payload
+
+inline static RXObject_t* RXList_new(void) {
+    RXObject_t* self = RXCore_allocateObjectOfType(RXList_t);
+    RXObject_initialize(self);
+    RXList_payload(self) = NULL;
+    return self;
+}
 
 // Methods -------------------------------------------------------------
 
 static RXNativeMethod_define(RXList, new) {
-    RXList_t* result = RXList_new();
-    RXObject_setSlot((RXObject_t*)result, RXSymbol_delegate_o, self);
+    RXObject_t* result = RXList_new();
+    RXObject_setSlot(result, RXSymbol_delegate_o, self);
     // TODO clone list from self
-    return (RXObject_t*)result;
+    return result;
 }
 
 static RXNativeMethod_define(RXList, asString) {
@@ -153,7 +150,7 @@ static RXNativeMethod_define(RXList, exists) {
 
 // Public --------------------------------------------------------------
 
-RXList_t* RXList_o;
+RXObject_t* RXList_o;
 
 void RXList_setup(void) {
     RXList_o = RXList_new();

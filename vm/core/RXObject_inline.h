@@ -1,4 +1,5 @@
 
+#include <stdbool.h>
 #include <assert.h>
 
 /*
@@ -11,28 +12,12 @@
 #define RXObject_flags (RXObject_flagIsLookingUp | RXObject_flagIsNativeMethod)
 #define RXObject_retainCountMax (~RXObject_flags)
 
-inline static bool RXObject_isLookingUp(const RXObject_t* self) {
-    return (RXObject_coreData(self).meta & RXObject_flagIsLookingUp) != 0;
-}
-
-inline static void RXObject_setIsLookingUp(RXObject_t* self) { 
-    RXObject_coreData(self).meta |= RXObject_flagIsLookingUp;
-}
-
-inline static void RXObject_clearIsLookingUp(RXObject_t* self) {
-    RXObject_coreData(self).meta &= ~RXObject_flagIsLookingUp;
-}
-
 inline static bool RXObject_isNativeMethod(const RXObject_t* self) {
     return (RXObject_coreData(self).meta & RXObject_flagIsNativeMethod) != 0;
 }
 
 inline static void RXObject_setIsNativeMethod(RXObject_t* self) { 
     RXObject_coreData(self).meta |= RXObject_flagIsNativeMethod;
-}
-
-inline static void RXObject_clearIsNativeMethod(RXObject_t* self) {
-    RXObject_coreData(self).meta &= ~RXObject_flagIsNativeMethod;
 }
 
 inline static uint32_t RXObject_retainCount(const RXObject_t* self) {
@@ -77,13 +62,15 @@ inline static RXObject_t* RXObject_new(void) {
     return self;
 }
 
-void RXObject_deleteNode(Eina_Rbtree* node, void* data);
+typedef struct RXObjectNode_s RXObjectNode_t;
+
+void RXObject_deleteNode(RXObjectNode_t* node, void* data);
 
 /*
  * Prepare the given object to be deleted
  */
 inline static void RXObject_finalize(RXObject_t* self) {
-    eina_rbtree_delete(RXObject_coreData(self).slots, RXObject_deleteNode, NULL);
+    eina_rbtree_delete(RXObject_coreData(self).slots, EINA_RBTREE_FREE_CB(RXObject_deleteNode), NULL);
 }
 
 inline static void RXObject_retain(RXObject_t* self) {

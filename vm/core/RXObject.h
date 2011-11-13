@@ -2,11 +2,8 @@
 #ifndef __RX_CORE_OBJECT_H__
 #define __RX_CORE_OBJECT_H__
 
-#include <stdlib.h>
 #include <stdint.h>
-#include <stdbool.h>
 #include <Eina.h>
-#include "RXSymbol.h"
 
 /*
  * Common data for all objects.
@@ -76,22 +73,22 @@ extern RXObject_t* RXNil_o;
 /*
  * Assign a value to a slot of the given object.
  */
-void RXObject_setSlot(RXObject_t* self, const RXSymbol_t* slotName, RXObject_t* value);
+void RXObject_setSlot(RXObject_t* self, const RXObject_t* slotName, RXObject_t* value);
 
 /*
  * Return the value of a slot in the given object.
  */
-RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXSymbol_t* slotName);
+RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXObject_t* slotName);
 
 /*
  * Delete a slot with the given name from the given object.
  */
-void RXObject_deleteSlot(RXObject_t* self, const RXSymbol_t* slotName);
+void RXObject_deleteSlot(RXObject_t* self, const RXObject_t* slotName);
 
 /*
  * Respond to a message.
  */
-RXObject_t* RXObject_respondTo(RXObject_t* self, const RXSymbol_t* messageName, int argumentCount);
+RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, int argumentCount);
 
 #include "RXObject_inline.h"
 

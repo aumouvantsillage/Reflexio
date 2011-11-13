@@ -13,9 +13,9 @@ static RXNativeMethod_define(RXObject, new) {
 static RXNativeMethod_define(RXObject, asString) {
     char* str;
     asprintf(&str, RXObject_format, self);
-    RXSymbol_t* result = RXSymbol_symbolForCString(str);
+    RXObject_t* result = RXSymbol_symbolForCString(str);
     free(str);
-    return (RXObject_t*)result;
+    return result;
 }
 
 static RXNativeMethod_define(RXObject, print) {

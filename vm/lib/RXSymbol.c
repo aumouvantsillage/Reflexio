@@ -10,9 +10,9 @@ static RXNativeMethod_define(RXSymbol, print) {
     return self;
 }
 
-RXSymbol_t* RXSymbol_value_o;
-RXSymbol_t* RXSymbol_asString_o;
-RXSymbol_t* RXSymbol_print_o;
+RXObject_t* RXSymbol_value_o;
+RXObject_t* RXSymbol_asString_o;
+RXObject_t* RXSymbol_print_o;
 
 void RXSymbol_libSetup(void) {
     RXSymbol_value_o = RXSymbol_symbolForCString("value");

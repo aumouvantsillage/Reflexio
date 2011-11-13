@@ -6,12 +6,12 @@
 void main(void) {
     Reflexio_setup();
     
-    RXInteger_t* n = RXInteger_new(125);
-    RXObject_retain((RXObject_t*)n);
+    RXObject_t* n = RXInteger_new(125);
+    RXObject_retain(n);
 
-    RXObject_respondTo((RXObject_t*)n, RXSymbol_symbolForCString("print"), 0);
+    RXObject_respondTo(n, RXSymbol_symbolForCString("print"), 0);
 
-    RXObject_release(((RXObject_t*)n));
+    RXObject_release(n);
     
     Reflexio_clean();
 }

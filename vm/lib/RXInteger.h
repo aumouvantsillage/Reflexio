@@ -4,9 +4,7 @@
 
 #include <core/RXCore.h>
 
-RXObject_defineType(RXInteger_t, int);
-
-RXInteger_t* RXInteger_new(int value);
+RXObject_t* RXInteger_new(int value);
 
 void RXInteger_setup(void);
 void RXInteger_clean(void);
