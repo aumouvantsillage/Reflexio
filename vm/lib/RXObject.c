@@ -2,10 +2,8 @@
 #include "core/RXCore.h"
 #include <inttypes.h>
 
-static RXNativeMethod_define(RXObject, new) {
-    RXObject_t* result = RXObject_new();
-    RXObject_setSlot(result, RXSymbol_delegate_o, self);
-    return result;
+static RXNativeMethod_define(RXObject, spawn) {
+    return RXObject_spawn(self);
 }
 
 #define RXObject_format ("Object_0x%" PRIxPTR)
@@ -28,7 +26,7 @@ static RXNativeMethod_define(RXObject, value) {
 }
 
 void RXObject_libSetup(void) {
-    RXNativeMethod_attach(RXObject, new);
+    RXNativeMethod_attach(RXObject, spawn);
     RXNativeMethod_attach(RXObject, asString);
     RXNativeMethod_attach(RXObject, print);
     RXNativeMethod_attach(RXObject, value);

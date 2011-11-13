@@ -4,9 +4,10 @@
 
 #include <core/RXCore.h>
 
-RXObject_t* RXInteger_new(int value);
+extern RXObject_t* RXInteger_o;
+
+RXObject_t* RXInteger_spawn(RXObject_t* self, int value);
 
 void RXInteger_setup(void);
-void RXInteger_clean(void);
 
 #endif

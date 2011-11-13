@@ -20,7 +20,7 @@ inline static RXObject_t* RXList_new(void) {
 
 // Methods -------------------------------------------------------------
 
-static RXNativeMethod_define(RXList, new) {
+static RXNativeMethod_define(RXList, spawn) {
     RXObject_t* result = RXList_new();
     RXObject_setSlot(result, RXSymbol_delegate_o, self);
     // TODO clone list from self
@@ -52,6 +52,7 @@ static RXNativeMethod_define(RXList, append) {
     assert(argumentCount >= 1);
     RXObject_t* arg = RXObject_valueOfArgumentAt(0);
     RXList_payload(self) = eina_list_append(RXList_payload(self), arg);
+    // TODO mark new object in the same reachability as self
     assert(!eina_error_get());
     return self;
 }
@@ -64,34 +65,42 @@ static RXNativeMethod_define(RXList, concat) {
 static RXNativeMethod_define(RXList, prepend) {
     assert(argumentCount >= 1);
     RXList_payload(self) = eina_list_prepend(RXList_payload(self), RXObject_valueOfArgumentAt(0));
+    // TODO mark new object in the same reachability as self
     return self;
 }
 
 static RXNativeMethod_define(RXList, insertAt) {
     assert(argumentCount >= 2);
     // TODO RXList insertAt
+    // TODO mark new object in the same reachability as self
 }
 
 static RXNativeMethod_define(RXList, replaceAt) {
     assert(argumentCount >= 2);
     // TODO RXList insertAt
+    // TODO mark new object in the same reachability as self
+    // TODO mark replaced object as possibly collectable
 }
 
 static RXNativeMethod_define(RXList, removeLast) {
     // TODO RXList removeLast
+    // TODO mark removed object as possibly collectable
 }
 
 static RXNativeMethod_define(RXList, removeFirst) {
     // TODO RXList removeLast
+    // TODO mark removed object as possibly collectable
 }
 
 static RXNativeMethod_define(RXList, removeAt) {
     assert(argumentCount >= 1);
     // TODO RXList removeAt
+    // TODO mark removed object as possibly collectable
 }
 
 static RXNativeMethod_define(RXList, removeAll) {
     // TODO RXList removeAll
+    // TODO mark removed objects as possibly collectable
 }
 
 static RXNativeMethod_define(RXList, last) {
@@ -114,7 +123,7 @@ static RXNativeMethod_define(RXList, at) {
 }
 
 static RXNativeMethod_define(RXList, count) {
-    return RXInteger_new(eina_list_count(RXList_payload(self)));
+    return RXInteger_spawn(RXInteger_o, eina_list_count(RXList_payload(self)));
 }
 
 static RXNativeMethod_define(RXList, isEmpty) {
@@ -157,7 +166,7 @@ void RXList_setup(void) {
     RXObject_setSlot(RXList_o, RXSymbol_delegate_o, RXObject_o);
     RXObject_setSlot(RXObject_o, RXSymbol_symbolForCString("List"), RXList_o);
     
-    RXNativeMethod_attach(RXList, new);
+    RXNativeMethod_attach(RXList, spawn);
     RXNativeMethod_attach(RXList, asString);
     RXNativeMethod_attach(RXList, print);
     RXNativeMethod_attach(RXList, append);
@@ -179,8 +188,4 @@ void RXList_setup(void) {
     RXNativeMethod_attach(RXList, forEach);
     RXNativeMethod_attach(RXList, forAll);
     RXNativeMethod_attach(RXList, exists);
-}
-
-void RXList_clean(void) {
-    RXObject_deleteSlot(RXList_o, RXSymbol_delegate_o);
 }

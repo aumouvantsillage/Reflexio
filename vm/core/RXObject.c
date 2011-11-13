@@ -8,7 +8,6 @@
 
 extern RXObject_t* RXSymbol_activate_o;
 extern RXObject_t* RXSymbol_lookup_o;
-extern RXObject_t* RXSymbol_delegate_o;
 
 
 // Private -------------------------------------------------------------
@@ -65,11 +64,10 @@ void RXObject_setSlot(RXObject_t* self, const RXObject_t* slotName, RXObject_t* 
         node->key = slotName;
     }
     else {
-        RXObject_release(node->value);
+        // TODO remove cache entry for old value
+        // TODO mark old value as possibly collectable
     }
     node->value = value;
-    RXObject_retain(value);
-    // TODO remove cache entry if applicable
 }
 
 RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXObject_t* slotName) {
@@ -83,14 +81,10 @@ void RXObject_deleteSlot(RXObject_t* self, const RXObject_t* slotName) {
     RXObjectNode_t* node = RXObject_node(self, slotName);
     if (node != NULL) {
         RXObject_coreData(self).slots = eina_rbtree_inline_remove(RXObject_coreData(self).slots, (Eina_Rbtree*)node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), NULL);
-        RXObject_deleteNode(node, NULL);
+        free(node);
+        // TODO remove cache entry for old value
+        // TODO mark old value as possibly collectable
     }
-    // TODO remove cache entry if applicable
-}
-
-void RXObject_deleteNode(RXObjectNode_t* node, void* data) {
-    RXObject_release(node->value);
-    free(node);
 }
 
 /*

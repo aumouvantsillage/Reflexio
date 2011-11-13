@@ -16,11 +16,6 @@ void Reflexio_setup(void) {
 }
 
 void Reflexio_clean(void) {
-    RXList_clean();
-    RXInteger_clean();
-    RXNumber_clean();
-    RXBoolean_clean();
-    
     RXCore_clean();
 
     eina_shutdown();

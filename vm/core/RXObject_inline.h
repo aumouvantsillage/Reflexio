@@ -10,7 +10,6 @@
 #define RXObject_flagIsLookingUp (1<<31)
 #define RXObject_flagIsNativeMethod (1<<30)
 #define RXObject_flags (RXObject_flagIsLookingUp | RXObject_flagIsNativeMethod)
-#define RXObject_retainCountMax (~RXObject_flags)
 
 inline static bool RXObject_isNativeMethod(const RXObject_t* self) {
     return (RXObject_coreData(self).meta & RXObject_flagIsNativeMethod) != 0;
@@ -18,10 +17,6 @@ inline static bool RXObject_isNativeMethod(const RXObject_t* self) {
 
 inline static void RXObject_setIsNativeMethod(RXObject_t* self) { 
     RXObject_coreData(self).meta |= RXObject_flagIsNativeMethod;
-}
-
-inline static uint32_t RXObject_retainCount(const RXObject_t* self) {
-    return RXObject_coreData(self).meta & ~RXObject_flags;
 }
 
 #define RXObject_sizeOfCoreData sizeof(RXObjectCoreData_t)
@@ -62,28 +57,19 @@ inline static RXObject_t* RXObject_new(void) {
     return self;
 }
 
-typedef struct RXObjectNode_s RXObjectNode_t;
+extern RXObject_t* RXSymbol_delegate_o;
 
-void RXObject_deleteNode(RXObjectNode_t* node, void* data);
+inline static RXObject_t* RXObject_spawn(RXObject_t* self) {
+    RXObject_t* result = RXObject_new();
+    RXObject_setSlot(result, RXSymbol_delegate_o, self);
+    return result;
+}
+
+typedef struct RXObjectNode_s RXObjectNode_t;
 
 /*
  * Prepare the given object to be deleted
  */
 inline static void RXObject_finalize(RXObject_t* self) {
-    eina_rbtree_delete(RXObject_coreData(self).slots, EINA_RBTREE_FREE_CB(RXObject_deleteNode), NULL);
+    eina_rbtree_delete(RXObject_coreData(self).slots, EINA_RBTREE_FREE_CB(free), NULL);
 }
-
-inline static void RXObject_retain(RXObject_t* self) {
-    assert(RXObject_retainCount(self) < RXObject_retainCountMax);
-    RXObject_coreData(self).meta++;
-}
-
-inline static void RXObject_release(RXObject_t* self) {
-    assert(RXObject_retainCount(self) > 0);
-    RXObject_coreData(self).meta--;
-    if (!RXObject_retainCount(self)) {
-        RXObject_finalize(self);
-        RXCore_deallocateObject(self);
-    }
-}
-

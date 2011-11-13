@@ -23,7 +23,8 @@ typedef struct {
 // Public --------------------------------------------------------------
 
 void RXSymbol_setup(void) {
-    RXSymbol_all = eina_hash_string_djb2_new(EINA_FREE_CB(RXObject_release));
+    // TODO add callback
+    RXSymbol_all = eina_hash_string_djb2_new(NULL);
 }
 
 void RXSymbol_clean(void) {
@@ -33,7 +34,6 @@ void RXSymbol_clean(void) {
 RXObject_t* RXSymbol_new(const char* str) {
     RXObject_t* self = RXCore_allocateObjectWithSize(strlen(str) + 1);
     RXObject_initialize(self);
-    RXObject_retain(self);
     strcpy((char*)self, str);
     eina_hash_direct_add(RXSymbol_all, self, self);
     return self;
