@@ -114,7 +114,7 @@ static RXNativeMethod_define(RXList, at) {
 }
 
 static RXNativeMethod_define(RXList, count) {
-    return (RXObject_t*)RXInteger_new(eina_list_count(RXList_payload(self)));
+    return RXInteger_new(eina_list_count(RXList_payload(self)));
 }
 
 static RXNativeMethod_define(RXList, isEmpty) {
@@ -154,8 +154,8 @@ RXObject_t* RXList_o;
 
 void RXList_setup(void) {
     RXList_o = RXList_new();
-    RXObject_setSlot((RXObject_t*)RXList_o, RXSymbol_delegate_o, RXObject_o);
-    RXObject_setSlot(RXObject_o, RXSymbol_symbolForCString("List"), (RXObject_t*)RXList_o);
+    RXObject_setSlot(RXList_o, RXSymbol_delegate_o, RXObject_o);
+    RXObject_setSlot(RXObject_o, RXSymbol_symbolForCString("List"), RXList_o);
     
     RXNativeMethod_attach(RXList, new);
     RXNativeMethod_attach(RXList, asString);
@@ -182,5 +182,5 @@ void RXList_setup(void) {
 }
 
 void RXList_clean(void) {
-    RXObject_deleteSlot((RXObject_t*)RXList_o, RXSymbol_delegate_o);
+    RXObject_deleteSlot(RXList_o, RXSymbol_delegate_o);
 }

@@ -10,5 +10,5 @@ void RXNumber_setup(void) {
 }
 
 void RXNumber_clean(void) {
-    RXObject_deleteSlot((RXObject_t*)RXNumber_o, RXSymbol_delegate_o);
+    RXObject_deleteSlot(RXNumber_o, RXSymbol_delegate_o);
 }

@@ -19,7 +19,7 @@ void RXSymbol_libSetup(void) {
     RXSymbol_asString_o = RXSymbol_symbolForCString("asString");
     RXSymbol_print_o = RXSymbol_symbolForCString("print");
     
-    RXObject_setSlot(RXObject_o, RXSymbol_o, (RXObject_t*)RXSymbol_o);
+    RXObject_setSlot(RXObject_o, RXSymbol_o, RXSymbol_o);
     
     RXNativeMethod_attach(RXSymbol, asString);
     RXNativeMethod_attach(RXSymbol, print);
