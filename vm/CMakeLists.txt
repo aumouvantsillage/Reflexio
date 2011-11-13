@@ -7,6 +7,9 @@ set(VM_SRC
     core/RXNativeMethod.c
     lib/RXObject.c
     lib/RXSymbol.c
+    lib/RXBoolean.c
+    lib/RXNumber.c
+    lib/RXInteger.c
     lib/RXList.c
 )
 

@@ -2,9 +2,11 @@
 #ifndef __RX_LIB_H__
 #define __RX_LIB_H__
 
-void RXObject_libSetup(void);
-void RXSymbol_libSetup(void);
-
+#include "RXObject.h"
+#include "RXSymbol.h"
+#include "RXNumber.h"
+#include "RXInteger.h"
+#include "RXBoolean.h"
 #include "RXList.h"
 
 #endif

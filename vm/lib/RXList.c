@@ -1,5 +1,8 @@
 
 #include <core/RXCore.h>
+#include "RXObject.h"
+#include "RXBoolean.h"
+#include "RXInteger.h"
 #include "RXList.h"
 
 // Private -------------------------------------------------------------
@@ -16,6 +19,8 @@ inline static RXList_t* RXList_new(void) {
     return self;
 }
 
+#define RXList_payload(self) ((RXList_t*)self)->payload
+
 // Methods -------------------------------------------------------------
 
 static RXNativeMethod_define(RXList, new) {
@@ -30,22 +35,48 @@ static RXNativeMethod_define(RXList, asString) {
 }
 
 static RXNativeMethod_define(RXList, print) {
-    // TODO RXList print
+    fputs("list(", stdout);
+    Eina_List* iter;
+    RXObject_t* data;
+    bool sep = false;
+    EINA_LIST_FOREACH(RXList_payload(self), iter, data) {
+        if (sep) {
+            fputs(", ", stdout);
+        }
+        else {
+            sep = true;
+        }
+        RXObject_respondTo(data, RXSymbol_print_o, 0);
+    }
+    fputs(")", stdout);
 }
 
 static RXNativeMethod_define(RXList, append) {
-    // TODO RXList append
+    assert(argumentCount >= 1);
+    RXObject_t* arg = RXObject_valueOfArgumentAt(0);
+    RXList_payload(self) = eina_list_append(RXList_payload(self), arg);
+    assert(!eina_error_get());
+    return self;
 }
 
 static RXNativeMethod_define(RXList, concat) {
-    // TODO RXList join
+    assert(argumentCount >= 1);
+    // TODO RXList concat
 }
 
 static RXNativeMethod_define(RXList, prepend) {
-    // TODO RXList append
+    assert(argumentCount >= 1);
+    RXList_payload(self) = eina_list_prepend(RXList_payload(self), RXObject_valueOfArgumentAt(0));
+    return self;
 }
 
 static RXNativeMethod_define(RXList, insertAt) {
+    assert(argumentCount >= 2);
+    // TODO RXList insertAt
+}
+
+static RXNativeMethod_define(RXList, replaceAt) {
+    assert(argumentCount >= 2);
     // TODO RXList insertAt
 }
 
@@ -58,6 +89,7 @@ static RXNativeMethod_define(RXList, removeFirst) {
 }
 
 static RXNativeMethod_define(RXList, removeAt) {
+    assert(argumentCount >= 1);
     // TODO RXList removeAt
 }
 
@@ -70,38 +102,52 @@ static RXNativeMethod_define(RXList, last) {
 }
 
 static RXNativeMethod_define(RXList, first) {
-    // TODO RXList first
+    RXObject_t* data = eina_list_data_get(RXList_payload(self));
+    return data != NULL
+        ? data
+        : RXNil_o;
 }
 
 static RXNativeMethod_define(RXList, at) {
-    // TODO RXList at
+    assert(argumentCount >= 1);
+    RXObject_t* data = eina_list_nth(RXList_payload(self), *(int*)RXObject_valueOfArgumentAt(0));
+    return data != NULL
+        ? data
+        : RXNil_o;
 }
 
 static RXNativeMethod_define(RXList, count) {
-    // TODO RXList count
+    return (RXObject_t*)RXInteger_new(eina_list_count(RXList_payload(self)));
 }
 
 static RXNativeMethod_define(RXList, isEmpty) {
-    // TODO RXList isEmpty
+    return RXList_payload(self) != NULL
+        ? RXBoolean_true_o
+        : RXBoolean_false_o;
 }
 
 static RXNativeMethod_define(RXList, select) {
+    assert(argumentCount >= 2);
     // TODO RXList select
 }
 
 static RXNativeMethod_define(RXList, collect) {
+    assert(argumentCount >= 2);
     // TODO RXList collect
 }
 
 static RXNativeMethod_define(RXList, forEach) {
+    assert(argumentCount >= 2);
     // TODO RXList forEach
 }
 
 static RXNativeMethod_define(RXList, forAll) {
+    assert(argumentCount >= 2);
     // TODO RXList forAll
 }
 
 static RXNativeMethod_define(RXList, exists) {
+    assert(argumentCount >= 2);
     // TODO RXList exists
 }
 
@@ -121,6 +167,7 @@ void RXList_setup(void) {
     RXNativeMethod_attach(RXList, concat);
     RXNativeMethod_attach(RXList, prepend);
     RXNativeMethod_attach(RXList, insertAt);
+    RXNativeMethod_attach(RXList, replaceAt);
     RXNativeMethod_attach(RXList, removeLast);
     RXNativeMethod_attach(RXList, removeFirst);
     RXNativeMethod_attach(RXList, removeAt);

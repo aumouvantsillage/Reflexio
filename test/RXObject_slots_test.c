@@ -31,7 +31,6 @@ void main(void) {
     
     RXNativeMethod_push((RXObject_t*)sb);
     RXObject_respondTo(RXObject_valueOfSlot(RXObject_o, RXSymbol_print_o), RXSymbol_activate_o, 1);
-    RXNativeMethod_pop(1);
     
     RXObject_release(a);
     

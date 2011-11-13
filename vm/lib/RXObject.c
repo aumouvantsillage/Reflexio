@@ -23,10 +23,15 @@ static RXNativeMethod_define(RXObject, print) {
     return self;
 }
 
+static RXNativeMethod_define(RXObject, value) {
+    return self;
+}
+
 void RXObject_libSetup(void) {
     RXNativeMethod_attach(RXObject, new);
     RXNativeMethod_attach(RXObject, asString);
     RXNativeMethod_attach(RXObject, print);
+    RXNativeMethod_attach(RXObject, value);
 }
 
 void RXObject_libClean(void) {
