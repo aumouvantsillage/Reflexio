@@ -69,10 +69,14 @@ typedef struct {
     // Payload: empty
 }  RXObject_t;
 
+void RXObject_setup(void);
+
+void RXObject_clean(void);
+
 /*
  * Assign a value to a slot of the given object.
  */
-void RXObject_setSlot(RXObject_t* self, const RXObject_t* slotName, RXObject_t* value);
+void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value);
 
 /*
  * Return the value of a slot in the given object.

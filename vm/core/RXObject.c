@@ -46,39 +46,6 @@ static inline RXObjectNode_t* RXObject_node(const RXObject_t* self, const RXObje
     return (RXObjectNode_t*)eina_rbtree_inline_lookup(RXObject_coreData(self).slots, slotName, 0, EINA_RBTREE_CMP_KEY_CB(RXObject_compareKeys), NULL);
 }
 
-// Public --------------------------------------------------------------
-
-void RXObject_setSlot(RXObject_t* self, const RXObject_t* slotName, RXObject_t* value) {
-    RXObjectNode_t* node = RXObject_node(self, slotName);
-    if (node == NULL) {
-        node = (RXObjectNode_t*)malloc(sizeof(RXObjectNode_t));
-        RXObject_coreData(self).slots = eina_rbtree_inline_insert(RXObject_coreData(self).slots, (Eina_Rbtree*)node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), slotName);
-        node->key = slotName;
-    }
-    else {
-        // TODO remove cache entry for old value
-        // TODO mark old value as possibly collectable
-    }
-    node->value = value;
-}
-
-RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXObject_t* slotName) {
-    RXObjectNode_t* node = RXObject_node(self, slotName);
-    return (node == NULL)
-        ? RXNil_o
-        : node->value;
-}
-
-void RXObject_deleteSlot(RXObject_t* self, const RXObject_t* slotName) {
-    RXObjectNode_t* node = RXObject_node(self, slotName);
-    if (node != NULL) {
-        RXObject_coreData(self).slots = eina_rbtree_inline_remove(RXObject_coreData(self).slots, (Eina_Rbtree*)node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), NULL);
-        free(node);
-        // TODO remove cache entry for old value
-        // TODO mark old value as possibly collectable
-    }
-}
-
 /*
  * Default slot lookup method.
  *
@@ -119,6 +86,52 @@ static RXObject_t* RXObject_lookup(RXObject_t* self, RXObject_t* slotName) {
     }
         
     return RXNil_o;
+}
+
+Eina_Hash* RXObject_pool;
+
+// Public --------------------------------------------------------------
+
+void RXObject_setup(void) {
+    // TODO add callback
+    RXObject_pool = eina_hash_pointer_new(NULL);
+}
+
+void RXObject_clean(void) {
+    eina_hash_free(RXObject_pool);
+}
+
+void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value) {
+    RXObjectNode_t* node = RXObject_node(self, slotName);
+    if (node == NULL) {
+        node = (RXObjectNode_t*)malloc(sizeof(RXObjectNode_t));
+        RXObject_coreData(self).slots = eina_rbtree_inline_insert(RXObject_coreData(self).slots, (Eina_Rbtree*)node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), slotName);
+        node->key = slotName;
+        RXObject_chainMark(self, slotName);
+    }
+    else {
+        RXObject_unmark(node->value);
+        // TODO remove cache entry for old value
+    }
+    node->value = value;
+    RXObject_chainMark(self, value);
+}
+
+RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXObject_t* slotName) {
+    RXObjectNode_t* node = RXObject_node(self, slotName);
+    return (node == NULL)
+        ? RXNil_o
+        : node->value;
+}
+
+void RXObject_deleteSlot(RXObject_t* self, const RXObject_t* slotName) {
+    RXObjectNode_t* node = RXObject_node(self, slotName);
+    if (node != NULL) {
+        RXObject_coreData(self).slots = eina_rbtree_inline_remove(RXObject_coreData(self).slots, (Eina_Rbtree*)node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), NULL);
+        RXObject_unmark(node->value);
+        free(node);
+        // TODO remove cache entry for old value
+    }
 }
 
 RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, int argumentCount) {
