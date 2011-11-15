@@ -1,4 +1,8 @@
 
+#ifndef __RX_CORE_NATIVE_METHOD_INLINE_H__
+#define __RX_CORE_NATIVE_METHOD_INLINE_H__
+
+#include "RXNativeMethod.h"
 #include <assert.h>
 
 /*
@@ -44,3 +48,5 @@ inline static RXObject_t* RXNativeMethod_argumentAt(int index) {
     assert(RXNativeMethod_stackTop - RXNativeMethod_stackBottom > index);
     return *(RXNativeMethod_stackTop - index - 1);
 }
+
+#endif

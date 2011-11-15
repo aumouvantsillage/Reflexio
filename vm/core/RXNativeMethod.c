@@ -1,5 +1,5 @@
 
-#include "RXNativeMethod.h"
+#include "RXCore.h"
 
 // Private -------------------------------------------------------------
 

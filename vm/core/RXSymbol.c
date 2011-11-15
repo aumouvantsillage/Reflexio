@@ -1,6 +1,5 @@
 
-#include "RXSymbol.h"
-#include "RXObject.h"
+#include "RXCore.h"
 #include <Eina.h>
 
 // Private -------------------------------------------------------------

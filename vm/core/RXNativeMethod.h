@@ -10,11 +10,6 @@
 typedef RXObject_t* (*RXNativeMethodBody_t) (RXObject_t* self, int argumentCount);
 
 /*
- * The common delegate object for all native methods.
- */
-extern RXObject_t* RXNativeMethod_o;
-
-/*
  * The standard function name for methods attached to predefined object types.
  */
 #define RXNativeMethod_functionName(type, name) \
@@ -61,7 +56,5 @@ void RXNativeMethod_clean(void);
  * Use macro RXNativeMethod_attach to create a method and attach it to an object.
  */
 RXObject_t* RXNativeMethod_new(RXNativeMethodBody_t body);
-
-#include "RXNativeMethod_inline.h"
 
 #endif

@@ -1,4 +1,8 @@
 
+#ifndef __RX_CORE_OBJECT_INLINE_H__
+#define __RX_CORE_OBJECT_INLINE_H__
+
+#include "RXCore.h"
 #include <stdbool.h>
 #include <assert.h>
 
@@ -57,8 +61,6 @@ inline static RXObject_t* RXObject_new(void) {
     return self;
 }
 
-extern RXObject_t* RXSymbol_delegate_o;
-
 inline static RXObject_t* RXObject_spawn(RXObject_t* self) {
     RXObject_t* result = RXObject_new();
     RXObject_setSlot(result, RXSymbol_delegate_o, self);
@@ -73,3 +75,5 @@ typedef struct RXObjectNode_s RXObjectNode_t;
 inline static void RXObject_finalize(RXObject_t* self) {
     eina_rbtree_delete(RXObject_coreData(self).slots, EINA_RBTREE_FREE_CB(free), NULL);
 }
+
+#endif

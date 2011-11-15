@@ -1,5 +1,5 @@
 
-#include "core/RXCore.h"
+#include "RXLib.h"
 #include <inttypes.h>
 
 static RXNativeMethod_define(RXObject, spawn) {
@@ -25,7 +25,15 @@ static RXNativeMethod_define(RXObject, value) {
     return self;
 }
 
+RXObject_t* RXSymbol_value_o;
+RXObject_t* RXSymbol_asString_o;
+RXObject_t* RXSymbol_print_o;
+
 void RXObject_libSetup(void) {
+    RXSymbol_value_o = RXSymbol_symbolForCString("value");
+    RXSymbol_asString_o = RXSymbol_symbolForCString("asString");
+    RXSymbol_print_o = RXSymbol_symbolForCString("print");
+    
     RXNativeMethod_attach(RXObject, spawn);
     RXNativeMethod_attach(RXObject, asString);
     RXNativeMethod_attach(RXObject, print);

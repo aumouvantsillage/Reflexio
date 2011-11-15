@@ -1,14 +1,6 @@
 
-#include "RXObject.h"
-#include "RXNativeMethod.h"
-
+#include "RXCore.h"
 #include <inttypes.h>
-
-// External ------------------------------------------------------------
-
-extern RXObject_t* RXSymbol_activate_o;
-extern RXObject_t* RXSymbol_lookup_o;
-
 
 // Private -------------------------------------------------------------
 

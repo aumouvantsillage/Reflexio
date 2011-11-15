@@ -1,9 +1,5 @@
 
-#include <core/RXCore.h>
-#include "RXObject.h"
-#include "RXBoolean.h"
-#include "RXInteger.h"
-#include "RXList.h"
+#include "RXLib.h"
 
 // Private -------------------------------------------------------------
 

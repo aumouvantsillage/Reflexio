@@ -63,13 +63,6 @@ typedef struct {
     // Payload: empty
 }  RXObject_t;
 
-extern RXObject_t* RXObject_o;
-
-/*
- * Predefined object: nil
- */
-extern RXObject_t* RXNil_o;
-
 /*
  * Assign a value to a slot of the given object.
  */
@@ -89,7 +82,5 @@ void RXObject_deleteSlot(RXObject_t* self, const RXObject_t* slotName);
  * Respond to a message.
  */
 RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, int argumentCount);
-
-#include "RXObject_inline.h"
 
 #endif
