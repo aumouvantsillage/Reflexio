@@ -16,7 +16,6 @@ static RXNativeMethod_define(RXNativeMethod, default) {
 }
 
 void RXCore_setup(void) {
-    RXObject_setup();
     RXSymbol_setup();
     RXNativeMethod_setup();
 
@@ -43,5 +42,4 @@ void RXCore_setup(void) {
 void RXCore_clean(void) {
     RXNativeMethod_clean();
     RXSymbol_clean();
-    RXObject_clean();
 }

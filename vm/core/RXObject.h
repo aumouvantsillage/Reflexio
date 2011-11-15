@@ -15,8 +15,7 @@ typedef struct {
 
 enum {
     RXObject_flagIsLookingUp = 1,
-    RXObject_flagIsNativeMethod = 2,
-    RXObject_flagIsReachable = 4
+    RXObject_flagIsNativeMethod = 2
 };
 
 /*
@@ -69,10 +68,6 @@ typedef struct {
     // Payload: empty
 }  RXObject_t;
 
-void RXObject_setup(void);
-
-void RXObject_clean(void);
-
 /*
  * Assign a value to a slot of the given object.
  */
@@ -86,7 +81,7 @@ RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXObject_t* slotN
 /*
  * Delete a slot with the given name from the given object.
  */
-void RXObject_deleteSlot(RXObject_t* self, const RXObject_t* slotName);
+void RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName);
 
 /*
  * Respond to a message.

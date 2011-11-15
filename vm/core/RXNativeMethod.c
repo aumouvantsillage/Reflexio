@@ -29,5 +29,5 @@ void RXNativeMethod_setup(void) {
 }
 
 void RXNativeMethod_clean(void) {
-    free(RXNativeMethod_stackBottom);
+    free(RXNativeMethod_stackBottom); // TODO remove this function
 }

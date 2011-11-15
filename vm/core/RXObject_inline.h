@@ -32,56 +32,13 @@ inline static void RXCore_deallocateObject(RXObject_t* self) {
     free((char*)self - sizeof(RXObjectCoreData_t));
 }
 
-inline static bool RXObject_isReachable(const RXObject_t* self) {
-    return (RXObject_coreData(self).flags & RXObject_flagIsReachable) != 0;
-}
-
-inline static void RXObject_setIsReachable(RXObject_t* self) { 
-    RXObject_coreData(self).flags |= RXObject_flagIsReachable;
-}
-
-inline static void RXObject_clearIsReachable(RXObject_t* self) {
-    RXObject_coreData(self).flags &= ~RXObject_flagIsReachable;
-}
-
-/*
- * The pool of objects that are possibly unreachable.
- */
-extern Eina_Hash* RXObject_pool;
-
-/*
- * Mark the given object as reachable.
- */
-inline static void RXObject_mark(RXObject_t* obj) {
-    RXObject_setIsReachable(obj);
-    eina_hash_del_by_key(RXObject_pool, obj);
-}
-
-/*
- * Mark the given object as possibly unreachable.
- */
-inline static void RXObject_unmark(RXObject_t* obj) {
-    RXObject_clearIsReachable(obj);
-    eina_hash_add(RXObject_pool, obj, obj);
-}
-
-/*
- * Mark the given object as reachable if self is reachable.
- */
-inline static void RXObject_chainMark(const RXObject_t* self, RXObject_t* obj) {
-    if (RXObject_isReachable(self) && !RXObject_isReachable(obj)) {
-        RXObject_mark(obj);
-    }
-}
-
 /*
  * Initialize a newly allocated object.
- * Use this macro to initialize the core object data.
+ * A new object has an empty slot list, is detached and is not a root object.
  */
 inline static void RXObject_initialize(RXObject_t* self) {
     RXObject_coreData(self).slots = NULL;
     RXObject_coreData(self).flags = 0;
-    eina_hash_add(RXObject_pool, self, self); // FIXME direct add?
 }
 
 /*
