@@ -5,6 +5,14 @@
 #include "RXNativeMethod.h"
 #include <assert.h>
 
+inline static bool RXObject_isNativeMethod(const RXObject_t* self) {
+    return (RXObject_coreData(self).flags & RXObject_flagIsNativeMethod) != 0;
+}
+
+inline static void RXObject_setIsNativeMethod(RXObject_t* self) { 
+    RXObject_coreData(self).flags |= RXObject_flagIsNativeMethod;
+}
+
 /*
  * Execute a given native method on the given receiver.
  */

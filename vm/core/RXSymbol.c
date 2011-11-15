@@ -31,7 +31,7 @@ void RXSymbol_clean(void) {
 }
 
 RXObject_t* RXSymbol_new(const char* str) {
-    RXObject_t* self = RXCore_allocateObjectWithSize(strlen(str) + 1);
+    RXObject_t* self = RXObject_allocateSize(strlen(str) + 1);
     RXObject_initialize(self);
     strcpy((char*)self, str);
     eina_hash_direct_add(RXSymbol_all, self, self);

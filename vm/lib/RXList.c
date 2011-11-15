@@ -8,7 +8,7 @@ RXObject_defineType(RXList_t, Eina_List*);
 #define RXList_payload(self) ((RXList_t*)self)->payload
 
 inline static RXObject_t* RXList_new(void) {
-    RXObject_t* self = RXCore_allocateObjectOfType(RXList_t);
+    RXObject_t* self = RXObject_allocateType(RXList_t);
     RXObject_initialize(self);
     RXList_payload(self) = NULL;
     return self;

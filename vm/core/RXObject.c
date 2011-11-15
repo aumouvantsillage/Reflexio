@@ -5,26 +5,26 @@
 // Private -------------------------------------------------------------
 
 inline static bool RXObject_isLookingUp(const RXObject_t* self) {
-    return (RXObject_coreData(self).meta & RXObject_flagIsLookingUp) != 0;
+    return (RXObject_coreData(self).flags & RXObject_flagIsLookingUp) != 0;
 }
 
 inline static void RXObject_setIsLookingUp(RXObject_t* self) { 
-    RXObject_coreData(self).meta |= RXObject_flagIsLookingUp;
+    RXObject_coreData(self).flags |= RXObject_flagIsLookingUp;
 }
 
 inline static void RXObject_clearIsLookingUp(RXObject_t* self) {
-    RXObject_coreData(self).meta &= ~RXObject_flagIsLookingUp;
+    RXObject_coreData(self).flags &= ~RXObject_flagIsLookingUp;
 }
 
 /*
  * Node type for Red-Black binary trees containing
  * object slots.
  */
-struct RXObjectNode_s {
+typedef struct {
     EINA_RBTREE;
     const RXObject_t* key;
     RXObject_t* value;
-};
+} RXObjectNode_t;
 
 /*
  * Key comparison callback used during slot lookup.

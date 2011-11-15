@@ -6,7 +6,7 @@
 RXObject_defineType(RXInteger_t, int);
 
 static RXObject_t* RXInteger_new(int value) {
-    RXObject_t* self = RXCore_allocateObjectOfType(RXInteger_t);
+    RXObject_t* self = RXObject_allocateType(RXInteger_t);
     RXObject_initialize(self);
     ((RXInteger_t*)self)->payload = value;
     return self;

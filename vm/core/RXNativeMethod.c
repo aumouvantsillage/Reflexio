@@ -15,7 +15,7 @@ RXObject_t** RXNativeMethod_stackBottom;
 RXObject_t** RXNativeMethod_stackTop;
 
 RXObject_t* RXNativeMethod_new(RXNativeMethodBody_t body) {
-    RXObject_t* self = RXCore_allocateObjectOfType(RXNativeMethod_t);
+    RXObject_t* self = RXObject_allocateType(RXNativeMethod_t);
     RXObject_initialize(self);
     RXObject_setIsNativeMethod(self);
     ((RXNativeMethod_t*)self)->payload = body;

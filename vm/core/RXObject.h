@@ -10,8 +10,14 @@
  */
 typedef struct {
     Eina_Rbtree* slots;
-    uint32_t meta;
+    uint32_t flags;
 } RXObjectCoreData_t;
+
+enum {
+    RXObject_flagIsLookingUp = 1,
+    RXObject_flagIsNativeMethod = 2,
+    RXObject_flagIsReachable = 4
+};
 
 /*
  * Call this macro at the beginning of a struct
