@@ -43,7 +43,7 @@ static RXNativeMethod_define(RXList, print) {
 
 static RXNativeMethod_define(RXList, append) {
     assert(argumentCount >= 1);
-    RXObject_t* arg = RXObject_valueOfArgumentAt(0, context);
+    RXObject_t* arg = RXExpression_valueOfArgumentAt(0, context);
     RXList_payload(self) = eina_list_append(RXList_payload(self), arg);
     // TODO mark new object in the same reachability as self
     assert(!eina_error_get());
@@ -57,7 +57,7 @@ static RXNativeMethod_define(RXList, concat) {
 
 static RXNativeMethod_define(RXList, prepend) {
     assert(argumentCount >= 1);
-    RXList_payload(self) = eina_list_prepend(RXList_payload(self), RXObject_valueOfArgumentAt(0, context));
+    RXList_payload(self) = eina_list_prepend(RXList_payload(self), RXExpression_valueOfArgumentAt(0, context));
     // TODO mark new object in the same reachability as self
     return self;
 }
@@ -109,7 +109,7 @@ static RXNativeMethod_define(RXList, first) {
 
 static RXNativeMethod_define(RXList, at) {
     assert(argumentCount >= 1);
-    RXObject_t* data = eina_list_nth(RXList_payload(self), *(int*)RXObject_valueOfArgumentAt(0, context));
+    RXObject_t* data = eina_list_nth(RXList_payload(self), *(int*)RXExpression_valueOfArgumentAt(0, context));
     return data != NULL
         ? data
         : RXNil_o;

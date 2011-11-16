@@ -27,7 +27,7 @@ static RXNativeMethod_define(RXObject, spawn) {
  *  - self
  */
 static RXNativeMethod_define(RXObject, setSlot) {
-    RXObject_setSlot(self, RXObject_valueOfArgumentAt(0, context), RXObject_valueOfArgumentAt(1, context));
+    RXObject_setSlot(self, RXExpression_valueOfArgumentAt(0, context), RXExpression_valueOfArgumentAt(1, context));
     return self;
 }
 
@@ -41,7 +41,7 @@ static RXNativeMethod_define(RXObject, setSlot) {
  *  - the value of the slot with the given name
  */
 static RXNativeMethod_define(RXObject, valueOfSlot) {
-    return RXObject_valueOfSlot(self, RXObject_valueOfArgumentAt(0, context));
+    return RXObject_valueOfSlot(self, RXExpression_valueOfArgumentAt(0, context));
 }
 
 /*
@@ -54,7 +54,7 @@ static RXNativeMethod_define(RXObject, valueOfSlot) {
  *  - the value of the slot before it was deleted
  */
 static RXNativeMethod_define(RXObject, deleteSlot) {
-    return RXObject_deleteSlot(self, RXObject_valueOfArgumentAt(0, context));
+    return RXObject_deleteSlot(self, RXExpression_valueOfArgumentAt(0, context));
 }
 
 /*
@@ -105,28 +105,12 @@ static RXNativeMethod_define(RXObject, println) {
     return self;
 }
 
-/*
- * Return the value of the receiver in the given context.
- * This method provides a default behavior for expression evaluation.
- * See RXExpression.
- *
- * Arguments:
- *  - the evaluation context
- *
- * Returns:
- *  - self
- */
-static RXNativeMethod_define(RXObject, valueInContext) {
-    return self;
-}
-
 // Public --------------------------------------------------------------
 
 RXObject_t* RXSymbol_spawn_o;
 RXObject_t* RXSymbol_setSlot_o;
 RXObject_t* RXSymbol_valueOfSlot_o;
 RXObject_t* RXSymbol_deleteSlot_o;
-RXObject_t* RXSymbol_valueInContext_o;
 RXObject_t* RXSymbol_asString_o;
 RXObject_t* RXSymbol_print_o;
 RXObject_t* RXSymbol_println_o;
@@ -137,7 +121,6 @@ void RXObject_libSetup(void) {
     RXSymbol_setSlot_o = RXSymbol_symbolForCString("setSlot");
     RXSymbol_valueOfSlot_o = RXSymbol_symbolForCString("valueOfSlot");
     RXSymbol_deleteSlot_o = RXSymbol_symbolForCString("deleteSlot");
-    RXSymbol_valueInContext_o = RXSymbol_symbolForCString("valueInContext");
     RXSymbol_asString_o = RXSymbol_symbolForCString("asString");
     RXSymbol_print_o = RXSymbol_symbolForCString("print");
     RXSymbol_println_o = RXSymbol_symbolForCString("println");
@@ -150,7 +133,6 @@ void RXObject_libSetup(void) {
     RXNativeMethod_attach(RXObject, asString);
     RXNativeMethod_attach(RXObject, print);
     RXNativeMethod_attach(RXObject, println);
-    RXNativeMethod_attach(RXObject, valueInContext);
 
     RXObject_setSlot(RXNil_o, RXSymbol_asString_o, RXSymbol_nil_o);
 }

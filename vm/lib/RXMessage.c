@@ -1,36 +1,36 @@
 
 #include "RXLib.h"
 
-RXObject_t* RXSymbol_valueOnObjectInContext_o;
+RXObject_t* RXMessage_o;
 RXObject_t* RXSymbol_name_o;
-RXObject_t* RXSymbol_arguments_o;
+RXObject_t* RXSymbol_valueOnObjectInContext_o;
 
 static RXNativeMethod_define(RXMessage, valueOnObjectInContext) {
     // Push arguments to the stack
-    RXObject_t* args = RXObject_valueOfSlot(self, RXSymbol_arguments_o);
     Eina_List* iter;
-    RXObject_t* data;
-    EINA_LIST_REVERSE_FOREACH(*(Eina_List**)args, iter, data) {
-        RXNativeMethod_push(data);
+    RXObject_t* arg;
+    EINA_LIST_REVERSE_FOREACH(*(Eina_List**)self, iter, arg) {
+        RXNativeMethod_push(arg);
     }
     
     // Send message to receiver
     return RXObject_respondTo(
-        RXObject_valueOfArgumentAt(0, context),
+        RXExpression_valueOfArgumentAt(0, context),
         RXObject_valueOfSlot(self, RXSymbol_name_o),
-        RXObject_valueOfArgumentAt(1, context),
-        eina_list_count(*(Eina_List**)args)
+        RXExpression_valueOfArgumentAt(1, context),
+        eina_list_count(*(Eina_List**)self)
     );
 }
 
-RXObject_t* RXMessage_o;
-
 void RXMessage_setup(void) {
-    RXMessage_o = RXList_spawn(RXList_o);
-
     RXSymbol_name_o = RXSymbol_symbolForCString("name");
-    RXSymbol_arguments_o = RXSymbol_symbolForCString("arguments");
     RXSymbol_valueOnObjectInContext_o = RXSymbol_symbolForCString("valueOnObjectInContext");
     
+    RXMessage_o = RXList_spawn(RXList_o);
+    
+    // The common message delegate has "nil" as message name
+    // and and empty argument list
+    RXObject_setSlot(RXMessage_o, RXSymbol_name_o, RXSymbol_nil_o);
+
     RXNativeMethod_attach(RXMessage, valueOnObjectInContext);
 }
