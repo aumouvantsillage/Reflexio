@@ -7,4 +7,6 @@ extern RXObject_t* RXList_o;
 void RXList_setup(void);
 void RXList_clean(void);
 
+RXObject_t* RXList_spawn(RXObject_t* self);
+
 #endif

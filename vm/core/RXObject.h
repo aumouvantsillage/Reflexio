@@ -86,6 +86,6 @@ void RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName);
 /*
  * Respond to a message.
  */
-RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, int argumentCount);
+RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, RXObject_t* context, int argumentCount);
 
 #endif

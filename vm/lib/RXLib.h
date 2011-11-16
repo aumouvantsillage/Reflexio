@@ -8,6 +8,8 @@
 #include "RXInteger.h"
 #include "RXBoolean.h"
 #include "RXList.h"
+#include "RXMessage.h"
+#include "RXExpression.h"
 
 #endif
 

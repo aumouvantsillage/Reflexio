@@ -7,7 +7,7 @@
 /*
  * Function type for native method bodies.
  */
-typedef RXObject_t* (*RXNativeMethodBody_t) (RXObject_t* self, int argumentCount);
+typedef RXObject_t* (*RXNativeMethodBody_t) (RXObject_t* self, RXObject_t* context, int argumentCount);
 
 /*
  * The standard function name for methods attached to predefined object types.
@@ -27,7 +27,7 @@ typedef RXObject_t* (*RXNativeMethodBody_t) (RXObject_t* self, int argumentCount
  * The static keyword can be added before RXNativeMethod_define.
  */
 #define RXNativeMethod_define(type, name) \
-    RXObject_t* RXNativeMethod_functionName(type, name) (RXObject_t* self, int argumentCount)
+    RXObject_t* RXNativeMethod_functionName(type, name) (RXObject_t* self, RXObject_t* context, int argumentCount)
 
 /*
  * Attach a method to an object representing the given type.

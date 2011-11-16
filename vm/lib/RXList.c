@@ -17,10 +17,7 @@ inline static RXObject_t* RXList_new(void) {
 // Methods -------------------------------------------------------------
 
 static RXNativeMethod_define(RXList, spawn) {
-    RXObject_t* result = RXList_new();
-    RXObject_setSlot(result, RXSymbol_delegate_o, self);
-    // TODO clone list from self
-    return result;
+    return RXList_spawn(self);
 }
 
 static RXNativeMethod_define(RXList, asString) {
@@ -39,14 +36,14 @@ static RXNativeMethod_define(RXList, print) {
         else {
             sep = true;
         }
-        RXObject_respondTo(data, RXSymbol_print_o, 0);
+        RXObject_respondTo(data, RXSymbol_print_o, RXNil_o, 0);
     }
     fputs(")", stdout);
 }
 
 static RXNativeMethod_define(RXList, append) {
     assert(argumentCount >= 1);
-    RXObject_t* arg = RXObject_valueOfArgumentAt(0);
+    RXObject_t* arg = RXObject_valueOfArgumentAt(0, context);
     RXList_payload(self) = eina_list_append(RXList_payload(self), arg);
     // TODO mark new object in the same reachability as self
     assert(!eina_error_get());
@@ -60,7 +57,7 @@ static RXNativeMethod_define(RXList, concat) {
 
 static RXNativeMethod_define(RXList, prepend) {
     assert(argumentCount >= 1);
-    RXList_payload(self) = eina_list_prepend(RXList_payload(self), RXObject_valueOfArgumentAt(0));
+    RXList_payload(self) = eina_list_prepend(RXList_payload(self), RXObject_valueOfArgumentAt(0, context));
     // TODO mark new object in the same reachability as self
     return self;
 }
@@ -112,7 +109,7 @@ static RXNativeMethod_define(RXList, first) {
 
 static RXNativeMethod_define(RXList, at) {
     assert(argumentCount >= 1);
-    RXObject_t* data = eina_list_nth(RXList_payload(self), *(int*)RXObject_valueOfArgumentAt(0));
+    RXObject_t* data = eina_list_nth(RXList_payload(self), *(int*)RXObject_valueOfArgumentAt(0, context));
     return data != NULL
         ? data
         : RXNil_o;
@@ -156,6 +153,13 @@ static RXNativeMethod_define(RXList, exists) {
 // Public --------------------------------------------------------------
 
 RXObject_t* RXList_o;
+
+RXObject_t* RXList_spawn(RXObject_t* self) {
+    RXObject_t* result = RXList_new();
+    RXObject_setSlot(result, RXSymbol_delegate_o, self);
+    // TODO clone list from self
+    return result;
+}
 
 void RXList_setup(void) {
     RXList_o = RXList_new();

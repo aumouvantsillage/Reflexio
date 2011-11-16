@@ -21,23 +21,29 @@ static RXNativeMethod_define(RXObject, print) {
     return self;
 }
 
-static RXNativeMethod_define(RXObject, value) {
+static RXNativeMethod_define(RXNil, print) {
+    fputs("nil", stdout);
     return self;
 }
 
-RXObject_t* RXSymbol_value_o;
+static RXNativeMethod_define(RXObject, valueInContext) {
+    return self;
+}
+
+RXObject_t* RXSymbol_valueInContext_o;
 RXObject_t* RXSymbol_asString_o;
 RXObject_t* RXSymbol_print_o;
 
 void RXObject_libSetup(void) {
-    RXSymbol_value_o = RXSymbol_symbolForCString("value");
+    RXSymbol_valueInContext_o = RXSymbol_symbolForCString("valueInContext");
     RXSymbol_asString_o = RXSymbol_symbolForCString("asString");
     RXSymbol_print_o = RXSymbol_symbolForCString("print");
     
     RXNativeMethod_attach(RXObject, spawn);
     RXNativeMethod_attach(RXObject, asString);
     RXNativeMethod_attach(RXObject, print);
-    RXNativeMethod_attach(RXObject, value);
+    RXNativeMethod_attach(RXNil, print);
+    RXNativeMethod_attach(RXObject, valueInContext);
 }
 
 void RXObject_libClean(void) {

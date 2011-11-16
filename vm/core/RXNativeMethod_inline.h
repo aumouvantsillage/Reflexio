@@ -16,8 +16,8 @@ inline static void RXObject_setIsNativeMethod(RXObject_t* self) {
 /*
  * Execute a given native method on the given receiver.
  */
-inline static RXObject_t* RXNativeMethod_activate(RXObject_t* self, RXObject_t* receiver, int argumentCount) {
-    return (*(RXNativeMethodBody_t*)self)(receiver, argumentCount);
+inline static RXObject_t* RXNativeMethod_activate(RXObject_t* self, RXObject_t* receiver, RXObject_t* context, int argumentCount) {
+    return (*(RXNativeMethodBody_t*)self)(receiver, context, argumentCount);
 }
 
 /*

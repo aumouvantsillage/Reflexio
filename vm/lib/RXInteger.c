@@ -34,6 +34,7 @@ static RXNativeMethod_define(RXInteger, print) {
 // Public --------------------------------------------------------------
 
 RXObject_t* RXInteger_o;
+RXObject_t* RXSymbol_Integer_o;
 
 RXObject_t* RXInteger_spawn(RXObject_t* self, int value) {
     RXObject_t* result = RXInteger_new(value);
@@ -42,9 +43,11 @@ RXObject_t* RXInteger_spawn(RXObject_t* self, int value) {
 }
 
 void RXInteger_setup(void) {
+    RXSymbol_Integer_o = RXSymbol_symbolForCString("Integer");
+    
     RXInteger_o = RXInteger_new(0);
     RXObject_setSlot(RXInteger_o, RXSymbol_delegate_o, RXNumber_o);
-    RXObject_setSlot(RXObject_o, RXSymbol_symbolForCString("Integer"), RXInteger_o);
+    RXObject_setSlot(RXObject_o, RXSymbol_Integer_o, RXInteger_o);
     
     RXNativeMethod_attach(RXInteger, spawn);
     RXNativeMethod_attach(RXInteger, asString);

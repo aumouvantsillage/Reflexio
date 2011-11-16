@@ -8,7 +8,7 @@ void main(void) {
     
     RXObject_t* n = RXInteger_spawn(RXInteger_o, 125);
 
-    RXObject_respondTo(n, RXSymbol_symbolForCString("print"), 0);
+    RXObject_respondTo(n, RXSymbol_symbolForCString("print"), RXNil_o, 0);
 
     Reflexio_clean();
 }

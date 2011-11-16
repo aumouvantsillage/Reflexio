@@ -11,6 +11,8 @@ set(VM_SRC
     lib/RXNumber.c
     lib/RXInteger.c
     lib/RXList.c
+    lib/RXMessage.c
+    lib/RXExpression.c
 )
 
 find_package(Eina)

@@ -13,6 +13,8 @@ void Reflexio_setup(void) {
     RXNumber_setup();
     RXInteger_setup();
     RXList_setup();
+    RXMessage_setup();
+    RXExpression_setup();
 }
 
 void Reflexio_clean(void) {
