@@ -7,6 +7,7 @@
 extern RXObject_t* RXSymbol_spawn_o;
 extern RXObject_t* RXSymbol_setSlot_o;
 extern RXObject_t* RXSymbol_valueOfSlot_o;
+extern RXObject_t* RXSymbol_deleteSlot_o;
 extern RXObject_t* RXSymbol_valueInContext_o;
 extern RXObject_t* RXSymbol_print_o;
 extern RXObject_t* RXSymbol_println_o;
