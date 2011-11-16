@@ -4,9 +4,14 @@
 
 #include <core/RXCore.h>
 
+extern RXObject_t* RXSymbol_spawn_o;
+extern RXObject_t* RXSymbol_setSlot_o;
+extern RXObject_t* RXSymbol_valueOfSlot_o;
 extern RXObject_t* RXSymbol_valueInContext_o;
 extern RXObject_t* RXSymbol_print_o;
+extern RXObject_t* RXSymbol_println_o;
 extern RXObject_t* RXSymbol_asString_o;
+extern RXObject_t* RXSymbol_nil_o;
 
 void RXObject_libSetup(void);
 

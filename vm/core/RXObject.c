@@ -70,6 +70,7 @@ static RXObject_t* RXObject_lookup(RXObject_t* self, RXObject_t* slotName) {
     // If a lookup method exists in the receiver, send an "activate" message to that method and return the result.
     node = RXObject_node(self, RXSymbol_lookup_o);
     if (node != NULL) {
+        // lookupMethod activate(self, slotName)
         RXNativeMethod_push(slotName);
         RXNativeMethod_push(self);
         RXObject_t* result = RXObject_respondTo(node->value, RXSymbol_activate_o, RXNil_o, 2);
@@ -125,6 +126,7 @@ RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, RXObje
 
     // If a method has been found, run it by sending an "activate" message
     if (method != RXNil_o) {
+        // method activate(self, context, ...)
         RXNativeMethod_push(context);
         RXNativeMethod_push(self);
         RXObject_t* result = RXObject_respondTo(method, RXSymbol_activate_o, RXNil_o, argumentCount + 2);
