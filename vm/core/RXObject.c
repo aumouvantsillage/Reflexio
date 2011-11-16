@@ -112,13 +112,16 @@ RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXObject_t* slotN
         : node->value;
 }
 
-void RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName) {
+RXObject_t* RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName) {
     RXObjectNode_t* node = RXObject_node(self, slotName);
     if (node != NULL) {
+        RXObject_t* value = node->value;
         RXObject_coreData(self).slots = eina_rbtree_inline_remove(RXObject_coreData(self).slots, (Eina_Rbtree*)node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), NULL);
         free(node);
         // TODO remove cache entry for old value
+        return value;
     }
+    return RXNil_o;
 }
 
 RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, RXObject_t* context, int argumentCount) {

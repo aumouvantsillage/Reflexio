@@ -45,6 +45,19 @@ static RXNativeMethod_define(RXObject, valueOfSlot) {
 }
 
 /*
+ * Remove a slot and return the value of that slot.
+ *
+ * Arguments:
+ *  - slot name (a symbol)
+ *
+ * Returns:
+ *  - the value of the slot before it was deleted
+ */
+static RXNativeMethod_define(RXObject, deleteSlot) {
+    return RXObject_deleteSlot(self, RXObject_valueOfArgumentAt(0, context));
+}
+
+/*
  * Returns a string representing the receiver.
  *
  * Arguments: none

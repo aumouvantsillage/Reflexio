@@ -80,8 +80,9 @@ RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXObject_t* slotN
 
 /*
  * Delete a slot with the given name from the given object.
+ * Return the value of the deleted slot.
  */
-void RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName);
+RXObject_t* RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName);
 
 /*
  * Respond to a message.
