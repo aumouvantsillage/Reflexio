@@ -5,6 +5,7 @@
 #include <core/RXCore.h>
 
 extern RXObject_t* RXClosure_o;
+extern RXObject_t* RXSymbol_Closure_o;
 extern RXObject_t* RXSymbol_self_o;
 extern RXObject_t* RXSymbol_locals_o;
 extern RXObject_t* RXSymbol_context_o;

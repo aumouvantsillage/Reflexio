@@ -5,6 +5,7 @@
 #include <core/RXCore.h>
 
 extern RXObject_t* RXMessage_o;
+extern RXObject_t* RXSymbol_Message_o;
 extern RXObject_t* RXSymbol_name_o;
 extern RXObject_t* RXSymbol_valueOnObjectInContext_o;
 

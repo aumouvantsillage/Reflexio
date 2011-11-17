@@ -107,6 +107,9 @@ static RXNativeMethod_define(RXObject, println) {
 
 // Public --------------------------------------------------------------
 
+RXObject_t* RXLobby_o;
+RXObject_t* RXSymbol_Lobby_o;
+RXObject_t* RXSymbol_Object_o;
 RXObject_t* RXSymbol_spawn_o;
 RXObject_t* RXSymbol_setSlot_o;
 RXObject_t* RXSymbol_valueOfSlot_o;
@@ -117,6 +120,8 @@ RXObject_t* RXSymbol_println_o;
 RXObject_t* RXSymbol_nil_o;
 
 void RXObject_libSetup(void) {
+    RXSymbol_Lobby_o = RXSymbol_symbolForCString("Lobby");
+    RXSymbol_Object_o = RXSymbol_symbolForCString("Object");
     RXSymbol_spawn_o = RXSymbol_symbolForCString("spawn");
     RXSymbol_setSlot_o = RXSymbol_symbolForCString("setSlot");
     RXSymbol_valueOfSlot_o = RXSymbol_symbolForCString("valueOfSlot");
@@ -135,6 +140,11 @@ void RXObject_libSetup(void) {
     RXNativeMethod_attach(RXObject, println);
 
     RXObject_setSlot(RXNil_o, RXSymbol_asString_o, RXSymbol_nil_o);
+    
+    RXLobby_o = RXObject_spawn(RXObject_o);
+    RXObject_setSlot(RXLobby_o, RXSymbol_Lobby_o, RXLobby_o);
+    RXObject_setSlot(RXLobby_o, RXSymbol_Object_o, RXObject_o);
+    RXObject_setSlot(RXLobby_o, RXSymbol_nil_o, RXNil_o);
 }
 
 void RXObject_libClean(void) {

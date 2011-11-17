@@ -16,9 +16,9 @@ static RXNativeMethod_define(RXSymbol, println) {
 }
 
 void RXSymbol_libSetup(void) {
-    RXObject_setSlot(RXObject_o, RXSymbol_o, RXSymbol_o);
-    
     RXNativeMethod_attach(RXSymbol, asString);
     RXNativeMethod_attach(RXSymbol, print);
     RXNativeMethod_attach(RXSymbol, println);
+
+    RXObject_setSlot(RXLobby_o, RXSymbol_o, RXSymbol_o);
 }

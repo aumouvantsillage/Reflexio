@@ -2,6 +2,7 @@
 #include "RXLib.h"
 
 RXObject_t* RXMessage_o;
+RXObject_t* RXSymbol_Message_o;
 RXObject_t* RXSymbol_name_o;
 RXObject_t* RXSymbol_valueOnObjectInContext_o;
 
@@ -33,4 +34,7 @@ void RXMessage_setup(void) {
     RXObject_setSlot(RXMessage_o, RXSymbol_name_o, RXSymbol_nil_o);
 
     RXNativeMethod_attach(RXMessage, valueOnObjectInContext);
+    
+    RXSymbol_Message_o = RXSymbol_symbolForCString("Message");
+    RXObject_setSlot(RXLobby_o, RXSymbol_Message_o, RXMessage_o);
 }

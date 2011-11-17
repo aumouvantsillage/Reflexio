@@ -4,6 +4,9 @@
 
 #include <core/RXCore.h>
 
+extern RXObject_t* RXLobby_o;
+extern RXObject_t* RXSymbol_Lobby_o;
+extern RXObject_t* RXSymbol_Object_o;
 extern RXObject_t* RXSymbol_spawn_o;
 extern RXObject_t* RXSymbol_setSlot_o;
 extern RXObject_t* RXSymbol_valueOfSlot_o;

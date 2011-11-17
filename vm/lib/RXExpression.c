@@ -64,6 +64,7 @@ static RXNativeMethod_define(RXExpression, valueInContext) {
 // Public --------------------------------------------------------------
 
 RXObject_t* RXExpression_o;
+RXObject_t* RXSymbol_Expression_o;
 RXObject_t* RXSymbol_valueInContext_o;
 RXObject_t* RXSymbol_semicolon_o;
 
@@ -80,4 +81,7 @@ void RXExpression_setup(void) {
     RXObject_setSlot(RXObject_o, RXSymbol_semicolon_o,
         RXNativeMethod_attach(RXObject, closeStatement)
     );
+    
+    RXSymbol_Expression_o = RXSymbol_symbolForCString("Expression");
+    RXObject_setSlot(RXLobby_o, RXSymbol_Expression_o, RXExpression_o);
 }

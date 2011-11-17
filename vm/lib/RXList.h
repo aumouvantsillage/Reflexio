@@ -5,6 +5,7 @@
 #include <core/RXObject.h>
 
 extern RXObject_t* RXList_o;
+extern RXObject_t* RXSymbol_List_o;
 
 void RXList_setup(void);
 void RXList_clean(void);

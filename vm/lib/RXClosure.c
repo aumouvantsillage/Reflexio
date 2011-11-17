@@ -111,6 +111,7 @@ RXNativeMethod_define(RXClosure, activate) {
 // Public --------------------------------------------------------------
 
 RXObject_t* RXClosure_o;
+RXObject_t* RXSymbol_Closure_o;
 RXObject_t* RXSymbol_self_o;
 RXObject_t* RXSymbol_locals_o;
 RXObject_t* RXSymbol_context_o;
@@ -141,4 +142,7 @@ void RXClosure_setup(void) {
     RXNativeMethod_attach(RXClosure, activate);
     RXNativeMethod_attach(RXObject, method);
     RXNativeMethod_attach(RXObject, block);
+    
+    RXSymbol_Closure_o = RXSymbol_symbolForCString("Closure");
+    RXObject_setSlot(RXLobby_o, RXSymbol_Closure_o, RXClosure_o);
 }

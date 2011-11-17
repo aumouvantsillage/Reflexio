@@ -153,6 +153,7 @@ static RXNativeMethod_define(RXList, exists) {
 // Public --------------------------------------------------------------
 
 RXObject_t* RXList_o;
+RXObject_t* RXSymbol_List_o;
 
 RXObject_t* RXList_spawn(RXObject_t* self) {
     RXObject_t* result = RXList_new();
@@ -176,7 +177,6 @@ RXObject_t* RXList_at(RXObject_t* self, int index) {
 void RXList_setup(void) {
     RXList_o = RXList_new();
     RXObject_setSlot(RXList_o, RXSymbol_delegate_o, RXObject_o);
-    RXObject_setSlot(RXObject_o, RXSymbol_symbolForCString("List"), RXList_o);
     
     RXNativeMethod_attach(RXList, spawn);
     RXNativeMethod_attach(RXList, asString);
@@ -200,4 +200,7 @@ void RXList_setup(void) {
     RXNativeMethod_attach(RXList, forEach);
     RXNativeMethod_attach(RXList, forAll);
     RXNativeMethod_attach(RXList, exists);
+
+    RXSymbol_List_o = RXSymbol_symbolForCString("List");
+    RXObject_setSlot(RXLobby_o, RXSymbol_List_o, RXList_o);
 }
