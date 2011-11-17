@@ -13,3 +13,6 @@ target_link_libraries(RXNumber_test ${LIBS})
 
 add_executable(RXList_test RXList_test.c)
 target_link_libraries(RXList_test ${LIBS})
+
+add_executable(RXClosure_test RXClosure_test.c)
+target_link_libraries(RXClosure_test ${LIBS})

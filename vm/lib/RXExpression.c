@@ -51,12 +51,13 @@ static RXNativeMethod_define(RXExpression, valueInContext) {
     
     Eina_List* iter;
     RXObject_t* msg;
-    EINA_LIST_REVERSE_FOREACH(*(Eina_List**)self, iter, msg) {
+    EINA_LIST_FOREACH(*(Eina_List**)self, iter, msg) {
         RXNativeMethod_push(evalContext);
         RXNativeMethod_push(receiver);
         receiver = RXObject_respondTo(msg, RXSymbol_valueOnObjectInContext_o, RXNil_o, 2);
     }
     
+    // FIXME return nil if expression is empty?
     return receiver;
 }
 

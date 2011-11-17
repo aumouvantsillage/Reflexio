@@ -4,6 +4,7 @@
 
 extern RXObject_t* RXExpression_o;
 extern RXObject_t* RXSymbol_valueInContext_o;
+extern RXObject_t* RXSymbol_semicolon_o;
 
 void RXExpression_setup();
 

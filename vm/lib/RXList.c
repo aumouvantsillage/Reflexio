@@ -161,6 +161,18 @@ RXObject_t* RXList_spawn(RXObject_t* self) {
     return result;
 }
 
+int RXList_count(const RXObject_t* self) {
+    return eina_list_count(*(Eina_List**)self);
+}
+
+void RXList_append(RXObject_t* self, RXObject_t* obj) {
+    RXList_payload(self) = eina_list_append(RXList_payload(self), obj);
+}
+
+RXObject_t* RXList_at(RXObject_t* self, int index) {
+    return eina_list_nth(RXList_payload(self), index);
+}
+
 void RXList_setup(void) {
     RXList_o = RXList_new();
     RXObject_setSlot(RXList_o, RXSymbol_delegate_o, RXObject_o);

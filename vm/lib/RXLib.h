@@ -10,6 +10,7 @@
 #include "RXList.h"
 #include "RXMessage.h"
 #include "RXExpression.h"
+#include "RXClosure.h"
 
 #endif
 

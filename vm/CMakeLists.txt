@@ -13,6 +13,7 @@ set(VM_SRC
     lib/RXList.c
     lib/RXMessage.c
     lib/RXExpression.c
+    lib/RXClosure.c
 )
 
 find_package(Eina)

@@ -15,6 +15,7 @@ void Reflexio_setup(void) {
     RXList_setup();
     RXMessage_setup();
     RXExpression_setup();
+    RXClosure_setup();
 }
 
 void Reflexio_clean(void) {
