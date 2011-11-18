@@ -2,7 +2,7 @@
 #include <Reflexio.h>
 
 void main(void) {
-    Reflexio_setup();
+    Reflexio_setup(0, NULL);
     
     // Lobby person = Object spawn
     RXObject_t* person = RXObject_spawn(RXObject_o);

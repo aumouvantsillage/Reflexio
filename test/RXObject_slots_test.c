@@ -4,7 +4,7 @@
 #include <assert.h>
 
 void main(void) {
-    Reflexio_setup();
+    Reflexio_setup(0, NULL);
 
     RXObject_t* basile = RXSymbol_symbolForCString("basile");
     RXObject_t* carla = RXSymbol_symbolForCString("carla");

@@ -4,18 +4,19 @@
 // Private -------------------------------------------------------------
 
 static RXObject_t* RXClosure_spawn(RXObject_t* isMethod, RXObject_t* context, int argumentCount) {
-    RXObject_t* result = RXObject_spawn(RXClosure_o);
-    RXObject_setSlot(result, RXSymbol_context_o, context);
-    RXObject_setSlot(result, RXSymbol_body_o, RXNativeMethod_argumentAt(argumentCount - 1));
-    
     // Fill parameter list
     RXObject_t* parameterList = RXList_spawn(RXList_o);
-    RXObject_setSlot(result, RXSymbol_parameters_o, parameterList);
     for (int i = 0; i < argumentCount - 1; i ++) {
         RXObject_t* message = RXNativeMethod_argumentAt(i);
         RXList_append(parameterList, RXObject_valueOfSlot(message, RXSymbol_name_o));
     }
     
+    RXObject_t* body = RXNativeMethod_argumentAt(argumentCount - 1);
+    
+    RXObject_t* result = RXObject_spawn(RXClosure_o);
+    RXObject_setSlot(result, RXSymbol_context_o, context);
+    RXObject_setSlot(result, RXSymbol_body_o, body);
+    RXObject_setSlot(result, RXSymbol_parameters_o, parameterList);
     RXObject_setSlot(result, RXSymbol_isMethod_o, isMethod);
     
     return result;

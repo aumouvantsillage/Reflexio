@@ -4,7 +4,7 @@
 #include <assert.h>
 
 void main(void) {
-    Reflexio_setup();
+    Reflexio_setup(0, NULL);
     
     RXObject_t* list = RXObject_respondTo(RXList_o, RXSymbol_symbolForCString("spawn"), RXNil_o, 0);
 

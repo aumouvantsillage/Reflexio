@@ -27,7 +27,9 @@ static RXNativeMethod_define(RXObject, spawn) {
  *  - self
  */
 static RXNativeMethod_define(RXObject, setSlot) {
-    RXObject_setSlot(self, RXExpression_valueOfArgumentAt(0, context), RXExpression_valueOfArgumentAt(1, context));
+    RXObject_t* slotName = RXExpression_valueOfArgumentAt(0, context);
+    RXObject_t* value = RXExpression_valueOfArgumentAt(1, context);
+    RXObject_setSlot(self, slotName, value);
     return self;
 }
 
@@ -41,7 +43,8 @@ static RXNativeMethod_define(RXObject, setSlot) {
  *  - the value of the slot with the given name
  */
 static RXNativeMethod_define(RXObject, valueOfSlot) {
-    return RXObject_valueOfSlot(self, RXExpression_valueOfArgumentAt(0, context));
+    RXObject_t* slotName = RXExpression_valueOfArgumentAt(0, context);
+    return RXObject_valueOfSlot(self, slotName);
 }
 
 /*
@@ -54,7 +57,8 @@ static RXNativeMethod_define(RXObject, valueOfSlot) {
  *  - the value of the slot before it was deleted
  */
 static RXNativeMethod_define(RXObject, deleteSlot) {
-    return RXObject_deleteSlot(self, RXExpression_valueOfArgumentAt(0, context));
+    RXObject_t* slotName = RXExpression_valueOfArgumentAt(0, context);
+    return RXObject_deleteSlot(self, slotName);
 }
 
 /*
@@ -115,6 +119,7 @@ RXObject_t* RXSymbol_setSlot_o;
 RXObject_t* RXSymbol_valueOfSlot_o;
 RXObject_t* RXSymbol_deleteSlot_o;
 RXObject_t* RXSymbol_asString_o;
+RXObject_t* RXSymbol_asSource_o;
 RXObject_t* RXSymbol_print_o;
 RXObject_t* RXSymbol_println_o;
 RXObject_t* RXSymbol_nil_o;
@@ -127,6 +132,7 @@ void RXObject_libSetup(void) {
     RXSymbol_valueOfSlot_o = RXSymbol_symbolForCString("valueOfSlot");
     RXSymbol_deleteSlot_o = RXSymbol_symbolForCString("deleteSlot");
     RXSymbol_asString_o = RXSymbol_symbolForCString("asString");
+    RXSymbol_asSource_o = RXSymbol_symbolForCString("asSource");
     RXSymbol_print_o = RXSymbol_symbolForCString("print");
     RXSymbol_println_o = RXSymbol_symbolForCString("println");
     RXSymbol_nil_o = RXSymbol_symbolForCString("nil");
@@ -135,7 +141,9 @@ void RXObject_libSetup(void) {
     RXNativeMethod_attach(RXObject, setSlot);
     RXNativeMethod_attach(RXObject, valueOfSlot);
     RXNativeMethod_attach(RXObject, deleteSlot);
-    RXNativeMethod_attach(RXObject, asString);
+    RXObject_setSlot(RXObject_o, RXSymbol_asSource_o,
+        RXNativeMethod_attach(RXObject, asString)
+    );
     RXNativeMethod_attach(RXObject, print);
     RXNativeMethod_attach(RXObject, println);
 

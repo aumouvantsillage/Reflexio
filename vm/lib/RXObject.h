@@ -14,6 +14,7 @@ extern RXObject_t* RXSymbol_deleteSlot_o;
 extern RXObject_t* RXSymbol_print_o;
 extern RXObject_t* RXSymbol_println_o;
 extern RXObject_t* RXSymbol_asString_o;
+extern RXObject_t* RXSymbol_asSource_o;
 extern RXObject_t* RXSymbol_nil_o;
 
 void RXObject_libSetup(void);

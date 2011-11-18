@@ -4,7 +4,7 @@
 #include <assert.h>
 
 void main(void) {
-    Reflexio_setup();
+    Reflexio_setup(0, NULL);
     
     RXObject_t* n = RXInteger_spawn(RXInteger_o, 125);
 

@@ -61,6 +61,29 @@ static RXNativeMethod_define(RXExpression, valueInContext) {
     return receiver;
 }
 
+static RXNativeMethod_define(RXExpression, asSource) {
+    int count = RXList_count(self);
+    RXObject_t* msgSrc[count];
+    int len = 0;
+    int index = 0;
+    Eina_List* iter;
+    RXObject_t* msg;
+    EINA_LIST_FOREACH(*(Eina_List**)self, iter, msg) {
+        RXObject_t* src = RXObject_respondTo(msg, RXSymbol_asSource_o, RXNil_o, 0);
+        len += strlen((char*)src) + 1;
+        msgSrc[index++] = src;
+    }
+    char result[len];
+    result[0] = 0;
+    for (index = 0; index < count; index ++) {
+        if (index > 0) {
+            strcat(result, " ");
+        }
+        strcat(result, (char*)(msgSrc[index]));
+    }
+    return RXSymbol_symbolForCString(result);
+}
+
 // Public --------------------------------------------------------------
 
 RXObject_t* RXExpression_o;
@@ -76,6 +99,7 @@ void RXExpression_setup(void) {
     
     RXNativeMethod_attach(RXObject, valueInContext);
     RXNativeMethod_attach(RXExpression, valueInContext);
+    RXNativeMethod_attach(RXExpression, asSource);
     
     // Method closeStatement is also bound to symbol ";"    
     RXObject_setSlot(RXObject_o, RXSymbol_semicolon_o,

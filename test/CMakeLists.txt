@@ -16,3 +16,6 @@ target_link_libraries(RXList_test ${LIBS})
 
 add_executable(RXClosure_test RXClosure_test.c)
 target_link_libraries(RXClosure_test ${LIBS})
+
+add_executable(RXParser_test RXParser_test.c)
+target_link_libraries(RXParser_test ${LIBS})

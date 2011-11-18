@@ -125,14 +125,14 @@ RXObject_t* RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName) {
 }
 
 RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, RXObject_t* context, int argumentCount) {
+    // Lookup message name starting from the receiver
     RXObject_t* method = RXObject_lookup(self, messageName);
 
     // If a method has been found, run it by sending an "activate" message
     if (method != RXNil_o) {
         // method activate(self, ...)
         RXNativeMethod_push(self);
-        RXObject_t* result = RXObject_respondTo(method, RXSymbol_activate_o, context, argumentCount + 1);
-        return result;        
+        return RXObject_respondTo(method, RXSymbol_activate_o, context, argumentCount + 1);
     }
     // If no method has been found and the current message is "activate"
     else if (messageName == RXSymbol_activate_o) {
@@ -146,12 +146,14 @@ RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, RXObje
             return result;
         }
         else {
+            RXNativeMethod_pop(argumentCount);
             return self;
         }
     }
-    // If no method has been found and the current message is not activate,
+    // If no method has been found and the current message is not "activate",
     // return nil
     else { 
+        RXNativeMethod_pop(argumentCount);
         return RXNil_o;
     }
 }

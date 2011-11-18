@@ -14,6 +14,22 @@ set(VM_SRC
     lib/RXMessage.c
     lib/RXExpression.c
     lib/RXClosure.c
+    parser/RXParser.c
+    parser/RXLexer.c
+)
+
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/parser)
+
+add_custom_command(
+    OUTPUT parser/RXParser.c
+    DEPENDS parser/RXParser.y
+    COMMAND bison --defines=${CMAKE_CURRENT_BINARY_DIR}/parser/RXTokens.h -o ${CMAKE_CURRENT_BINARY_DIR}/parser/RXParser.c ${CMAKE_CURRENT_SOURCE_DIR}/parser/RXParser.y
+)
+
+add_custom_command(
+    OUTPUT parser/RXLexer.c
+    DEPENDS parser/RXLexer.l parser/RXParser.c
+    COMMAND flex -o ${CMAKE_CURRENT_BINARY_DIR}/parser/RXLexer.c ${CMAKE_CURRENT_SOURCE_DIR}/parser/RXLexer.l
 )
 
 find_package(Eina)
