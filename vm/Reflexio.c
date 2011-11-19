@@ -16,6 +16,7 @@ void Reflexio_setup(int argc, char* argv[]) {
     RXMessage_setup();
     RXExpression_setup();
     RXClosure_setup();
+    RXFile_setup();
     
     // Copy argument list into the Lobby objet
     RXObject_t* argumentList = RXList_spawn(RXList_o);

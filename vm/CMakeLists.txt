@@ -14,6 +14,7 @@ set(VM_SRC
     lib/RXMessage.c
     lib/RXExpression.c
     lib/RXClosure.c
+    lib/RXFile.c
     parser/RXParser.c
     parser/RXLexer.c
 )

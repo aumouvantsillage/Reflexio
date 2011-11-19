@@ -11,6 +11,7 @@
 #include "RXMessage.h"
 #include "RXExpression.h"
 #include "RXClosure.h"
+#include "RXFile.h"
 
 #endif
 

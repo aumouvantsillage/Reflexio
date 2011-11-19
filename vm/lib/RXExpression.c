@@ -1,5 +1,6 @@
 
 #include "RXLib.h"
+#include <parser/RXParser.h>
 
 // Methods -------------------------------------------------------------
 
@@ -84,22 +85,56 @@ static RXNativeMethod_define(RXExpression, asSource) {
     return RXSymbol_symbolForCString(result);
 }
 
+/*
+ * Create a new expression from the given file.
+ *
+ * Arguments:
+ *  - a file object open for reading
+ *
+ * Returns:
+ *  - a new expression
+ */
+static RXNativeMethod_define(RXExpression, fromFile) {
+    RXObject_t* file = RXExpression_valueOfArgumentAt(0, context);
+    return RXParser_expressionFromCFile(*(FILE**)file);
+}
+
+/*
+ * Create a new expression from the given string.
+ *
+ * Arguments:
+ *  - a string containing an expression
+ *
+ * Returns:
+ *  - a new expression
+ */
+static RXNativeMethod_define(RXExpression, fromString) {
+    RXObject_t* str = RXExpression_valueOfArgumentAt(0, context);
+    return RXParser_expressionFromCString((char*)str);
+}
+
 // Public --------------------------------------------------------------
 
 RXObject_t* RXExpression_o;
 RXObject_t* RXSymbol_Expression_o;
 RXObject_t* RXSymbol_valueInContext_o;
 RXObject_t* RXSymbol_semicolon_o;
+RXObject_t* RXSymbol_fromFile_o;
+RXObject_t* RXSymbol_fromString_o;
 
 void RXExpression_setup(void) {
     RXSymbol_valueInContext_o = RXSymbol_symbolForCString("valueInContext");
     RXSymbol_semicolon_o = RXSymbol_symbolForCString(";");
+    RXSymbol_fromFile_o = RXSymbol_symbolForCString("fromFile");
+    RXSymbol_fromString_o = RXSymbol_symbolForCString("fromString");
 
     RXExpression_o = RXList_spawn(RXList_o);
     
     RXNativeMethod_attach(RXObject, valueInContext);
     RXNativeMethod_attach(RXExpression, valueInContext);
     RXNativeMethod_attach(RXExpression, asSource);
+    RXNativeMethod_attach(RXExpression, fromFile);
+    RXNativeMethod_attach(RXExpression, fromString);
     
     // Method closeStatement is also bound to symbol ";"    
     RXObject_setSlot(RXObject_o, RXSymbol_semicolon_o,

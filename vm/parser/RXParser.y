@@ -281,13 +281,13 @@ RXObject_t* RXParser_parse() {
    return result;
 }
 
-RXObject_t* RXParser_expressionFromString(RXObject_t* string) {
-   yy_scan_string((char*)string);
+RXObject_t* RXParser_expressionFromCString(char* string) {
+   yy_scan_string(string);
    return RXParser_parse();
 }
 
-RXObject_t* RXParser_expressionFromFile(RXObject_t* file) {
-   yyin = *(FILE**)file;
+RXObject_t* RXParser_expressionFromCFile(FILE* file) {
+   yyin = file;
    return RXParser_parse();
 }
 
