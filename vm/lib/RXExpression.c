@@ -62,7 +62,7 @@ static RXNativeMethod_define(RXExpression, valueInContext) {
     return receiver;
 }
 
-static RXNativeMethod_define(RXExpression, asSource) {
+static RXNativeMethod_define(RXExpression, asString) {
     int count = RXList_count(self);
     RXObject_t* msgSrc[count];
     int len = 0;
@@ -132,7 +132,7 @@ void RXExpression_setup(void) {
     
     RXNativeMethod_attach(RXObject, valueInContext);
     RXNativeMethod_attach(RXExpression, valueInContext);
-    RXNativeMethod_attach(RXExpression, asSource);
+    RXNativeMethod_attach(RXExpression, asString);
     RXNativeMethod_attach(RXExpression, fromFile);
     RXNativeMethod_attach(RXExpression, fromString);
     

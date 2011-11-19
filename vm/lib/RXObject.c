@@ -78,6 +78,20 @@ static RXNativeMethod_define(RXObject, asString) {
 }
 
 /*
+ * Returns a string representing the receiver as source code.
+ * The default behavior is to return the result of asString on
+ * the receiver.
+ *
+ * Arguments: none
+ *
+ * Returns:
+ *  - a symbol
+ */
+static RXNativeMethod_define(RXObject, asSource) {
+    return RXObject_respondTo(self, RXSymbol_asString_o, context, argumentCount);
+}
+
+/*
  * Print the receiver on the standard output.
  * This method calls asString to get a representation of the receiver.
  *
@@ -141,9 +155,8 @@ void RXObject_libSetup(void) {
     RXNativeMethod_attach(RXObject, setSlot);
     RXNativeMethod_attach(RXObject, valueOfSlot);
     RXNativeMethod_attach(RXObject, deleteSlot);
-    RXObject_setSlot(RXObject_o, RXSymbol_asSource_o,
-        RXNativeMethod_attach(RXObject, asString)
-    );
+    RXNativeMethod_attach(RXObject, asString);
+    RXNativeMethod_attach(RXObject, asSource);
     RXNativeMethod_attach(RXObject, print);
     RXNativeMethod_attach(RXObject, println);
 

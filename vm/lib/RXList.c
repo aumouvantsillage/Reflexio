@@ -20,8 +20,36 @@ static RXNativeMethod_define(RXList, spawn) {
     return RXList_spawn(self);
 }
 
+static RXNativeMethod_define(RXList, with) {
+    RXObject_t* result = RXList_spawn(self);
+    for (int i = 0; i < argumentCount; i ++) {
+        RXList_append(result, RXExpression_valueOfArgumentAt(i, context));
+    }
+    return result;
+}
+
 static RXNativeMethod_define(RXList, asString) {
-    // TODO RXList asString
+    int count = RXList_count(self);
+    RXObject_t* msgSrc[count];
+    int len = 10;
+    int index = 0;
+    Eina_List* iter;
+    RXObject_t* msg;
+    EINA_LIST_FOREACH(*(Eina_List**)self, iter, msg) {
+        RXObject_t* src = RXObject_respondTo(msg, RXSymbol_asSource_o, RXNil_o, 0);
+        len += strlen((char*)src) + 2;
+        msgSrc[index++] = src;
+    }
+    char result[len];
+    strcpy(result, "List with(");
+    for (index = 0; index < count; index ++) {
+        if (index > 0) {
+            strcat(result, ", ");
+        }
+        strcat(result, (char*)(msgSrc[index]));
+    }
+    strcat(result, ")");
+    return RXSymbol_symbolForCString(result);
 }
 
 static RXNativeMethod_define(RXList, print) {
@@ -157,7 +185,7 @@ RXObject_t* RXSymbol_List_o;
 RXObject_t* RXList_spawn(RXObject_t* self) {
     RXObject_t* result = RXList_new();
     RXObject_setSlot(result, RXSymbol_delegate_o, self);
-    // TODO clone list from self
+    RXList_payload(result) = eina_list_clone(RXList_payload(self));
     return result;
 }
 
@@ -178,6 +206,7 @@ void RXList_setup(void) {
     RXObject_setSlot(RXList_o, RXSymbol_delegate_o, RXObject_o);
     
     RXNativeMethod_attach(RXList, spawn);
+    RXNativeMethod_attach(RXList, with);
     RXNativeMethod_attach(RXList, asString);
     RXNativeMethod_attach(RXList, print);
     RXNativeMethod_attach(RXList, append);
