@@ -1,0 +1,18 @@
+
+person = Object spawn
+
+albert = person spawn
+albert name = "Albert"
+
+// Will print "Object_0x..."
+albert println
+
+hello = "Salut "
+
+person println = method(
+    hello print
+    self name println
+)
+
+// Will print "Salut Albert"
+albert println

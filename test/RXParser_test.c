@@ -17,9 +17,6 @@ void main(void) {
         albert println \n"
     );
     
-    // printf((char*)source);
-    // printf((char*)RXObject_respondTo(source, RXSymbol_symbolForCString("asSource"), RXLobby_o, 0));
-    
     RXNativeMethod_push(source);
     RXObject_t* expression = RXObject_respondTo(RXExpression_o, RXSymbol_fromString_o, RXLobby_o, 1);
     printf("%s\n", RXObject_respondTo(expression, RXSymbol_symbolForCString("asSource"), RXLobby_o, 0));
