@@ -15,7 +15,7 @@
  * Returns:
  *  - self
  */
-static RXNativeMethod_define(RXObject, valueInContext) {
+RXNativeMethod_define(RXObject, valueInContext) {
     return self;
 }
 
@@ -33,7 +33,7 @@ static RXNativeMethod_define(RXObject, valueInContext) {
  *
  *  a(b, c) ; d(e,f)
  */
-static RXNativeMethod_define(RXObject, closeStatement) {
+RXNativeMethod_define(RXObject, closeStatement) {
     return context;
 }
 
@@ -46,7 +46,7 @@ static RXNativeMethod_define(RXObject, closeStatement) {
  * Returns:
  *  - the value of the current expression in the given context
  */
-static RXNativeMethod_define(RXExpression, valueInContext) {
+RXNativeMethod_define(RXExpression, valueInContext) {
     RXObject_t* evalContext = RXExpression_valueOfArgumentAt(0, context);
     RXObject_t* receiver = evalContext;
     
@@ -62,7 +62,7 @@ static RXNativeMethod_define(RXExpression, valueInContext) {
     return receiver;
 }
 
-static RXNativeMethod_define(RXExpression, asString) {
+RXNativeMethod_define(RXExpression, asString) {
     int count = RXList_count(self);
     RXObject_t* msgSrc[count];
     int len = 0;
@@ -94,7 +94,7 @@ static RXNativeMethod_define(RXExpression, asString) {
  * Returns:
  *  - a new expression
  */
-static RXNativeMethod_define(RXExpression, fromFile) {
+RXNativeMethod_define(RXExpression, fromFile) {
     RXObject_t* file = RXExpression_valueOfArgumentAt(0, context);
     return RXParser_expressionFromCFile(*(FILE**)file);
 }
@@ -108,7 +108,7 @@ static RXNativeMethod_define(RXExpression, fromFile) {
  * Returns:
  *  - a new expression
  */
-static RXNativeMethod_define(RXExpression, fromString) {
+RXNativeMethod_define(RXExpression, fromString) {
     RXObject_t* str = RXExpression_valueOfArgumentAt(0, context);
     return RXParser_expressionFromCString((char*)str);
 }

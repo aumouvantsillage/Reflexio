@@ -27,7 +27,7 @@ typedef RXObject_t* (*RXNativeMethodBody_t) (RXObject_t* self, RXObject_t* conte
  * The static keyword can be added before RXNativeMethod_define.
  */
 #define RXNativeMethod_define(type, name) \
-    RXObject_t* RXNativeMethod_functionName(type, name) (RXObject_t* self, RXObject_t* context, int argumentCount)
+    static RXObject_t* RXNativeMethod_functionName(type, name) (RXObject_t* self, RXObject_t* context, int argumentCount)
 
 /*
  * Attach a method to an object representing the given type.

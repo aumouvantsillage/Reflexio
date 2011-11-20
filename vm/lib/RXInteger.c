@@ -16,11 +16,11 @@ static RXObject_t* RXInteger_new(int value) {
 
 // Methods -------------------------------------------------------------
 
-static RXNativeMethod_define(RXInteger, spawn) {
+RXNativeMethod_define(RXInteger, spawn) {
     return RXInteger_spawn(self, *(int*)self);
 }
 
-static RXNativeMethod_define(RXInteger, asString) {
+RXNativeMethod_define(RXInteger, asString) {
     char* str;
     asprintf(&str, "%d", *(int*)self);
     RXObject_t* result = RXSymbol_symbolForCString(str);
@@ -28,7 +28,7 @@ static RXNativeMethod_define(RXInteger, asString) {
     return result;
 }
 
-static RXNativeMethod_define(RXInteger, print) {
+RXNativeMethod_define(RXInteger, print) {
     printf("%d", *(int*)self);
     return self;
 }

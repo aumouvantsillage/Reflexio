@@ -1,11 +1,13 @@
 
 #include "RXLib.h"
 
-static RXNativeMethod_define(RXSymbol, asString) {
+// Methods -------------------------------------------------------------
+
+RXNativeMethod_define(RXSymbol, asString) {
     return self;
 }
 
-static RXNativeMethod_define(RXSymbol, asSource) {
+RXNativeMethod_define(RXSymbol, asSource) {
     char* cstr = (char*)self;
       
     // Compute string length, including quotes and backslashes for escaped characters
@@ -39,15 +41,17 @@ static RXNativeMethod_define(RXSymbol, asSource) {
     return result;
 }
 
-static RXNativeMethod_define(RXSymbol, print) {
+RXNativeMethod_define(RXSymbol, print) {
     fputs((char*)self, stdout);
     return self;
 }
 
-static RXNativeMethod_define(RXSymbol, println) {
+RXNativeMethod_define(RXSymbol, println) {
     puts((char*)self);
     return self;
 }
+
+// Public --------------------------------------------------------------
 
 void RXSymbol_libSetup(void) {
     RXNativeMethod_attach(RXSymbol, asString);

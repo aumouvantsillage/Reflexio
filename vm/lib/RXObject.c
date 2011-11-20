@@ -12,7 +12,7 @@
  * Returns:
  *  - a new object
  */
-static RXNativeMethod_define(RXObject, spawn) {
+RXNativeMethod_define(RXObject, spawn) {
     return RXObject_spawn(self);
 }
 
@@ -26,7 +26,7 @@ static RXNativeMethod_define(RXObject, spawn) {
  * Returns:
  *  - self
  */
-static RXNativeMethod_define(RXObject, setSlot) {
+RXNativeMethod_define(RXObject, setSlot) {
     RXObject_t* slotName = RXExpression_valueOfArgumentAt(0, context);
     RXObject_t* value = RXExpression_valueOfArgumentAt(1, context);
     RXObject_setSlot(self, slotName, value);
@@ -42,7 +42,7 @@ static RXNativeMethod_define(RXObject, setSlot) {
  * Returns:
  *  - the value of the slot with the given name
  */
-static RXNativeMethod_define(RXObject, valueOfSlot) {
+RXNativeMethod_define(RXObject, valueOfSlot) {
     RXObject_t* slotName = RXExpression_valueOfArgumentAt(0, context);
     return RXObject_valueOfSlot(self, slotName);
 }
@@ -56,7 +56,7 @@ static RXNativeMethod_define(RXObject, valueOfSlot) {
  * Returns:
  *  - the value of the slot before it was deleted
  */
-static RXNativeMethod_define(RXObject, deleteSlot) {
+RXNativeMethod_define(RXObject, deleteSlot) {
     RXObject_t* slotName = RXExpression_valueOfArgumentAt(0, context);
     return RXObject_deleteSlot(self, slotName);
 }
@@ -69,7 +69,7 @@ static RXNativeMethod_define(RXObject, deleteSlot) {
  * Returns:
  *  - a symbol
  */
-static RXNativeMethod_define(RXObject, asString) {
+RXNativeMethod_define(RXObject, asString) {
     char* str;
     asprintf(&str, "Object_0x%" PRIxPTR, self);
     RXObject_t* result = RXSymbol_symbolForCString(str);
@@ -87,7 +87,7 @@ static RXNativeMethod_define(RXObject, asString) {
  * Returns:
  *  - a symbol
  */
-static RXNativeMethod_define(RXObject, asSource) {
+RXNativeMethod_define(RXObject, asSource) {
     return RXObject_respondTo(self, RXSymbol_asString_o, context, argumentCount);
 }
 
@@ -100,7 +100,7 @@ static RXNativeMethod_define(RXObject, asSource) {
  * Returns:
  *  - self
  */
-static RXNativeMethod_define(RXObject, print) {
+RXNativeMethod_define(RXObject, print) {
     // self asString print
     RXObject_t* selfAsString = RXObject_respondTo(self, RXSymbol_asString_o, RXNil_o, 0);
     RXObject_respondTo(selfAsString, RXSymbol_print_o, RXNil_o, 0);
@@ -116,7 +116,7 @@ static RXNativeMethod_define(RXObject, print) {
  * Returns:
  *  - self
  */
-static RXNativeMethod_define(RXObject, println) {
+RXNativeMethod_define(RXObject, println) {
     // self asString print
     RXObject_t* selfAsString = RXObject_respondTo(self, RXSymbol_asString_o, RXNil_o, 0);
     RXObject_respondTo(selfAsString, RXSymbol_println_o, RXNil_o, 0);

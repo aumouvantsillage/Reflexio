@@ -1,16 +1,13 @@
 
 #include "RXLib.h"
 
-RXObject_t* RXMessage_o;
-RXObject_t* RXSymbol_Message_o;
-RXObject_t* RXSymbol_name_o;
-RXObject_t* RXSymbol_valueOnObjectInContext_o;
+// Methods -------------------------------------------------------------
 
-static RXNativeMethod_define(RXObject, valueOnObjectInContext) {
+RXNativeMethod_define(RXObject, valueOnObjectInContext) {
     return self;
 }
 
-static RXNativeMethod_define(RXMessage, valueOnObjectInContext) {
+RXNativeMethod_define(RXMessage, valueOnObjectInContext) {
     RXObject_t* receiver = RXExpression_valueOfArgumentAt(0, context);
     RXObject_t* messageName = RXObject_valueOfSlot(self, RXSymbol_name_o);
     RXObject_t* msgContext = RXExpression_valueOfArgumentAt(1, context);
@@ -27,7 +24,7 @@ static RXNativeMethod_define(RXMessage, valueOnObjectInContext) {
     return RXObject_respondTo(receiver, messageName, msgContext, msgArgumentCount);
 }
 
-static RXNativeMethod_define(RXMessage, asSource) {
+RXNativeMethod_define(RXMessage, asSource) {
     RXObject_t* name = RXObject_valueOfSlot(self, RXSymbol_name_o);
     int len = strlen((char*)name)+3; // name(...)\0
     
@@ -60,6 +57,13 @@ static RXNativeMethod_define(RXMessage, asSource) {
     }
     return RXSymbol_symbolForCString(result);
 }
+
+// Public --------------------------------------------------------------
+
+RXObject_t* RXMessage_o;
+RXObject_t* RXSymbol_Message_o;
+RXObject_t* RXSymbol_name_o;
+RXObject_t* RXSymbol_valueOnObjectInContext_o;
 
 void RXMessage_setup(void) {
     RXSymbol_name_o = RXSymbol_symbolForCString("name");

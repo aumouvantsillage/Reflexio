@@ -12,7 +12,7 @@ RXObject_t* RXSymbol_respondTo_o;
 
 RXObject_t* RXNativeMethod_o;
 
-static RXNativeMethod_define(RXNativeMethod, default) {
+RXNativeMethod_define(RXNativeMethod, default) {
     return self;
 }
 

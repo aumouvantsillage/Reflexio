@@ -28,7 +28,7 @@ static RXObject_t* RXFile_open(const char* fileName, const char* flags) {
 
 // Methods -------------------------------------------------------------
 
-static RXNativeMethod_define(RXFile, spawn) {
+RXNativeMethod_define(RXFile, spawn) {
     RXObject_t* result = RXFile_new(RXFile_payload(self));
     RXObject_setSlot(result, RXSymbol_delegate_o, self);
     return result;
@@ -43,7 +43,7 @@ static RXNativeMethod_define(RXFile, spawn) {
  * Returns:
  *  - a new file object, nil on failure
  */
-static RXNativeMethod_define(RXFile, openForReading) {
+RXNativeMethod_define(RXFile, openForReading) {
     RXObject_t* fileName = RXExpression_valueOfArgumentAt(0, context);
     return RXFile_open((char*)fileName, "r");
 }
@@ -57,7 +57,7 @@ static RXNativeMethod_define(RXFile, openForReading) {
  * Returns:
  *  - a new file object, nil on failure
  */
-static RXNativeMethod_define(RXFile, openForWriting) {
+RXNativeMethod_define(RXFile, openForWriting) {
     RXObject_t* fileName = RXExpression_valueOfArgumentAt(0, context);
     return RXFile_open((char*)fileName, "w");
 }
@@ -65,7 +65,7 @@ static RXNativeMethod_define(RXFile, openForWriting) {
 /*
  * Close the current file.
  */
-static RXNativeMethod_define(RXFile, close) {
+RXNativeMethod_define(RXFile, close) {
     fclose(RXFile_payload(self));
 }
 
