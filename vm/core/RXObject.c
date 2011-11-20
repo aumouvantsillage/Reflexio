@@ -137,7 +137,6 @@ RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, RXObje
     // If no method has been found and the current message is "activate"
     else if (messageName == RXSymbol_activate_o) {
         // If self is a native method, execute it directly
-        // else return the receiver
         if (RXObject_isNativeMethod(self)) {
             RXObject_t* receiver = RXNativeMethod_argumentAt(0);
             RXNativeMethod_pop(1);
@@ -145,10 +144,16 @@ RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, RXObje
             RXNativeMethod_pop(argumentCount - 1);
             return result;
         }
+        // If self is not a native, method, return it
         else {
             RXNativeMethod_pop(argumentCount);
             return self;
         }
+    }
+    // If no method has been found and the current message is not "respondTo"
+    else if (messageName != RXSymbol_respondTo_o) {
+        RXNativeMethod_push(messageName);
+        return RXObject_respondTo(self, RXSymbol_respondTo_o, context, argumentCount + 1);
     }
     // If no method has been found and the current message is not "activate",
     // return nil

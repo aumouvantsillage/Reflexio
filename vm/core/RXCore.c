@@ -8,6 +8,7 @@ RXObject_t* RXSymbol_o;
 RXObject_t* RXSymbol_activate_o;
 RXObject_t* RXSymbol_delegate_o;
 RXObject_t* RXSymbol_lookup_o;
+RXObject_t* RXSymbol_respondTo_o;
 
 RXObject_t* RXNativeMethod_o;
 
@@ -34,6 +35,7 @@ void RXCore_setup(void) {
     RXNil_o = RXObject_spawn(RXObject_o);
     RXSymbol_activate_o = RXSymbol_symbolForCString("activate");
     RXSymbol_lookup_o = RXSymbol_symbolForCString("lookup");
+    RXSymbol_respondTo_o = RXSymbol_symbolForCString("respondTo");
 
     RXNativeMethod_o = RXNativeMethod_new(RXNativeMethod_functionName(RXNativeMethod, default));
     RXObject_setSlot(RXNativeMethod_o, RXSymbol_delegate_o, RXObject_o);

@@ -7,8 +7,10 @@ static RXObject_t* RXClosure_spawn(RXObject_t* isMethod, RXObject_t* context, in
     // Fill parameter list
     RXObject_t* parameterList = RXList_spawn(RXList_o);
     for (int i = 0; i < argumentCount - 1; i ++) {
-        RXObject_t* message = RXNativeMethod_argumentAt(i);
-        RXList_append(parameterList, RXObject_valueOfSlot(message, RXSymbol_name_o));
+        RXObject_t* expression = RXNativeMethod_argumentAt(i);
+        RXObject_t* message = RXList_at(expression, 0);
+        RXObject_t* name = RXObject_valueOfSlot(message, RXSymbol_name_o);
+        RXList_append(parameterList, name);
     }
     
     RXObject_t* body = RXNativeMethod_argumentAt(argumentCount - 1);

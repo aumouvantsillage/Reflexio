@@ -123,6 +123,12 @@ static RXNativeMethod_define(RXObject, println) {
     return self;
 }
 
+RXNativeMethod_define(RXObject, respondTo) {
+    RXObject_t* messageName = RXExpression_valueOfArgumentAt(0, context);
+    fprintf(stderr, "No method found for message \"%s\"\n", messageName);
+    exit(EXIT_FAILURE);
+}
+
 // Public --------------------------------------------------------------
 
 RXObject_t* RXLobby_o;
@@ -159,6 +165,7 @@ void RXObject_libSetup(void) {
     RXNativeMethod_attach(RXObject, asSource);
     RXNativeMethod_attach(RXObject, print);
     RXNativeMethod_attach(RXObject, println);
+    RXNativeMethod_attach(RXObject, respondTo);
 
     RXObject_setSlot(RXNil_o, RXSymbol_asString_o, RXSymbol_nil_o);
     

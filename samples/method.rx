@@ -9,10 +9,12 @@ albert println
 
 hello = "Salut "
 
-person println = method(
+person println = method(before, after,
+    before print
     hello print
-    self name println
+    self name print
+    after println
 )
 
-// Will print "Salut Albert"
-albert println
+// Will print "<Salut Albert>"
+albert println("<", ">")
