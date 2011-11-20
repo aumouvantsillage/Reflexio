@@ -52,6 +52,12 @@ static RXNativeMethod_define(RXList, asString) {
     return RXSymbol_symbolForCString(result);
 }
 
+RXNativeMethod_define(RXList, asBoolean) {
+    return RXList_payload(self) != NULL
+        ? RXBoolean_true_o
+        : RXBoolean_false_o;
+}
+
 static RXNativeMethod_define(RXList, print) {
     fputs("list(", stdout);
     Eina_List* iter;
@@ -208,6 +214,7 @@ void RXList_setup(void) {
     RXNativeMethod_attach(RXList, spawn);
     RXNativeMethod_attach(RXList, with);
     RXNativeMethod_attach(RXList, asString);
+    RXNativeMethod_attach(RXList, asBoolean);
     RXNativeMethod_attach(RXList, print);
     RXNativeMethod_attach(RXList, append);
     RXNativeMethod_attach(RXList, concat);

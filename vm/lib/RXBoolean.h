@@ -12,6 +12,7 @@ extern RXObject_t* RXSymbol_true_o;
 extern RXObject_t* RXSymbol_false_o;
 extern RXObject_t* RXSymbol_and_o;
 extern RXObject_t* RXSymbol_or_o;
+extern RXObject_t* RXSymbol_asBoolean_o;
 
 void RXBoolean_setup(void);
 

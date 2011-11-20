@@ -5,10 +5,12 @@
 
 RXObject_defineType(RXInteger_t, int);
 
+#define RXInteger_payload(self) ((RXInteger_t*)self)->payload
+
 static RXObject_t* RXInteger_new(int value) {
     RXObject_t* self = RXObject_allocateType(RXInteger_t);
     RXObject_initialize(self);
-    ((RXInteger_t*)self)->payload = value;
+    RXInteger_payload(self) = value;
     return self;
 }
 
@@ -31,6 +33,12 @@ static RXNativeMethod_define(RXInteger, print) {
     return self;
 }
 
+RXNativeMethod_define(RXInteger, asBoolean) {
+    return RXInteger_payload(self)
+        ? RXBoolean_true_o
+        : RXBoolean_false_o;
+}
+
 // Public --------------------------------------------------------------
 
 RXObject_t* RXInteger_o;
@@ -51,6 +59,7 @@ void RXInteger_setup(void) {
     RXNativeMethod_attach(RXInteger, spawn);
     RXNativeMethod_attach(RXInteger, asString);
     RXNativeMethod_attach(RXInteger, print);
+    RXNativeMethod_attach(RXInteger, asBoolean);
 
     RXObject_setSlot(RXLobby_o, RXSymbol_Integer_o, RXInteger_o);
 }
