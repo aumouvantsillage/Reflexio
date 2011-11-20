@@ -108,7 +108,7 @@ RXNativeMethod_define(RXClosure, activate) {
     
     // Evaluate the closure body in the context of the locals object.
     RXNativeMethod_push(localContext);
-    return RXObject_respondTo(RXObject_valueOfSlot(self, RXSymbol_body_o), RXSymbol_valueInContext_o, RXNil_o, 1);
+    return RXObject_respondTo(RXObject_valueOfSlot(self, RXSymbol_body_o), RXSymbol_valueInContext_o, RXLobby_o, 1);
 }
 
 // Public --------------------------------------------------------------
@@ -138,8 +138,8 @@ void RXClosure_setup(void) {
     
     RXClosure_o = RXObject_spawn(RXObject_o);
     RXObject_setSlot(RXClosure_o, RXSymbol_parameters_o, RXList_spawn(RXList_o));
-    RXObject_setSlot(RXClosure_o, RXSymbol_context_o, RXList_spawn(RXNil_o));
-    RXObject_setSlot(RXClosure_o, RXSymbol_body_o, RXList_spawn(RXList_o));
+    RXObject_setSlot(RXClosure_o, RXSymbol_context_o, RXNil_o);
+    RXObject_setSlot(RXClosure_o, RXSymbol_body_o, RXList_spawn(RXExpression_o));
     RXObject_setSlot(RXClosure_o, RXSymbol_isMethod_o, RXBoolean_false_o);
     
     RXNativeMethod_attach(RXClosure, activate);

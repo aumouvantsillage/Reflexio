@@ -1,0 +1,46 @@
+
+Class = Object spawn
+Instance = Object spawn
+
+Class newInstance = method(
+    result = Instance spawn
+    result type = self
+    result
+)
+
+Class newSubclass = method(
+    result = Class spawn
+    result superclass = self
+    result
+)
+
+Class lookup = method(messageName,
+    "Looking up " print
+    messageName print
+    " in class" println
+    self superclass valueOfSlot(messageName)
+)
+
+Instance lookup = method(messageName,
+    "Looking up " print
+    messageName print
+    " in instance" println
+    self type valueOfSlot(messageName)
+)
+
+Animal = Class spawn
+
+/*
+Animal isLiving = true
+
+Mammal = Animal newSubclass
+Mammal canLactate = true
+
+Dog = Mammal newSubclass
+Dog canBark = true
+
+fido = Dog newInstance
+fido canBark println
+fido canLactate println
+fido isLiving println
+*/

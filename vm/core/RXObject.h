@@ -76,7 +76,7 @@ void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value)
 /*
  * Return the value of a slot in the given object.
  */
-RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXObject_t* slotName);
+RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName);
 
 /*
  * Delete a slot with the given name from the given object.

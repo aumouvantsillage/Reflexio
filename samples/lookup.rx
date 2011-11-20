@@ -1,0 +1,22 @@
+
+Animal = Object spawn
+Animal name = "Animal"
+
+// Default inheritance using slot "delegate"
+Dog = Animal spawn
+fido = Dog spawn
+fido name println
+
+// Custom inheritance using slot "parent"
+MyObject = Object spawn
+MyObject lookup = method(messageName,
+    self parent valueOfSlot(messageName)
+)
+
+Dog = MyObject spawn
+Dog parent = Animal
+
+fido = MyObject spawn
+fido parent = Dog
+
+fido name println

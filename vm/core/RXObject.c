@@ -46,50 +46,6 @@ static inline RXObjectNode_t* RXObject_node(const RXObject_t* self, const RXObje
     return (RXObjectNode_t*)eina_rbtree_inline_lookup(RXObject_coreData(self).slots, slotName, 0, EINA_RBTREE_CMP_KEY_CB(RXObject_compareKeys), NULL);
 }
 
-/*
- * Default slot lookup method.
- *
- * If the receiver has a slot with the given name, return the value of that slot.
- * If a lookup method exists in the receiver, send an "activate" message to that method and return the result.
- * If the receiver has a "delegate" slot, recursively look up in the delegate.
- */
-static RXObject_t* RXObject_lookup(RXObject_t* self, RXObject_t* slotName) {
-    // TODO lookup cache entry
-    
-    // Prevent infinite recursion in cyclic delegate chains
-    if (RXObject_isLookingUp(self)) {
-        return RXNil_o;
-    }
-    
-    // If the receiver has a slot with the given name, return the value of that slot.
-    RXObjectNode_t* node = RXObject_node(self, slotName);
-    if (node != NULL) {
-        return node->value;
-    }
-    
-    // If a lookup method exists in the receiver, send an "activate" message to that method and return the result.
-    node = RXObject_node(self, RXSymbol_lookup_o);
-    if (node != NULL) {
-        // lookupMethod activate(self, slotName)
-        RXNativeMethod_push(slotName);
-        RXNativeMethod_push(self);
-        RXObject_t* result = RXObject_respondTo(node->value, RXSymbol_activate_o, RXNil_o, 2);
-        return result;
-    }
-
-    // If a delegate slot exists in the receiver, recursively look up in the corresponding object
-    node = RXObject_node(self, RXSymbol_delegate_o);
-    if (node != NULL) {
-        RXObject_setIsLookingUp(self);
-        RXObject_t* result =  RXObject_lookup(node->value, slotName);
-        RXObject_clearIsLookingUp(self);
-        return result;
-    }
-        
-    return RXNil_o;
-}
-
-
 // Public --------------------------------------------------------------
 
 void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value) {
@@ -105,11 +61,52 @@ void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value)
     node->value = value;
 }
 
-RXObject_t* RXObject_valueOfSlot(const RXObject_t* self, const RXObject_t* slotName) {
+/*
+ * Default slot lookup method.
+ *
+ * If the receiver has a slot with the given name, return the value of that slot.
+ * If a lookup method exists in the receiver, send an "activate" message to that method and return the result.
+ * If the receiver has a "delegate" slot, recursively look up in the delegate.
+ */
+RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
+    // TODO lookup cache entry
+    
+    // Prevent infinite recursion in cyclic delegate chains
+    // NULL indicates failure
+    if (RXObject_isLookingUp(self)) {
+        return RXNil_o;
+    }
+    
+    RXObject_setIsLookingUp(self);
+    RXObject_t* result = RXNil_o;
+        
+    // Look up in the own slots of the current object
     RXObjectNode_t* node = RXObject_node(self, slotName);
-    return (node == NULL)
-        ? RXNil_o
-        : node->value;
+    if (node != NULL) {
+        result = node->value;
+    }
+
+    if (result == RXNil_o) {
+        // If a delegate slot exists in the receiver, recursively look up in the corresponding object
+        node = RXObject_node(self, RXSymbol_delegate_o);
+        if (node != NULL) {
+            result =  RXObject_valueOfSlot(node->value, slotName);
+        }
+    }
+    
+    if (result == RXNil_o) {
+        // If a lookup method exists in the receiver, send an "activate" message to that method
+        node = RXObject_node(self, RXSymbol_lookup_o);
+        if (node != NULL) {
+            // lookupMethod activate(self, slotName)
+            RXNativeMethod_push(slotName);
+            RXNativeMethod_push(self);
+            result = RXObject_respondTo(node->value, RXSymbol_activate_o, RXObject_o, 2);
+        }
+    }
+
+    RXObject_clearIsLookingUp(self);
+    return result;
 }
 
 RXObject_t* RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName) {
@@ -126,7 +123,7 @@ RXObject_t* RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName) {
 
 RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, RXObject_t* context, int argumentCount) {
     // Lookup message name starting from the receiver
-    RXObject_t* method = RXObject_lookup(self, messageName);
+    RXObject_t* method = RXObject_valueOfSlot(self, messageName);
 
     // If a method has been found, run it by sending an "activate" message
     if (method != RXNil_o) {

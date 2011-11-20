@@ -14,7 +14,7 @@ void RXExpression_setup();
 inline static RXObject_t* RXExpression_valueOfArgumentAt(int index, RXObject_t* context) {
     RXObject_t* receiver = RXNativeMethod_argumentAt(index);
     RXNativeMethod_push(context);
-    return RXObject_respondTo(receiver, RXSymbol_valueInContext_o, RXNil_o, 1);
+    return RXObject_respondTo(receiver, RXSymbol_valueInContext_o, RXLobby_o, 1);
 }
 
 #endif

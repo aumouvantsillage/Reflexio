@@ -36,7 +36,7 @@ RXNativeMethod_define(RXList, asString) {
     Eina_List* iter;
     RXObject_t* msg;
     EINA_LIST_FOREACH(*(Eina_List**)self, iter, msg) {
-        RXObject_t* src = RXObject_respondTo(msg, RXSymbol_asSource_o, RXNil_o, 0);
+        RXObject_t* src = RXObject_respondTo(msg, RXSymbol_asSource_o, RXLobby_o, 0);
         len += strlen((char*)src) + 2;
         msgSrc[index++] = src;
     }
@@ -70,7 +70,7 @@ RXNativeMethod_define(RXList, print) {
         else {
             sep = true;
         }
-        RXObject_respondTo(data, RXSymbol_print_o, RXNil_o, 0);
+        RXObject_respondTo(data, RXSymbol_print_o, RXLobby_o, 0);
     }
     fputs(")", stdout);
 }
