@@ -5,6 +5,7 @@ set(VM_SRC
     core/RXObject.c
     core/RXSymbol.c
     core/RXNativeMethod.c
+    core/RXCache.c
     lib/RXObject.c
     lib/RXSymbol.c
     lib/RXBoolean.c
@@ -24,7 +25,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/parser)
 add_custom_command(
     OUTPUT parser/RXParser.c
     DEPENDS parser/RXParser.y
-    COMMAND bison --defines=${CMAKE_CURRENT_BINARY_DIR}/parser/RXTokens.h -o ${CMAKE_CURRENT_BINARY_DIR}/parser/RXParser.c ${CMAKE_CURRENT_SOURCE_DIR}/parser/RXParser.y
+    COMMAND bison --report=state --defines=${CMAKE_CURRENT_BINARY_DIR}/parser/RXTokens.h -o ${CMAKE_CURRENT_BINARY_DIR}/parser/RXParser.c ${CMAKE_CURRENT_SOURCE_DIR}/parser/RXParser.y
 )
 
 add_custom_command(

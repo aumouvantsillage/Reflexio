@@ -1,5 +1,6 @@
 
 #include "RXCore.h"
+#include "RXCache.h"
 
 RXObject_t* RXNil_o;
 RXObject_t* RXObject_o;
@@ -17,6 +18,7 @@ RXNativeMethod_define(RXNativeMethod, default) {
 }
 
 void RXCore_setup(void) {
+    RXCache_setup();
     RXSymbol_setup();
     RXNativeMethod_setup();
 
@@ -44,4 +46,5 @@ void RXCore_setup(void) {
 void RXCore_clean(void) {
     RXNativeMethod_clean();
     RXSymbol_clean();
+    RXCache_clean();
 }

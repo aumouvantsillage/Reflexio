@@ -102,8 +102,8 @@ RXNativeMethod_define(RXObject, asSource) {
  */
 RXNativeMethod_define(RXObject, print) {
     // self asString print
-    RXObject_t* selfAsString = RXObject_respondTo(self, RXSymbol_asString_o, RXLobby_o, 0);
-    RXObject_respondTo(selfAsString, RXSymbol_print_o, RXLobby_o, 0);
+    RXObject_t* selfAsString = RXObject_respondTo(self, RXSymbol_asString_o, RXNil_o, 0);
+    RXObject_respondTo(selfAsString, RXSymbol_print_o, RXNil_o, 0);
     return self;
 }
 
@@ -118,8 +118,8 @@ RXNativeMethod_define(RXObject, print) {
  */
 RXNativeMethod_define(RXObject, println) {
     // self asString print
-    RXObject_t* selfAsString = RXObject_respondTo(self, RXSymbol_asString_o, RXLobby_o, 0);
-    RXObject_respondTo(selfAsString, RXSymbol_println_o, RXLobby_o, 0);
+    RXObject_t* selfAsString = RXObject_respondTo(self, RXSymbol_asString_o, RXNil_o, 0);
+    RXObject_respondTo(selfAsString, RXSymbol_println_o, RXNil_o, 0);
     return self;
 }
 

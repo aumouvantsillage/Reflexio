@@ -55,7 +55,7 @@ RXNativeMethod_define(RXExpression, valueInContext) {
     EINA_LIST_FOREACH(*(Eina_List**)self, iter, msg) {
         RXNativeMethod_push(evalContext);
         RXNativeMethod_push(receiver);
-        receiver = RXObject_respondTo(msg, RXSymbol_valueOnObjectInContext_o, RXLobby_o, 2);
+        receiver = RXObject_respondTo(msg, RXSymbol_valueOnObjectInContext_o, RXNil_o, 2);
     }
     
     // FIXME return nil if expression is empty?
@@ -70,7 +70,7 @@ RXNativeMethod_define(RXExpression, asString) {
     Eina_List* iter;
     RXObject_t* msg;
     EINA_LIST_FOREACH(*(Eina_List**)self, iter, msg) {
-        RXObject_t* src = RXObject_respondTo(msg, RXSymbol_asSource_o, RXLobby_o, 0);
+        RXObject_t* src = RXObject_respondTo(msg, RXSymbol_asSource_o, RXNil_o, 0);
         len += strlen((char*)src) + 1;
         msgSrc[index++] = src;
     }

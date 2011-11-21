@@ -1,5 +1,6 @@
 
 #include "RXCore.h"
+#include "RXCache.h"
 #include <inttypes.h>
 
 // Private -------------------------------------------------------------
@@ -14,6 +15,18 @@ inline static void RXObject_setIsLookingUp(RXObject_t* self) {
 
 inline static void RXObject_clearIsLookingUp(RXObject_t* self) {
     RXObject_coreData(self).flags &= ~RXObject_flagIsLookingUp;
+}
+
+inline static bool RXObject_isSearchingDelegates(const RXObject_t* self) {
+    return (RXObject_coreData(self).flags & RXObject_flagIsSearchingDelegates) != 0;
+}
+
+inline static void RXObject_setIsSearchingDelegates(RXObject_t* self) { 
+    RXObject_coreData(self).flags |= RXObject_flagIsSearchingDelegates;
+}
+
+inline static void RXObject_clearIsSearchingDelegates(RXObject_t* self) {
+    RXObject_coreData(self).flags &= ~RXObject_flagIsSearchingDelegates;
 }
 
 /*
@@ -55,9 +68,7 @@ void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value)
         RXObject_coreData(self).slots = eina_rbtree_inline_insert(RXObject_coreData(self).slots, (Eina_Rbtree*)node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), slotName);
         node->key = slotName;
     }
-    else {
-        // TODO remove cache entry for old value
-    }
+    RXCache_removeSlotName(slotName);
     node->value = value;
 }
 
@@ -77,43 +88,54 @@ void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate) {
  * If the receiver has a "delegate" slot, recursively look up in the delegate.
  */
 RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
-    // TODO lookup cache entry
-    
-    // Prevent infinite recursion in cyclic delegate chains
-    // NULL indicates failure
-    if (RXObject_isLookingUp(self)) {
-        return RXNil_o;
-    }
-    
-    RXObject_setIsLookingUp(self);
     RXObject_t* result = RXNil_o;
-        
-    // Look up in the own slots of the current object
-    RXObjectNode_t* node = RXObject_node(self, slotName);
-    if (node != NULL) {
-        result = node->value;
-    }
 
-    if (result == RXNil_o) {
+    // Looking in the current object is disabled when searching the delegate chain.
+    // It is allowed when using a custom lookup method, so that the body of the lookup method
+    // can access slots of the current object. 
+    if (!RXObject_isSearchingDelegates(self)) {
+        // Look up in the own slots of the current object
+        RXObjectNode_t* node = RXObject_node(self, slotName);
+        if (node != NULL) {
+            return node->value;
+        }
+
+        // If not found, look up in the cache
+        if (result == RXNil_o) {
+            result = RXCache_valueForEntry(self, slotName);
+            if (result != RXNil_o) {
+                return result;
+            }
+        }
+    }
+    
+    if (result == RXNil_o && slotName != RXSymbol_lookup_o && !RXObject_isLookingUp(self)) {
         // If a lookup method exists in the receiver, send an "activate" message to that method
-        node = RXObject_node(self, RXSymbol_lookup_o);
+        RXObjectNode_t* node = RXObject_node(self, RXSymbol_lookup_o);
         if (node != NULL) {
             // lookupMethod activate(self, slotName)
             RXNativeMethod_push(slotName);
             RXNativeMethod_push(self);
-            result = RXObject_respondTo(node->value, RXSymbol_activate_o, RXObject_o, 2);
+            RXObject_setIsLookingUp(self);
+            result = RXObject_respondTo(node->value, RXSymbol_activate_o, RXNil_o, 2);
+            RXObject_clearIsLookingUp(self);
         }
     }
 
-    if (result == RXNil_o) {
+    if (result == RXNil_o && slotName != RXSymbol_delegate_o && !RXObject_isSearchingDelegates(self)) {
         // If a delegate slot exists in the receiver, recursively look up in the corresponding object
-        node = RXObject_node(self, RXSymbol_delegate_o);
+        RXObjectNode_t* node = RXObject_node(self, RXSymbol_delegate_o);
         if (node != NULL) {
+            RXObject_setIsSearchingDelegates(self);
             result =  RXObject_valueOfSlot(node->value, slotName);
+            RXObject_clearIsSearchingDelegates(self);
         }
     }
+
+    if (result != RXNil_o) {
+        RXCache_addEntry(self, slotName, result);
+    }
     
-    RXObject_clearIsLookingUp(self);
     return result;
 }
 
@@ -123,7 +145,7 @@ RXObject_t* RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName) {
         RXObject_t* value = node->value;
         RXObject_coreData(self).slots = eina_rbtree_inline_remove(RXObject_coreData(self).slots, (Eina_Rbtree*)node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), NULL);
         free(node);
-        // TODO remove cache entry for old value
+        RXCache_removeSlotName(slotName);
         return value;
     }
     return RXNil_o;

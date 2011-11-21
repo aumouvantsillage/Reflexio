@@ -2,6 +2,9 @@
 Class = Object spawn
 Instance = Object spawn
 
+Class superclass = Object
+Instance type = Object
+
 Class newInstance = method(
     result = Instance spawn
     result type = self
@@ -15,22 +18,25 @@ Class newSubclass = method(
 )
 
 Class lookup = method(messageName,
-    "Looking up " print
+/*    "Looking up " print
     messageName print
-    " in class" println
+    " in class" println*/
     self superclass valueOfSlot(messageName)
 )
 
 Instance lookup = method(messageName,
-    "Looking up " print
-    messageName print
-    " in instance" println
+
+/*    "Looking up " print
+//    messageName print
+//    " in instance" println*/
+
+    
     self type valueOfSlot(messageName)
 )
 
-Animal = Class spawn
+Instance valueOfSlot("lookup") body println
 
-/*
+Animal = Class spawn
 Animal isLiving = true
 
 Mammal = Animal newSubclass
@@ -43,4 +49,6 @@ fido = Dog newInstance
 fido canBark println
 fido canLactate println
 fido isLiving println
-*/
+
+// Without cache: 1180 calls to "lookup"
+// With cache: 851 calls to "lookup"

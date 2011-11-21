@@ -35,7 +35,7 @@ RXNativeMethod_define(RXMessage, asSource) {
     Eina_List* iter;
     RXObject_t* msg;
     EINA_LIST_FOREACH(*(Eina_List**)self, iter, msg) {
-        RXObject_t* src = RXObject_respondTo(msg, RXSymbol_asSource_o, RXLobby_o, 0);
+        RXObject_t* src = RXObject_respondTo(msg, RXSymbol_asSource_o, RXNil_o, 0);
         len += strlen((char*)src);
         if (index) {
             len += 2; // arg preceded by comma and space
