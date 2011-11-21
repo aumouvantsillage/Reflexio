@@ -61,6 +61,14 @@ void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value)
     node->value = value;
 }
 
+void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate) {
+    RXObject_setSlot(self, RXSymbol_delegate_o, delegate);
+    RXObjectNode_t* node = RXObject_node(delegate, RXSymbol_lookup_o);
+    if (node != NULL) {
+        RXObject_setSlot(self, RXSymbol_lookup_o, node->value);
+    }
+}
+
 /*
  * Default slot lookup method.
  *
@@ -87,14 +95,6 @@ RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
     }
 
     if (result == RXNil_o) {
-        // If a delegate slot exists in the receiver, recursively look up in the corresponding object
-        node = RXObject_node(self, RXSymbol_delegate_o);
-        if (node != NULL) {
-            result =  RXObject_valueOfSlot(node->value, slotName);
-        }
-    }
-    
-    if (result == RXNil_o) {
         // If a lookup method exists in the receiver, send an "activate" message to that method
         node = RXObject_node(self, RXSymbol_lookup_o);
         if (node != NULL) {
@@ -105,6 +105,14 @@ RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
         }
     }
 
+    if (result == RXNil_o) {
+        // If a delegate slot exists in the receiver, recursively look up in the corresponding object
+        node = RXObject_node(self, RXSymbol_delegate_o);
+        if (node != NULL) {
+            result =  RXObject_valueOfSlot(node->value, slotName);
+        }
+    }
+    
     RXObject_clearIsLookingUp(self);
     return result;
 }

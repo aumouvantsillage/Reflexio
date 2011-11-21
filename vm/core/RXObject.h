@@ -74,6 +74,12 @@ typedef struct {
 void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value);
 
 /*
+ * Assign a delegate object to self.
+ * If the delegate has a lookup method, it is copied into self.
+ */
+void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate);
+
+/*
  * Return the value of a slot in the given object.
  */
 RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName);

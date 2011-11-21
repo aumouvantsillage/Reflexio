@@ -10,7 +10,7 @@ extern RXObject_t* RXSymbol_List_o;
 void RXList_setup(void);
 void RXList_clean(void);
 
-RXObject_t* RXList_spawn(RXObject_t* self);
+RXObject_t* RXList_spawn(RXObject_t* self, Eina_List* list);
 
 // TODO inline
 int RXList_count(const RXObject_t* self);

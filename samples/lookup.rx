@@ -8,15 +8,15 @@ fido = Dog spawn
 fido name println
 
 // Custom inheritance using slot "parent"
-MyObject = Object spawn
-MyObject lookup = method(messageName,
+Entity = Object spawn
+Entity lookup = method(messageName,
     self parent valueOfSlot(messageName)
 )
 
-Dog = MyObject spawn
+Dog = Entity spawn
 Dog parent = Animal
 
-fido = MyObject spawn
+fido = Entity spawn
 fido parent = Dog
 
 fido name println

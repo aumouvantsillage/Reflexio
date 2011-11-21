@@ -7,21 +7,14 @@ RXObject_defineType(RXList_t, Eina_List*);
 
 #define RXList_payload(self) ((RXList_t*)self)->payload
 
-inline static RXObject_t* RXList_new(void) {
-    RXObject_t* self = RXObject_allocateType(RXList_t);
-    RXObject_initialize(self);
-    RXList_payload(self) = NULL;
-    return self;
-}
-
 // Methods -------------------------------------------------------------
 
 RXNativeMethod_define(RXList, spawn) {
-    return RXList_spawn(self);
+    return RXList_spawn(self, RXList_payload(self));
 }
 
 RXNativeMethod_define(RXList, with) {
-    RXObject_t* result = RXList_spawn(self);
+    RXObject_t* result = RXList_spawn(self, RXList_payload(self));
     for (int i = 0; i < argumentCount; i ++) {
         RXList_append(result, RXExpression_valueOfArgumentAt(i, context));
     }
@@ -188,10 +181,11 @@ RXNativeMethod_define(RXList, exists) {
 RXObject_t* RXList_o;
 RXObject_t* RXSymbol_List_o;
 
-RXObject_t* RXList_spawn(RXObject_t* self) {
-    RXObject_t* result = RXList_new();
-    RXObject_setSlot(result, RXSymbol_delegate_o, self);
-    RXList_payload(result) = eina_list_clone(RXList_payload(self));
+RXObject_t* RXList_spawn(RXObject_t* self, Eina_List* list) {
+    RXObject_t* result = RXObject_allocateType(RXList_t);
+    RXObject_initialize(result);
+    RXObject_setDelegate(result, self);
+    RXList_payload(result) = eina_list_clone(list);
     return result;
 }
 
@@ -208,8 +202,7 @@ RXObject_t* RXList_at(RXObject_t* self, int index) {
 }
 
 void RXList_setup(void) {
-    RXList_o = RXList_new();
-    RXObject_setSlot(RXList_o, RXSymbol_delegate_o, RXObject_o);
+    RXList_o = RXList_spawn(RXObject_o, NULL);
     
     RXNativeMethod_attach(RXList, spawn);
     RXNativeMethod_attach(RXList, with);

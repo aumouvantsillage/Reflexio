@@ -24,30 +24,30 @@ void main(void) {
     RXObject_respondTo(albert, RXSymbol_println_o, RXLobby_o, 0);
     
     // Lobby person println = Lobby method(hello print; self name println)
-    RXObject_t* printlnBody = RXList_spawn(RXExpression_o);
+    RXObject_t* printlnBody = RXList_spawn(RXExpression_o, NULL);
     RXObject_t* msg;
     
-    msg = RXList_spawn(RXMessage_o);
+    msg = RXList_spawn(RXMessage_o, NULL);
     RXObject_setSlot(msg, RXSymbol_name_o, RXSymbol_symbolForCString("hello"));
     RXList_append(printlnBody, msg);
     
-    msg = RXList_spawn(RXMessage_o);
+    msg = RXList_spawn(RXMessage_o, NULL);
     RXObject_setSlot(msg, RXSymbol_name_o, RXSymbol_print_o);
     RXList_append(printlnBody, msg);
 
-    msg = RXList_spawn(RXMessage_o);
+    msg = RXList_spawn(RXMessage_o, NULL);
     RXObject_setSlot(msg, RXSymbol_name_o, RXSymbol_semicolon_o);
     RXList_append(printlnBody, msg);
 
-    msg = RXList_spawn(RXMessage_o);
+    msg = RXList_spawn(RXMessage_o, NULL);
     RXObject_setSlot(msg, RXSymbol_name_o, RXSymbol_self_o);
     RXList_append(printlnBody, msg);
 
-    msg = RXList_spawn(RXMessage_o);
+    msg = RXList_spawn(RXMessage_o, NULL);
     RXObject_setSlot(msg, RXSymbol_name_o, RXSymbol_name_o);
     RXList_append(printlnBody, msg);
 
-    msg = RXList_spawn(RXMessage_o);
+    msg = RXList_spawn(RXMessage_o, NULL);
     RXObject_setSlot(msg, RXSymbol_name_o, RXSymbol_println_o);
     RXList_append(printlnBody, msg);
         

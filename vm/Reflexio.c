@@ -19,7 +19,7 @@ void Reflexio_setup(int argc, char* argv[]) {
     RXFile_setup();
     
     // Copy argument list into the Lobby objet
-    RXObject_t* argumentList = RXList_spawn(RXList_o);
+    RXObject_t* argumentList = RXList_spawn(RXList_o, NULL);
     for (int i = 1; i < argc; i ++) {
         RXList_append(argumentList, RXSymbol_symbolForCString(argv[i]));
     }

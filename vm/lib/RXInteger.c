@@ -7,13 +7,6 @@ RXObject_defineType(RXInteger_t, int);
 
 #define RXInteger_payload(self) ((RXInteger_t*)self)->payload
 
-static RXObject_t* RXInteger_new(int value) {
-    RXObject_t* self = RXObject_allocateType(RXInteger_t);
-    RXObject_initialize(self);
-    RXInteger_payload(self) = value;
-    return self;
-}
-
 // Methods -------------------------------------------------------------
 
 RXNativeMethod_define(RXInteger, spawn) {
@@ -45,16 +38,17 @@ RXObject_t* RXInteger_o;
 RXObject_t* RXSymbol_Integer_o;
 
 RXObject_t* RXInteger_spawn(RXObject_t* self, int value) {
-    RXObject_t* result = RXInteger_new(value);
-    RXObject_setSlot(result, RXSymbol_delegate_o, self);    
+    RXObject_t* result = RXObject_allocateType(RXInteger_t);
+    RXObject_initialize(result);
+    RXObject_setDelegate(result, self);
+    RXInteger_payload(result) = value;
     return result;
 }
 
 void RXInteger_setup(void) {
     RXSymbol_Integer_o = RXSymbol_symbolForCString("Integer");
     
-    RXInteger_o = RXInteger_new(0);
-    RXObject_setSlot(RXInteger_o, RXSymbol_delegate_o, RXNumber_o);
+    RXInteger_o = RXInteger_spawn(RXNumber_o, 0);
     
     RXNativeMethod_attach(RXInteger, spawn);
     RXNativeMethod_attach(RXInteger, asString);

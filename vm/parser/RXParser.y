@@ -45,7 +45,7 @@ void RXParser_appendArgument(RXObject_t* expression) {
 }
 
 RXObject_t* RXParser_messageWithName(RXObject_t* name) {
-    RXObject_t* result = RXList_spawn(RXMessage_o);
+    RXObject_t* result = RXList_spawn(RXMessage_o, NULL);
     RXObject_setSlot(result, RXSymbol_name_o, name);
     return result;
 }
@@ -119,7 +119,7 @@ boolean_expression:
    comparison_expression
    | boolean_expression boolean_operator {
          RXParser_push($2);
-         RXParser_push(RXList_spawn(RXExpression_o));
+         RXParser_push(RXList_spawn(RXExpression_o, NULL));
       } comparison_expression {
          RXParser_appendArgument(RXParser_pop());
          RXParser_appendMessage(RXParser_pop());
@@ -135,7 +135,7 @@ comparison_expression:
    additive_expression
    | comparison_expression comparison_operator {
          RXParser_push($2);
-         RXParser_push(RXList_spawn(RXExpression_o));
+         RXParser_push(RXList_spawn(RXExpression_o, NULL));
       } additive_expression {
          RXParser_appendArgument(RXParser_pop());
          RXParser_appendMessage(RXParser_pop());
@@ -155,7 +155,7 @@ additive_expression:
    multiplicative_expression
    | additive_expression additive_operator {
          RXParser_push($2);
-         RXParser_push(RXList_spawn(RXExpression_o));
+         RXParser_push(RXList_spawn(RXExpression_o, NULL));
       } multiplicative_expression {
          RXParser_appendArgument(RXParser_pop());
          RXParser_appendMessage(RXParser_pop());
@@ -171,7 +171,7 @@ multiplicative_expression:
    unary_expression
    | multiplicative_expression multiplicative_operator {
          RXParser_push($2);
-         RXParser_push(RXList_spawn(RXExpression_o));
+         RXParser_push(RXList_spawn(RXExpression_o, NULL));
       } unary_expression {
          RXParser_appendArgument(RXParser_pop());
          RXParser_appendMessage(RXParser_pop());
@@ -207,7 +207,7 @@ first_receiver:
    | REAL { RXParser_appendMessage(RXReal_fromCReal($1)); }
 */
    | LPAR {
-         RXParser_push(RXList_spawn(RXExpression_o));
+         RXParser_push(RXList_spawn(RXExpression_o, NULL));
       } non_empty_expression RPAR {
          RXParser_appendMessage(RXParser_pop());
       }
@@ -223,16 +223,16 @@ method_call_or_assignment:
    | IDENTIFIER LPAR RPAR { RXParser_appendMessage(RXParser_messageWithName(RXSymbol_symbolForCString($1))); }
    | IDENTIFIER LPAR {
          RXParser_push(RXParser_messageWithName(RXSymbol_symbolForCString($1)));
-         RXParser_push(RXList_spawn(RXExpression_o));
+         RXParser_push(RXList_spawn(RXExpression_o, NULL));
       } argument_list RPAR {
          RXParser_appendMessage(RXParser_pop());
       }
    | IDENTIFIER ASSIGN {
          RXParser_push(RXParser_messageWithName(RXSymbol_setSlot_o));
-         RXParser_push(RXList_spawn(RXExpression_o));
+         RXParser_push(RXList_spawn(RXExpression_o, NULL));
          RXParser_appendMessage(RXSymbol_symbolForCString($1));
          RXParser_appendArgument(RXParser_pop());
-         RXParser_push(RXList_spawn(RXExpression_o));
+         RXParser_push(RXList_spawn(RXExpression_o, NULL));
       }
       comparison_expression {
          RXParser_appendArgument(RXParser_pop());
@@ -243,7 +243,7 @@ method_call_or_assignment:
 argument_list:
    argument
    | argument_list COMMA {
-         RXParser_push(RXList_spawn(RXExpression_o));
+         RXParser_push(RXList_spawn(RXExpression_o, NULL));
       } argument
    ;
 
@@ -274,7 +274,7 @@ void yy_scan_string(const char* str);
 
 RXObject_t* RXParser_parse() {
    RXParser_init();
-   RXParser_push(RXList_spawn(RXExpression_o));
+   RXParser_push(RXList_spawn(RXExpression_o, NULL));
    yyparse();
    RXObject_t* result = RXParser_pop();
    RXParser_destroy();

@@ -34,7 +34,7 @@ inline static void RXCore_deallocateObject(RXObject_t* self) {
 
 /*
  * Initialize a newly allocated object.
- * A new object has an empty slot list, is detached and is not a root object.
+ * A new object has an empty slot list.
  */
 inline static void RXObject_initialize(RXObject_t* self) {
     RXObject_coreData(self).slots = NULL;
@@ -58,7 +58,7 @@ inline static RXObject_t* RXObject_new(void) {
  */
 inline static RXObject_t* RXObject_spawn(RXObject_t* self) {
     RXObject_t* result = RXObject_new();
-    RXObject_setSlot(result, RXSymbol_delegate_o, self);
+    RXObject_setDelegate(result, self);
     return result;
 }
 

@@ -128,7 +128,7 @@ void RXExpression_setup(void) {
     RXSymbol_fromFile_o = RXSymbol_symbolForCString("fromFile");
     RXSymbol_fromString_o = RXSymbol_symbolForCString("fromString");
 
-    RXExpression_o = RXList_spawn(RXList_o);
+    RXExpression_o = RXList_spawn(RXList_o, NULL);
     
     RXNativeMethod_attach(RXObject, valueInContext);
     RXNativeMethod_attach(RXExpression, valueInContext);

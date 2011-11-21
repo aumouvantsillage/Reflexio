@@ -7,9 +7,10 @@ RXObject_defineType(RXFile_t, FILE*);
 
 #define RXFile_payload(self) ((RXFile_t*)self)->payload
 
-static RXObject_t* RXFile_new(FILE* f) {
+static RXObject_t* RXFile_spawn(RXObject_t* self, FILE* f) {
     RXObject_t* result = RXObject_allocateType(RXFile_t);
     RXObject_initialize(result);
+    RXObject_setDelegate(result, self);
     RXFile_payload(result) = f;
     return result;
 }
@@ -17,9 +18,7 @@ static RXObject_t* RXFile_new(FILE* f) {
 static RXObject_t* RXFile_open(const char* fileName, const char* flags) {
     FILE* fileHandle = fopen(fileName, flags);
     if (fileHandle != NULL) {
-        RXObject_t* result = RXFile_new(fileHandle);
-        RXObject_setSlot(result, RXSymbol_delegate_o, RXFile_o);
-        return result;
+        return RXFile_spawn(RXFile_o, fileHandle);
     }
     else {
         return RXNil_o;
@@ -29,9 +28,7 @@ static RXObject_t* RXFile_open(const char* fileName, const char* flags) {
 // Methods -------------------------------------------------------------
 
 RXNativeMethod_define(RXFile, spawn) {
-    RXObject_t* result = RXFile_new(RXFile_payload(self));
-    RXObject_setSlot(result, RXSymbol_delegate_o, self);
-    return result;
+    return RXFile_spawn(self, RXFile_payload(self));
 }
 
 /*
@@ -75,8 +72,7 @@ RXObject_t* RXFile_o;
 RXObject_t* RXSymbol_File_o;
 
 void RXFile_setup(void) {
-    RXFile_o = RXFile_new(NULL);
-    RXObject_setSlot(RXFile_o, RXSymbol_delegate_o, RXObject_o);
+    RXFile_o = RXFile_spawn(RXObject_o, NULL);
     
     RXNativeMethod_attach(RXFile, spawn);
     RXNativeMethod_attach(RXFile, openForReading);
