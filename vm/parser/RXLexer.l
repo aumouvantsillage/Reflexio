@@ -53,7 +53,7 @@ SKIP ({LC}|{MC}|{NL}|{WS})*
 "("{SKIP} { return LPAR; }
 ")" { return RPAR; }
 ":"{SKIP} { return COLON; }
-";"{SKIP} { return SEMI; }
+(";"{SKIP})+ { return SEMI; }
 ","{SKIP} { return COMMA; }
 "+"{SKIP} { return PLUS; }
 "-"{SKIP} { return MINUS; }

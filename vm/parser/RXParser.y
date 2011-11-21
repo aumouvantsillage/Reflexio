@@ -5,8 +5,8 @@
 #include <Eina.h>
 #include <Reflexio.h>
 
-int yyerror(const char* fmt) {
-   fprintf(stderr, "%s\n", fmt);
+int yyerror(const char* msg) {
+   fprintf(stderr, "%s\n", msg);
    return 0;
 }
 
@@ -50,6 +50,15 @@ RXObject_t* RXParser_messageWithName(RXObject_t* name) {
     return result;
 }
 
+void RXParser_pushOperator(RXObject_t* name) {
+    RXParser_push(RXParser_messageWithName(name));
+    RXParser_push(RXList_spawn(RXExpression_o, NULL));
+}
+
+void RXParser_completeBinaryExpression(void) {
+     RXParser_appendArgument(RXParser_pop());
+     RXParser_appendMessage(RXParser_pop());
+}
 %}
 
 %error-verbose
@@ -86,11 +95,12 @@ RXObject_t* RXParser_messageWithName(RXObject_t* name) {
 %token <asReal> REAL
 %token <asIdentifier> IDENTIFIER
 
-%type <asObject> boolean_operator
-%type <asObject> comparison_operator
-%type <asObject> additive_operator
-%type <asObject> multiplicative_operator
-%type <asObject> unary_operator
+%left OR
+%left AND
+%nonassoc EQ NEQ LT GT LEQ GEQ
+%left PLUS MINUS
+%left STAR SLASH
+%left UNARY
 
 %%
 
@@ -109,90 +119,28 @@ optional_expression_separator:
    ;
 
 non_empty_expression:
-   boolean_expression
+   operator_expression
    | non_empty_expression expression_separator {
          RXParser_appendMessage(RXParser_messageWithName(RXSymbol_semicolon_o));
-      } boolean_expression
+      } operator_expression
    ;
 
-boolean_expression:
-   comparison_expression
-   | boolean_expression boolean_operator {
-         RXParser_push($2);
-         RXParser_push(RXList_spawn(RXExpression_o, NULL));
-      } comparison_expression {
-         RXParser_appendArgument(RXParser_pop());
-         RXParser_appendMessage(RXParser_pop());
-      }
-   ;
-
-boolean_operator:
-   OR { $$ = RXParser_messageWithName(RXSymbol_or_o); }
-   | AND { $$ = RXParser_messageWithName(RXSymbol_and_o); }
-   ;
-
-comparison_expression:
-   additive_expression
-   | comparison_expression comparison_operator {
-         RXParser_push($2);
-         RXParser_push(RXList_spawn(RXExpression_o, NULL));
-      } additive_expression {
-         RXParser_appendArgument(RXParser_pop());
-         RXParser_appendMessage(RXParser_pop());
-      }
-   ;
-
-comparison_operator:
-   EQ { $$ = RXParser_messageWithName(RXSymbol_equal_o); }
-   | NEQ { $$ = RXParser_messageWithName(RXSymbol_notEqual_o); }
-   | LT { $$ = RXParser_messageWithName(RXSymbol_lessThan_o); }
-   | GT { $$ = RXParser_messageWithName(RXSymbol_greaterThan_o); }
-   | LEQ { $$ = RXParser_messageWithName(RXSymbol_lessOrEqual_o); }
-   | GEQ { $$ = RXParser_messageWithName(RXSymbol_greaterOrEqual_o); }
-   ;
-
-additive_expression:
-   multiplicative_expression
-   | additive_expression additive_operator {
-         RXParser_push($2);
-         RXParser_push(RXList_spawn(RXExpression_o, NULL));
-      } multiplicative_expression {
-         RXParser_appendArgument(RXParser_pop());
-         RXParser_appendMessage(RXParser_pop());
-      }
-   ;
-
-additive_operator:
-   PLUS { $$ = RXParser_messageWithName(RXSymbol_add_o); }
-   | MINUS { $$ = RXParser_messageWithName(RXSymbol_subtract_o); }
-   ;
-
-multiplicative_expression:
-   unary_expression
-   | multiplicative_expression multiplicative_operator {
-         RXParser_push($2);
-         RXParser_push(RXList_spawn(RXExpression_o, NULL));
-      } unary_expression {
-         RXParser_appendArgument(RXParser_pop());
-         RXParser_appendMessage(RXParser_pop());
-      }
-   ;
-
-multiplicative_operator:
-   STAR { $$ = RXParser_messageWithName(RXSymbol_multiply_o); }
-   | SLASH { $$ = RXParser_messageWithName(RXSymbol_divide_o); }
-   ;
-
-unary_expression:
+operator_expression:
    simple_expression
-   | unary_operator simple_expression {
-         RXParser_appendMessage($1); 
-      }
-   ;
-
-unary_operator:
-   PLUS { $$ = RXParser_messageWithName(RXSymbol_unaryPlus_o); }
-   | MINUS { $$ = RXParser_messageWithName(RXSymbol_negate_o); }
+   | operator_expression OR    {RXParser_pushOperator(RXSymbol_or_o);}             operator_expression {RXParser_completeBinaryExpression();}
+   | operator_expression AND   {RXParser_pushOperator(RXSymbol_and_o);}            operator_expression {RXParser_completeBinaryExpression();}
+   | operator_expression EQ    {RXParser_pushOperator(RXSymbol_equal_o);}          operator_expression {RXParser_completeBinaryExpression();}
+   | operator_expression NEQ   {RXParser_pushOperator(RXSymbol_notEqual_o);}       operator_expression {RXParser_completeBinaryExpression();}
+   | operator_expression LT    {RXParser_pushOperator(RXSymbol_lessThan_o);}       operator_expression {RXParser_completeBinaryExpression();}
+   | operator_expression GT    {RXParser_pushOperator(RXSymbol_greaterThan_o);}    operator_expression {RXParser_completeBinaryExpression();}
+   | operator_expression LEQ   {RXParser_pushOperator(RXSymbol_lessOrEqual_o);}    operator_expression {RXParser_completeBinaryExpression();}
+   | operator_expression GEQ   {RXParser_pushOperator(RXSymbol_greaterOrEqual_o);} operator_expression {RXParser_completeBinaryExpression();}
+   | operator_expression PLUS  {RXParser_pushOperator(RXSymbol_add_o);}            operator_expression {RXParser_completeBinaryExpression();}
+   | operator_expression MINUS {RXParser_pushOperator(RXSymbol_subtract_o);}       operator_expression {RXParser_completeBinaryExpression();}
+   | operator_expression STAR  {RXParser_pushOperator(RXSymbol_multiply_o);}       operator_expression {RXParser_completeBinaryExpression();}
+   | operator_expression SLASH {RXParser_pushOperator(RXSymbol_divide_o);}         operator_expression {RXParser_completeBinaryExpression();}
+   |                     PLUS  operator_expression %prec UNARY {RXParser_appendMessage(RXParser_messageWithName(RXSymbol_unaryPlus_o));}
+   |                     MINUS operator_expression %prec UNARY {RXParser_appendMessage(RXParser_messageWithName(RXSymbol_negate_o));}
    ;
 
 simple_expression:
@@ -200,7 +148,7 @@ simple_expression:
    ;
 
 first_receiver:
-   method_call_or_assignment
+   message_or_assignment
    | STRING { RXParser_appendMessage(RXSymbol_symbolForCString($1)); }
    | INTEGER { RXParser_appendMessage(RXInteger_spawn(RXInteger_o, $1)); }
 /* TODO Add support for real numbers
@@ -215,10 +163,10 @@ first_receiver:
 
 message_chain:
    /* Empty */
-   | message_chain method_call_or_assignment
+   | message_chain message_or_assignment
    ;
 
-method_call_or_assignment:
+message_or_assignment:
    IDENTIFIER { RXParser_appendMessage(RXParser_messageWithName(RXSymbol_symbolForCString($1))); }
    | IDENTIFIER LPAR RPAR { RXParser_appendMessage(RXParser_messageWithName(RXSymbol_symbolForCString($1))); }
    | IDENTIFIER LPAR {
@@ -234,7 +182,7 @@ method_call_or_assignment:
          RXParser_appendArgument(RXParser_pop());
          RXParser_push(RXList_spawn(RXExpression_o, NULL));
       }
-      comparison_expression {
+      operator_expression {
          RXParser_appendArgument(RXParser_pop());
          RXParser_appendMessage(RXParser_pop());
       }
