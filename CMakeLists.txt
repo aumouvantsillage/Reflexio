@@ -3,7 +3,7 @@ project(Reflectio)
 
 option(DEBUG "Add debug info and evaluate assertions" ON)
 
-set(CMAKE_MODULE_PATH  ${PROJECT_SOURCE_DIR}/cmake-extensions/ )
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake-extensions/ )
 
 add_definitions(-std=gnu99 -D_GNU_SOURCE)
 

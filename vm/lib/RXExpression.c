@@ -95,8 +95,8 @@ RXNativeMethod_define(RXExpression, asString) {
  *  - a new expression
  */
 RXNativeMethod_define(RXExpression, fromFile) {
-    RXObject_t* file = RXExpression_valueOfArgumentAt(0, context);
-    return RXParser_expressionFromCFile(*(FILE**)file);
+    RXObject_t* fileName = RXExpression_valueOfArgumentAt(0, context);
+    return RXParser_expressionFromCFile((char*)fileName);
 }
 
 /*

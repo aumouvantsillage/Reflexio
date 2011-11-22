@@ -5,8 +5,10 @@
 #include <Eina.h>
 #include <Reflexio.h>
 
+extern int RXLexer_lineNumber;
+
 int yyerror(const char* msg) {
-   fprintf(stderr, "%s\n", msg);
+   fprintf(stderr, "%d: %s\n", RXLexer_lineNumber, msg);
    return 0;
 }
 
@@ -75,6 +77,7 @@ void RXParser_completeBinaryExpression(void) {
 %token RPAR
 %token COLON
 %token SEMI
+%token TILDE
 %token COMMA
 %token PLUS
 %token MINUS
@@ -95,6 +98,7 @@ void RXParser_completeBinaryExpression(void) {
 %token <asReal> REAL
 %token <asIdentifier> IDENTIFIER
 
+%left SEMI
 %left OR
 %left AND
 %nonassoc EQ NEQ LT GT LEQ GEQ
@@ -105,98 +109,129 @@ void RXParser_completeBinaryExpression(void) {
 %%
 
 expression:
-   optional_expression_separator non_empty_expression optional_expression_separator
-   ;
+    optional_semi expression_body optional_semi
+    ;
 
-expression_separator:
-   SEMI
-   | expression_separator SEMI
-   ;
+optional_semi:
+      /* Empty */
+    | optional_semi semi
+    ;
 
-optional_expression_separator:
-   /* Empty */
-   | expression_separator
-   ;
-
-non_empty_expression:
-   operator_expression
-   | non_empty_expression expression_separator {
+semi:
+      SEMI
+    | semi SEMI
+    ;
+    
+expression_body:
+     or_expression
+   | expression_body semi {
          RXParser_appendMessage(RXParser_messageWithName(RXSymbol_semicolon_o));
-      } operator_expression
+      } or_expression
    ;
 
-operator_expression:
-   simple_expression
-   | operator_expression OR    {RXParser_pushOperator(RXSymbol_or_o);}             operator_expression {RXParser_completeBinaryExpression();}
-   | operator_expression AND   {RXParser_pushOperator(RXSymbol_and_o);}            operator_expression {RXParser_completeBinaryExpression();}
-   | operator_expression EQ    {RXParser_pushOperator(RXSymbol_equal_o);}          operator_expression {RXParser_completeBinaryExpression();}
-   | operator_expression NEQ   {RXParser_pushOperator(RXSymbol_notEqual_o);}       operator_expression {RXParser_completeBinaryExpression();}
-   | operator_expression LT    {RXParser_pushOperator(RXSymbol_lessThan_o);}       operator_expression {RXParser_completeBinaryExpression();}
-   | operator_expression GT    {RXParser_pushOperator(RXSymbol_greaterThan_o);}    operator_expression {RXParser_completeBinaryExpression();}
-   | operator_expression LEQ   {RXParser_pushOperator(RXSymbol_lessOrEqual_o);}    operator_expression {RXParser_completeBinaryExpression();}
-   | operator_expression GEQ   {RXParser_pushOperator(RXSymbol_greaterOrEqual_o);} operator_expression {RXParser_completeBinaryExpression();}
-   | operator_expression PLUS  {RXParser_pushOperator(RXSymbol_add_o);}            operator_expression {RXParser_completeBinaryExpression();}
-   | operator_expression MINUS {RXParser_pushOperator(RXSymbol_subtract_o);}       operator_expression {RXParser_completeBinaryExpression();}
-   | operator_expression STAR  {RXParser_pushOperator(RXSymbol_multiply_o);}       operator_expression {RXParser_completeBinaryExpression();}
-   | operator_expression SLASH {RXParser_pushOperator(RXSymbol_divide_o);}         operator_expression {RXParser_completeBinaryExpression();}
-   |                     PLUS  operator_expression %prec UNARY {RXParser_appendMessage(RXParser_messageWithName(RXSymbol_unaryPlus_o));}
-   |                     MINUS operator_expression %prec UNARY {RXParser_appendMessage(RXParser_messageWithName(RXSymbol_negate_o));}
-   ;
+or_expression:
+      and_expression
+    | or_expression OR { RXParser_pushOperator(RXSymbol_or_o); } optional_semi and_expression { RXParser_completeBinaryExpression(); }
+    ;
 
-simple_expression:
-   first_receiver message_chain
-   ;
+and_expression:
+      comparison_expression 
+    | and_expression AND { RXParser_pushOperator(RXSymbol_and_o); } optional_semi comparison_expression { RXParser_completeBinaryExpression(); }
+    ;
+
+comparison_expression:
+      additive_expression
+    | additive_expression comparison_operator optional_semi additive_expression { RXParser_completeBinaryExpression(); }
+    ;
+
+comparison_operator:
+      EQ  { RXParser_pushOperator(RXSymbol_equal_o); } 
+    | NEQ { RXParser_pushOperator(RXSymbol_notEqual_o); }
+    | LT  { RXParser_pushOperator(RXSymbol_lessThan_o); }
+    | GT  { RXParser_pushOperator(RXSymbol_greaterThan_o); }
+    | LEQ { RXParser_pushOperator(RXSymbol_lessOrEqual_o); }
+    | GEQ { RXParser_pushOperator(RXSymbol_greaterOrEqual_o); }
+    ;
+
+additive_expression:
+      multiplicative_expression
+    | additive_expression additive_operator optional_semi multiplicative_expression { RXParser_completeBinaryExpression(); }
+    ;
+
+additive_operator:
+      PLUS  { RXParser_pushOperator(RXSymbol_add_o); }
+    | MINUS { RXParser_pushOperator(RXSymbol_subtract_o); }
+    ;
+
+multiplicative_expression:
+      unary_expression
+    | multiplicative_expression multiplicative_operator optional_semi unary_expression { RXParser_completeBinaryExpression(); }
+    ;
+
+multiplicative_operator:
+      STAR  { RXParser_pushOperator(RXSymbol_multiply_o); }
+    | SLASH { RXParser_pushOperator(RXSymbol_divide_o); }
+    ;
+
+unary_expression:
+    primary_expression
+    | PLUS primary_expression  { RXParser_appendMessage(RXParser_messageWithName(RXSymbol_unaryPlus_o)); }
+    | MINUS primary_expression { RXParser_appendMessage(RXParser_messageWithName(RXSymbol_negate_o)); }
+    ;
+
+primary_expression:
+    first_receiver message_chain
+    ;
 
 first_receiver:
-   message_or_assignment
-   | STRING { RXParser_appendMessage(RXSymbol_symbolForCString($1)); }
-   | INTEGER { RXParser_appendMessage(RXInteger_spawn(RXInteger_o, $1)); }
+      message_or_assignment
+    | STRING { RXParser_appendMessage(RXSymbol_symbolForCString($1)); }
+    | INTEGER { RXParser_appendMessage(RXInteger_spawn(RXInteger_o, $1)); }
 /* TODO Add support for real numbers
-   | REAL { RXParser_appendMessage(RXReal_fromCReal($1)); }
+    | REAL { RXParser_appendMessage(RXReal_fromCReal($1)); }
 */
-   | LPAR {
-         RXParser_push(RXList_spawn(RXExpression_o, NULL));
-      } non_empty_expression RPAR {
-         RXParser_appendMessage(RXParser_pop());
-      }
+    | LPAR expression RPAR
    ;
 
 message_chain:
-   /* Empty */
-   | message_chain message_or_assignment
-   ;
+      /* Empty */
+    | message_chain message_or_assignment
+    ;
 
 message_or_assignment:
-   IDENTIFIER { RXParser_appendMessage(RXParser_messageWithName(RXSymbol_symbolForCString($1))); }
-   | IDENTIFIER LPAR RPAR { RXParser_appendMessage(RXParser_messageWithName(RXSymbol_symbolForCString($1))); }
-   | IDENTIFIER LPAR {
+      IDENTIFIER { RXParser_appendMessage(RXParser_messageWithName(RXSymbol_symbolForCString($1))); }
+    | IDENTIFIER LPAR {
          RXParser_push(RXParser_messageWithName(RXSymbol_symbolForCString($1)));
          RXParser_push(RXList_spawn(RXExpression_o, NULL));
-      } argument_list RPAR {
+      } optional_argument_list RPAR {
          RXParser_appendMessage(RXParser_pop());
       }
-   | IDENTIFIER ASSIGN {
+    | IDENTIFIER ASSIGN {
          RXParser_push(RXParser_messageWithName(RXSymbol_setSlot_o));
          RXParser_push(RXList_spawn(RXExpression_o, NULL));
          RXParser_appendMessage(RXSymbol_symbolForCString($1));
          RXParser_appendArgument(RXParser_pop());
          RXParser_push(RXList_spawn(RXExpression_o, NULL));
-      }
-      operator_expression {
+      } or_expression {
          RXParser_appendArgument(RXParser_pop());
          RXParser_appendMessage(RXParser_pop());
       }
    ;
 
+optional_argument_list:
+      optional_semi { RXParser_pop(); }
+    | argument_list
+    ;
+    
 argument_list:
-   argument
-   | argument_list COMMA {
+      argument
+    | argument_list COMMA {
          RXParser_push(RXList_spawn(RXExpression_o, NULL));
       } argument
    ;
 
 argument:
-   non_empty_expression {
+   expression {
          RXObject_t* argumentExpression = RXParser_pop();
          RXParser_appendArgument(argumentExpression);
       }

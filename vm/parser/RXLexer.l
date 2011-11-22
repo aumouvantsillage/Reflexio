@@ -2,6 +2,8 @@
 %{
 #include "RXTokens.h"
 
+int RXLexer_lineNumber;
+
 char* unescape(char* str) {
    // Count string length, removing quotes and backslashes
    int len = -2;
@@ -40,38 +42,41 @@ char* unescape(char* str) {
 DIGIT [0-9]
 HEXDIGIT [0-9a-fA-F]
 ALPHA [a-zA-Z]
-NL [\r\n]
-WS [ \t]
-LC "//".*
-MC "/*"(.|{NL})*"*/"
-SKIP ({LC}|{MC}|{NL}|{WS})*
+
+%s comment
+
 %%
+
+"//".*
+
+"/*" BEGIN(comment);
+<comment>"*/" BEGIN(INITIAL);
+<comment>[^*\n]+
+<comment>"*"
+<comment>"\n" { ++ RXLexer_lineNumber; }
+
+"\n" { ++ RXLexer_lineNumber; return SEMI; }
 
 "or" { return OR; }
 "and" { return AND; }
-
-"("{SKIP} { return LPAR; }
+"(" { return LPAR; }
 ")" { return RPAR; }
-":"{SKIP} { return COLON; }
-(";"{SKIP})+ { return SEMI; }
-","{SKIP} { return COMMA; }
-"+"{SKIP} { return PLUS; }
-"-"{SKIP} { return MINUS; }
-"*"{SKIP} { return STAR; }
-"/"{SKIP} { return SLASH; }
-"="{SKIP} { return ASSIGN; }
-"=="{SKIP} { return EQ; }
-"!="{SKIP} { return NEQ; }
-"<"{SKIP} { return LT; }
-">"{SKIP} { return GT; }
-"<="{SKIP} { return LEQ; }
-">="{SKIP} { return GEQ; }
+":" { return COLON; }
+";" { return SEMI; }
+"," { return COMMA; }
+"+" { return PLUS; }
+"-" { return MINUS; }
+"*" { return STAR; }
+"/" { return SLASH; }
+"=" { return ASSIGN; }
+"==" { return EQ; }
+"!=" { return NEQ; }
+"<" { return LT; }
+">" { return GT; }
+"<=" { return LEQ; }
+">=" { return GEQ; }
 
-"~"{SKIP}
-{SKIP}/")"
-
-({WS}|{LC}|{MC})*{NL}{SKIP} { return SEMI; }
-{SKIP}
+"~" { return TILDE; }
 
 ({ALPHA}|"_"|"$")({ALPHA}|{DIGIT}|"_")* {
    yylval.asIdentifier = strdup(yytext);
@@ -98,6 +103,8 @@ SKIP ({LC}|{MC}|{NL}|{WS})*
    yylval.asString = unescape(yytext);
    return STRING;
 }
+
+[ \t\r]+
 
 %%
 
