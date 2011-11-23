@@ -28,7 +28,4 @@ add_custom_command(
     COMMAND antlr -o ${CMAKE_CURRENT_BINARY_DIR}/parser ${CMAKE_CURRENT_SOURCE_DIR}/parser/RX.g
 )
 
-find_package(Eina)
-include_directories(${EINA_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-
 add_library(reflexio SHARED ${VM_SRC} )

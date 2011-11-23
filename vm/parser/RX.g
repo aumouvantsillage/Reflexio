@@ -143,7 +143,7 @@ additive_expression:
 	multiplicative_expression (
 		additive_operator
 		NL* multiplicative_expression { RXParser_completeBinaryExpression(); }
-	) 
+	)*
     ;
 
 additive_operator:
@@ -175,16 +175,16 @@ primary_expression:
 
 first_receiver:
       message_or_assignment
-    | STRING { RXParser_appendMessage(RXSymbol_symbolForCString((char*)$STRING.text)); }
-    | DECIMAL { RXParser_appendMessage(RXInteger_spawn(RXInteger_o, strtol((char*)$DECIMAL.text, NULL, 10))); }
-    | HEX { RXParser_appendMessage(RXInteger_spawn(RXInteger_o, strtol((char*)$HEX.text, NULL, 16))); }
+    | STRING { RXParser_appendMessage(RXSymbol_symbolForCString($STRING.text->subString($STRING.text, 1, $STRING.text->len-1)->chars)); }
+    | DECIMAL { RXParser_appendMessage(RXInteger_spawn(RXInteger_o, strtol($DECIMAL.text->chars, NULL, 10))); }
+    | HEX { RXParser_appendMessage(RXInteger_spawn(RXInteger_o, strtol($HEX.text->chars, NULL, 16))); }
 //    | r=REAL { RXParser_appendMessage(RXReal_spawn(RXReal_o, r)); } // TODO
     | '(' expression ')'
    ;
 
 message_or_assignment
 	@init { RXObject_t* symbol; }:
-	IDENTIFIER { symbol = RXSymbol_symbolForCString((char*)$IDENTIFIER.text); }
+	IDENTIFIER { symbol = RXSymbol_symbolForCString($IDENTIFIER.text->chars); }
 	(
       	  /* Empty */ { RXParser_appendMessage(RXParser_messageWithName(symbol)); }
     	| '(' { RXParser_push(RXParser_messageWithName(symbol)); } argument_list ')' {
@@ -215,14 +215,8 @@ argument:
 
 // Lexer ---------------------------------------------------------------
 
-// TODO add whitespace and comments
-
-NL:
-	'\r'? '\n'
-	;
-
 fragment LETTER:
-	'a'..'Z' | 'A'..'Z'
+	'a'..'z' | 'A'..'Z'
 	;
 	
 fragment ULETTER:
@@ -240,7 +234,7 @@ fragment HEXDIGIT:
 	;
 	
 IDENTIFIER:
-	(ULETTER (ULETTER | DIGIT)*)
+	ULETTER (ULETTER | DIGIT)*
 	;
 
 DECIMAL:
@@ -262,4 +256,19 @@ fragment UESCAPE
 STRING:
 	'"' s=(( ESCAPE | ~('\u0000'..'\u001f' | '\\' | '\"' ) )*) '"'
 	;
-	
+
+LCOMMENT:
+	'//' ~'\n'*	{ $channel = HIDDEN; }
+	;
+
+MLCOMMENT:
+	'/*' (options{greedy=false;} : .)* '*/' { $channel = HIDDEN; }
+	;
+
+NL:
+	'\r'? '\n'
+	;
+
+WS:
+	(' ' | '\t') { $channel = HIDDEN; }
+	;

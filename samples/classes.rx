@@ -18,9 +18,9 @@ Class newSubclass = method(
 )
 
 Class lookup = method(messageName,
-/*   "Looking up " print
-    messageName print
-    " in class" println */
+//   "Looking up " print
+    messageName print()
+//    " in class" println */
     self superclass valueOfSlot(messageName)
 )
 
