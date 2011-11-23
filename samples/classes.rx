@@ -5,48 +5,54 @@ Instance = Object spawn
 Class superclass = Object
 Instance type = Object
 
-Class newInstance = method(
+// Create a new class with a given superclass
+// and execute the given body in the context of the new class.
+class = method($name, superclass, $body,
+    result = Class spawn
+    result superclass = superclass
+    context setSlot($name asString, result)
+    $body valueInContext(result)
+    result
+)
+
+// Create a new instance of the current class
+Class new = method(
     result = Instance spawn
     result type = self
     result
 )
 
-Class newSubclass = method(
-    result = Class spawn
-    result superclass = self
-    result
-)
-
+// Lookup a message name in the class-superclass chain
 Class lookup = method(messageName,
-//   "Looking up " print
-//    messageName print()
-//    " in class" println */
     self superclass valueOfSlot(messageName)
 )
 
+// Lookup a message name in the type of the current instance
 Instance lookup = method(messageName,
-/*    "Looking up " print
-    messageName print
-    " in instance" println */
     self type valueOfSlot(messageName)
 )
 
-Class valueOfSlot("lookup") body println
-Instance valueOfSlot("lookup") body println
+// Create some classes
+class(Root, Object,
+    write = method(s,
+        s println
+    )
+)
 
-Animal = Class spawn
-Animal isLiving = true
+class(Animal, Root,
+    makeNoise = method(
+        self write(self noise)
+    )
+)
 
-Mammal = Animal newSubclass
-Mammal canLactate = true
+class(Dog, Animal,
+    noise = "Bark!" 
+)
 
-Dog = Mammal newSubclass
-Dog canBark = true
+class(Bird, Animal,
+    noise = "Chirp!" 
+)
 
-fido = Dog newInstance
-fido canBark println
-fido canLactate println
-fido isLiving println
-
-// Without cache: 1180 calls to "lookup"
-// With cache: 851 calls to "lookup"
+// Call a method of the superclass
+Dog new makeNoise
+Bird new makeNoise
