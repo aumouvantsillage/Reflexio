@@ -170,6 +170,10 @@ void RXObject_libSetup(void) {
     RXObject_setSlot(RXNil_o, RXSymbol_asString_o, RXSymbol_nil_o);
     
     RXLobby_o = RXObject_spawn(RXObject_o);
+    
+    // Change delegation from Object to Lobby
+    RXObject_setSlot(RXObject_o, RXSymbol_delegate_o, RXLobby_o);
+    
     RXObject_setSlot(RXLobby_o, RXSymbol_Lobby_o, RXLobby_o);
     RXObject_setSlot(RXLobby_o, RXSymbol_Object_o, RXObject_o);
     RXObject_setSlot(RXLobby_o, RXSymbol_nil_o, RXNil_o);
