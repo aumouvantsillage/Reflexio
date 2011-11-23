@@ -1,14 +1,30 @@
 
 
 
+/*
+setSlot("x",
+    a negate add(
+        b multiply(c)
+    ) subtract(
+        b unaryPlus multiply(c f)
+    ) add(
+        a
+    ) subtract(
+        a square add(b sqrt) multiply(c)
+    ) lessThan(12) and(
+        a multiply(b) greaterThan(13)
+    );
+    a add(b)
+)
+*/
 
-x = method(- a + b * c = 3 - +b * c f() + a - (a square + b sqrt) * c < 12 and a * b > 13)
-
-
-
-
+x = method(
+    - a +
+    b * c -
+    +b * c f() +
+    a -
+    (a square + b sqrt) * c < 12 and a * b > 13
+    a + b
+)
 
 valueOfSlot("x") body println
-
-
-

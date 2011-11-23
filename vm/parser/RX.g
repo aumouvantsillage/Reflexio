@@ -3,7 +3,6 @@ grammar RX;
 
 options {
 	language = C;
-	backtrack=true;
 }
 
 @header {
@@ -15,202 +14,189 @@ options {
 }
 
 @members {
-	#include <Eina.h>
 	#include <lib/RXLib.h>
 	#include <antlr3.h>
 	#include "RXLexer.h"
 	
-	static Eina_Array* RXParser_stack;
-	static int RXParser_stackTop;
-
-	static void RXParser_setup() {
-	   RXParser_stackTop = -1;
-	   RXParser_stack = eina_array_new(4);
-	}
-
-	static void RXParser_clean() {
-	   eina_array_free(RXParser_stack);
-	}
-
-	static void RXParser_push(void* object) {
-	   eina_array_push(RXParser_stack, object);
-	   ++ RXParser_stackTop;
-	}
-
-	static void* RXParser_pop() {
-	   -- RXParser_stackTop;
-	   return eina_array_pop(RXParser_stack);
-	}
-
-	static void RXParser_appendMessage(RXObject_t* message) {
-	   RXObject_t* expression = eina_array_data_get(RXParser_stack, RXParser_stackTop);
-	   RXList_append(expression, message);
-	}
-
-	static void RXParser_appendArgument(RXObject_t* expression) {
-	   RXObject_t* message = eina_array_data_get(RXParser_stack, RXParser_stackTop);
-	   RXList_append(message, expression);
-	}
-
-	static RXObject_t* RXParser_messageWithName(RXObject_t* name) {
-		RXObject_t* result = RXList_spawn(RXMessage_o, NULL);
-		RXObject_setSlot(result, RXSymbol_name_o, name);
-		return result;
-	}
-
-	static void RXParser_pushOperator(RXObject_t* name) {
-		RXParser_push(RXParser_messageWithName(name));
-		RXParser_push(RXList_spawn(RXExpression_o, NULL));
-	}
-
-	static void RXParser_completeBinaryExpression(void) {
-		 RXParser_appendArgument(RXParser_pop());
-		 RXParser_appendMessage(RXParser_pop());
-	}
-
 	static RXObject_t* RXParser_parse(pANTLR3_INPUT_STREAM input) {
-	   	RXParser_setup();
-	   	RXParser_push(RXList_spawn(RXExpression_o, NULL));
-	   
 		assert(input != NULL);
 		pRXLexer lexer = RXLexerNew(input);
 		assert(lexer != NULL);
 		pANTLR3_COMMON_TOKEN_STREAM tstream = antlr3CommonTokenStreamSourceNew(ANTLR3_SIZE_HINT, TOKENSOURCE(lexer));
 		assert(tstream != NULL);
 	   	pRXParser parser = RXParserNew(tstream);
-	   	parser->file(parser);
-	   
-	   	RXObject_t* result = RXParser_pop();
-	   	RXParser_clean();
+	   	RXObject_t* result = parser->file(parser);
+	   	// printf("\%s\n", RXObject_respondTo(result, RXSymbol_asSource_o, RXNil_o, 0));
 	   	return result;
 	}
 
+	static RXObject_t* RXParser_appendMessageWithName(RXObject_t* expr, RXObject_t* name) {
+		RXObject_t* msg = RXList_spawn(RXMessage_o, NULL);
+		RXObject_setSlot(msg, RXSymbol_name_o, name);
+		RXList_append(expr, msg);
+		return msg;
+	}
+	
+	static RXObject_t* RXParser_appendOperation(RXObject_t* expr, RXObject_t* name) {
+		RXObject_t* msg = RXParser_appendMessageWithName(expr, name);
+		RXObject_t* arg = RXList_spawn(RXExpression_o, NULL);
+		RXList_append(msg, arg);
+		return arg;
+	}
+	
 	RXObject_t* RXParser_expressionFromCString(char* string) {
-	   return RXParser_parse(antlr3NewAsciiStringInPlaceStream(string, strlen(string), NULL));
+	   return RXParser_parse(antlr3StringStreamNew(string, ANTLR3_ENC_8BIT, strlen(string), NULL));
 	}
 
 	RXObject_t* RXParser_expressionFromCFile(char* fileName) {
-	   	return RXParser_parse(antlr3AsciiFileStreamNew(fileName));
+	   	return RXParser_parse(antlr3FileStreamNew(fileName, ANTLR3_ENC_8BIT));
 	}
 }
 
-file:
-	expression EOF
+file returns[RXObject_t* expr]:
+	{ expr = RXList_spawn(RXExpression_o, NULL); }
+	expression[expr] EOF
 	;
 
-expression:
-    NL* expression_body NL*
+expression[RXObject_t* expr]:
+    NL* expression_body[expr] NL*
     ;
 
-expression_body:
-	or_expression (
-		(';' | NL)+ { RXParser_appendMessage(RXParser_messageWithName(RXSymbol_semicolon_o)); }
-		or_expression
+expression_body[RXObject_t* expr]:
+	statement[expr] ( 
+		(';' | NL)+ {
+			RXParser_appendMessageWithName(expr, RXSymbol_semicolon_o);
+		}
+		statement[expr]
 	)*
    	;
 
-or_expression:
-    and_expression (
-    	'or' { RXParser_pushOperator(RXSymbol_or_o); }
-    	NL* and_expression { RXParser_completeBinaryExpression(); }
+statement[RXObject_t* expr]:
+	  (assignment_prefix[NULL] IDENTIFIER '=') => assignment[expr]
+	| or_expression[expr]
+	;
+
+assignment[RXObject_t* expr]
+	@init { RXObject_t* arg; } :
+	assignment_prefix[expr] IDENTIFIER '=' NL* {
+		RXObject_t* msg = RXParser_appendMessageWithName(expr, RXSymbol_setSlot_o);
+		RXList_append(msg, RXSymbol_symbolForCString($IDENTIFIER.text->chars));
+		arg = RXList_spawn(RXExpression_o, NULL);
+		RXList_append(msg, arg);
+	} or_expression[arg]
+  	;
+
+assignment_prefix[RXObject_t* expr]:
+	first_receiver[expr]? message[expr]*
+	;
+
+or_expression[RXObject_t* expr]
+	@init { RXObject_t* arg; } :
+    and_expression[expr] (
+    	'or' NL* {
+    		arg = RXParser_appendOperation(expr, RXSymbol_or_o);
+    	}
+    	and_expression[arg]
     )*
     ;
 
-and_expression:
-    comparison_expression (
-    	'and' { RXParser_pushOperator(RXSymbol_and_o); }
-    	NL* comparison_expression { RXParser_completeBinaryExpression(); }
+and_expression[RXObject_t* expr]
+	@init { RXObject_t* arg; } :
+    comparison_expression[expr] (
+    	'and' NL* {
+    		arg = RXParser_appendOperation(expr, RXSymbol_and_o);
+    	}
+    	comparison_expression[arg]
     )*
     ;
 
-comparison_expression:
-	additive_expression (
-		comparison_operator
-		NL* additive_expression { RXParser_completeBinaryExpression(); }
+comparison_expression[RXObject_t* expr]
+	@init { RXObject_t* arg; } :
+	additive_expression[expr] (
+		op=comparison_operator NL* {
+			arg = RXParser_appendOperation(expr, $op.symbol);
+		}
+		additive_expression[arg]
 	)?
     ;
 
-comparison_operator:
-      '==' { RXParser_pushOperator(RXSymbol_equal_o); } 
-    | '!=' { RXParser_pushOperator(RXSymbol_notEqual_o); }
-    | '<'  { RXParser_pushOperator(RXSymbol_lessThan_o); }
-    | '>'  { RXParser_pushOperator(RXSymbol_greaterThan_o); }
-    | '<=' { RXParser_pushOperator(RXSymbol_lessOrEqual_o); }
-    | '>=' { RXParser_pushOperator(RXSymbol_greaterOrEqual_o); }
+comparison_operator returns[RXObject_t* symbol]:
+      '==' { symbol = RXSymbol_equal_o; } 
+    | '!=' { symbol = RXSymbol_notEqual_o; }
+    | '<'  { symbol = RXSymbol_lessThan_o; }
+    | '>'  { symbol = RXSymbol_greaterThan_o; }
+    | '<=' { symbol = RXSymbol_lessOrEqual_o; }
+    | '>=' { symbol = RXSymbol_greaterOrEqual_o; }
     ;
 
-additive_expression:
-	multiplicative_expression (
-		additive_operator
-		NL* multiplicative_expression { RXParser_completeBinaryExpression(); }
+additive_expression[RXObject_t* expr]
+	@init { RXObject_t* arg; } :
+	multiplicative_expression[expr] (
+		op=additive_operator NL* {
+			arg = RXParser_appendOperation(expr, $op.symbol);
+		}
+		multiplicative_expression[arg]
 	)*
     ;
 
-additive_operator:
-      '+' { RXParser_pushOperator(RXSymbol_add_o); }
-    | '-' { RXParser_pushOperator(RXSymbol_subtract_o); }
+additive_operator returns[RXObject_t* symbol]:
+      '+' { symbol = RXSymbol_add_o; }
+    | '-' { symbol = RXSymbol_subtract_o; }
     ;
 
-multiplicative_expression:
-	unary_expression (
-		multiplicative_operator
-		NL* unary_expression { RXParser_completeBinaryExpression(); }
+multiplicative_expression[RXObject_t* expr]
+	@init { RXObject_t* arg; } :
+	unary_expression[expr] (
+		op=multiplicative_operator NL* {
+			arg = RXParser_appendOperation(expr, $op.symbol);
+		}
+		unary_expression[arg]
 	)*
     ;
 
-multiplicative_operator:
-      '*' { RXParser_pushOperator(RXSymbol_multiply_o); }
-    | '/' { RXParser_pushOperator(RXSymbol_divide_o); }
+multiplicative_operator returns[RXObject_t* symbol]:
+      '*' { symbol = RXSymbol_multiply_o; }
+    | '/' { symbol = RXSymbol_divide_o; }
     ;
 
-unary_expression:
-    primary_expression
-    | '+' primary_expression  { RXParser_appendMessage(RXParser_messageWithName(RXSymbol_unaryPlus_o)); }
-    | '-' primary_expression { RXParser_appendMessage(RXParser_messageWithName(RXSymbol_negate_o)); }
+unary_expression[RXObject_t* expr]:
+    primary_expression[expr]
+    | '+' primary_expression[expr] { RXParser_appendMessageWithName(expr, RXSymbol_unaryPlus_o); }
+    | '-' primary_expression[expr] { RXParser_appendMessageWithName(expr, RXSymbol_negate_o); }
     ;
 
-primary_expression:
-    first_receiver message_or_assignment*
+primary_expression[RXObject_t* expr]:
+      first_receiver[expr] message[expr]*
+    | message[expr]+
     ;
 
-first_receiver:
-      message_or_assignment
-    | STRING { RXParser_appendMessage(RXSymbol_symbolForCString($STRING.text->subString($STRING.text, 1, $STRING.text->len-1)->chars)); }
-    | DECIMAL { RXParser_appendMessage(RXInteger_spawn(RXInteger_o, strtol($DECIMAL.text->chars, NULL, 10))); }
-    | HEX { RXParser_appendMessage(RXInteger_spawn(RXInteger_o, strtol($HEX.text->chars, NULL, 16))); }
-//    | r=REAL { RXParser_appendMessage(RXReal_spawn(RXReal_o, r)); } // TODO
-    | '(' expression ')'
+first_receiver[RXObject_t* expr]:
+      STRING  { RXList_append(expr, RXSymbol_symbolForCString($STRING.text->subString($STRING.text, 1, $STRING.text->len-1)->chars)); }
+    | DECIMAL { RXList_append(expr, RXInteger_spawn(RXInteger_o, strtol($DECIMAL.text->chars, NULL, 10))); }
+    | HEX     { RXList_append(expr, RXInteger_spawn(RXInteger_o, strtol($HEX.text->subString($HEX.text, 2, $HEX.text->len)->chars, NULL, 16))); }
+    | '(' expression[expr] ')'
    ;
 
-message_or_assignment
-	@init { RXObject_t* symbol; }:
-	IDENTIFIER { symbol = RXSymbol_symbolForCString($IDENTIFIER.text->chars); }
-	(
-      	  /* Empty */ { RXParser_appendMessage(RXParser_messageWithName(symbol)); }
-    	| '(' { RXParser_push(RXParser_messageWithName(symbol)); } argument_list ')' {
-         		RXParser_appendMessage(RXParser_pop());
-      		}
-    	| '=' {
-		     	RXParser_push(RXParser_messageWithName(RXSymbol_setSlot_o));
-		     	RXParser_push(RXList_spawn(RXExpression_o, NULL));
-		     	RXParser_appendMessage(symbol);
-		     	RXParser_appendArgument(RXParser_pop());
-		     	RXParser_push(RXList_spawn(RXExpression_o, NULL));
-      		} or_expression {
-		     	RXParser_appendArgument(RXParser_pop());
-		     	RXParser_appendMessage(RXParser_pop());
-      		}
-	)
+message[RXObject_t* expr]
+	@init { RXObject_t* msg; } :
+	IDENTIFIER {
+  		msg = RXParser_appendMessageWithName(expr, RXSymbol_symbolForCString($IDENTIFIER.text->chars));
+  	}
+  	( '(' argument_list[msg] ')' )?
+	;
+
+argument_list[RXObject_t* msg]:
+      NL*
+    | argument[msg] (',' argument[msg])*
    ;
 
-argument_list:
-      NL* { RXParser_pop(); }
-    | argument (',' argument)*
-   ;
-
-argument:
-	{ RXParser_push(RXList_spawn(RXExpression_o, NULL)); }
-   	expression { RXParser_appendArgument(RXParser_pop()); }
+argument[RXObject_t* msg]
+	@init { RXObject_t* arg; } :
+	{
+		arg = RXList_spawn(RXExpression_o, NULL);
+		RXList_append(msg, arg);
+	}
+   	expression[arg]
    	;
 
 // Lexer ---------------------------------------------------------------

@@ -25,7 +25,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/parser)
 add_custom_command(
     OUTPUT parser/RXParser.h parser/RXLexer.h parser/RXParser.c parser/RXLexer.c
     DEPENDS parser/RX.g
-    COMMAND antlr -o ${CMAKE_CURRENT_BINARY_DIR}/parser ${CMAKE_CURRENT_SOURCE_DIR}/parser/RX.g
+    COMMAND antlr3 -o ${CMAKE_CURRENT_BINARY_DIR}/parser ${CMAKE_CURRENT_SOURCE_DIR}/parser/RX.g
 )
 
 add_library(reflexio SHARED ${VM_SRC} )
