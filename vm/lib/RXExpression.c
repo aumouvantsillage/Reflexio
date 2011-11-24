@@ -42,12 +42,16 @@ RXNativeMethod_define(RXObject, closeStatement) {
  *
  * Argument:
  *  - an object to use as the evaluation context
+ *    if missing, the expression is evaluated in the context of nil
  *
  * Returns:
  *  - the value of the current expression in the given context
  */
 RXNativeMethod_define(RXExpression, valueInContext) {
-    RXObject_t* evalContext = RXExpression_valueOfArgumentAt(0, context);
+    RXObject_t* evalContext = argumentCount > 0
+        ? RXExpression_valueOfArgumentAt(0, context)
+        : RXNil_o;
+        
     RXObject_t* receiver = evalContext;
     
     Eina_List* iter;
@@ -95,8 +99,15 @@ RXNativeMethod_define(RXExpression, asString) {
  *  - a new expression
  */
 RXNativeMethod_define(RXExpression, fromFile) {
-    RXObject_t* fileName = RXExpression_valueOfArgumentAt(0, context);
-    return RXParser_expressionFromCFile((char*)fileName);
+    if (argumentCount > 0) {
+        // FIXME check that argument is a string
+        RXObject_t* fileName = RXExpression_valueOfArgumentAt(0, context);
+        return RXParser_expressionFromCFile((char*)fileName);
+    }
+    else {
+        // FIXME raise exception
+        return RXNil_o;
+    }
 }
 
 /*
@@ -109,8 +120,15 @@ RXNativeMethod_define(RXExpression, fromFile) {
  *  - a new expression
  */
 RXNativeMethod_define(RXExpression, fromString) {
-    RXObject_t* str = RXExpression_valueOfArgumentAt(0, context);
-    return RXParser_expressionFromCString((char*)str);
+    if (argumentCount > 0) {
+        // FIXME check that argument is a string
+        RXObject_t* str = RXExpression_valueOfArgumentAt(0, context);
+        return RXParser_expressionFromCString((char*)str);
+    }
+    else {
+        // FIXME raise exception
+        return RXNil_o;
+    }
 }
 
 // Public --------------------------------------------------------------

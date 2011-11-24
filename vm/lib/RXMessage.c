@@ -8,9 +8,13 @@ RXNativeMethod_define(RXObject, valueOnObjectInContext) {
 }
 
 RXNativeMethod_define(RXMessage, valueOnObjectInContext) {
-    RXObject_t* receiver = RXExpression_valueOfArgumentAt(0, context);
+    RXObject_t* receiver = argumentCount > 0
+        ? RXExpression_valueOfArgumentAt(0, context)
+        : RXNil_o;
+    RXObject_t* msgContext = argumentCount > 1
+        ? RXExpression_valueOfArgumentAt(1, context)
+        : RXNil_o;
     RXObject_t* messageName = RXObject_valueOfSlot(self, RXSymbol_name_o);
-    RXObject_t* msgContext = RXExpression_valueOfArgumentAt(1, context);
     int msgArgumentCount = eina_list_count(*(Eina_List**)self);
     
     // Push arguments to the stack

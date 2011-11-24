@@ -27,9 +27,13 @@ RXNativeMethod_define(RXObject, spawn) {
  *  - self
  */
 RXNativeMethod_define(RXObject, setSlot) {
-    RXObject_t* slotName = RXExpression_valueOfArgumentAt(0, context);
-    RXObject_t* value = RXExpression_valueOfArgumentAt(1, context);
-    RXObject_setSlot(self, slotName, value);
+    if (argumentCount > 0) {
+        RXObject_t* slotName = RXExpression_valueOfArgumentAt(0, context);
+        RXObject_t* value = argumentCount > 1
+            ? RXExpression_valueOfArgumentAt(1, context)
+            : RXNil_o;
+        RXObject_setSlot(self, slotName, value);
+    }
     return self;
 }
 
@@ -43,8 +47,13 @@ RXNativeMethod_define(RXObject, setSlot) {
  *  - the value of the slot with the given name
  */
 RXNativeMethod_define(RXObject, valueOfSlot) {
-    RXObject_t* slotName = RXExpression_valueOfArgumentAt(0, context);
-    return RXObject_valueOfSlot(self, slotName);
+    if (argumentCount > 0) {
+        RXObject_t* slotName = RXExpression_valueOfArgumentAt(0, context);
+        return RXObject_valueOfSlot(self, slotName);
+    }
+    else {
+        return RXNil_o;
+    }
 }
 
 /*
@@ -57,8 +66,13 @@ RXNativeMethod_define(RXObject, valueOfSlot) {
  *  - the value of the slot before it was deleted
  */
 RXNativeMethod_define(RXObject, deleteSlot) {
-    RXObject_t* slotName = RXExpression_valueOfArgumentAt(0, context);
-    return RXObject_deleteSlot(self, slotName);
+    if (argumentCount > 0) {
+        RXObject_t* slotName = RXExpression_valueOfArgumentAt(0, context);
+        return RXObject_deleteSlot(self, slotName);
+    }
+    else {
+        return RXNil_o;
+    }
 }
 
 /*
@@ -124,7 +138,9 @@ RXNativeMethod_define(RXObject, println) {
 }
 
 RXNativeMethod_define(RXObject, respondTo) {
-    RXObject_t* messageName = RXExpression_valueOfArgumentAt(0, context);
+    RXObject_t* messageName = argumentCount > 0
+        ? RXExpression_valueOfArgumentAt(0, context)
+        : RXSymbol_nil_o;
     fprintf(stderr, "No method found for message \"%s\"\n", messageName);
     exit(EXIT_FAILURE);
 }

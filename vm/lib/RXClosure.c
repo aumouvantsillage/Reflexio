@@ -79,7 +79,7 @@ RXNativeMethod_define(RXClosure, activate) {
 
     // If the closure defines a method, assign slot "self" with the first argument.
     // Otherwise, the first argument is ignored.
-    if (RXObject_valueOfSlot(self, RXSymbol_isMethod_o) == RXBoolean_true_o) {
+    if (RXObject_valueOfSlot(self, RXSymbol_isMethod_o) == RXBoolean_true_o && argumentCount > 0) {
         RXObject_setSlot(localContext, RXSymbol_self_o, RXExpression_valueOfArgumentAt(0, context));
     }
 
