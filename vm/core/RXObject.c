@@ -3,6 +3,10 @@
 #include "RXCache.h"
 #include <inttypes.h>
 
+#ifndef RX_CACHE_ENABLE
+#warning Flag RX_CACHE_ENABLE not defined: method cache is disabled.
+#endif
+
 // Private -------------------------------------------------------------
 
 inline static bool RXObject_isLookingUp(const RXObject_t* self) {
@@ -68,8 +72,10 @@ void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value)
         RXObject_coreData(self).slots = eina_rbtree_inline_insert(RXObject_coreData(self).slots, (Eina_Rbtree*)node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), slotName);
         node->key = slotName;
     }
-    RXCache_removeSlotName(slotName);
     node->value = value;
+#ifdef RX_CACHE_ENABLE
+    RXCache_removeSlotName(slotName);
+#endif
 }
 
 void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate) {
@@ -99,7 +105,8 @@ RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
         if (node != NULL) {
             return node->value;
         }
-
+        
+#ifdef RX_CACHE_ENABLE
         // If not found, look up in the cache
         if (result == RXNil_o) {
             result = RXCache_valueForEntry(self, slotName);
@@ -107,6 +114,7 @@ RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
                 return result;
             }
         }
+#endif
     }
     
     if (result == RXNil_o && slotName != RXSymbol_lookup_o && !RXObject_isLookingUp(self)) {
@@ -131,11 +139,13 @@ RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
             RXObject_clearIsSearchingDelegates(self);
         }
     }
-
+    
+#ifdef RX_CACHE_ENABLE
     if (result != RXNil_o) {
         RXCache_addEntry(self, slotName, result);
     }
-    
+#endif
+
     return result;
 }
 
@@ -145,7 +155,9 @@ RXObject_t* RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName) {
         RXObject_t* value = node->value;
         RXObject_coreData(self).slots = eina_rbtree_inline_remove(RXObject_coreData(self).slots, (Eina_Rbtree*)node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), NULL);
         free(node);
+#ifdef RX_CACHE_ENABLE
         RXCache_removeSlotName(slotName);
+#endif
         return value;
     }
     return RXNil_o;
