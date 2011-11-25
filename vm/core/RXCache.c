@@ -23,7 +23,23 @@ void RXCache_addEntry(RXObject_t* object, RXObject_t* slotName, RXObject_t* valu
 }
 
 void RXCache_removeEntry(RXObject_t* object, RXObject_t* slotName) {
+    // Remove all cached values for the given slot name.
+    // Inheritance relationships are not explored:
+    // for the sake of consistency, we need to remove entries for this
+    // slot name in all objects.
     eina_hash_del_by_key(RXCache_data, &slotName);
+    
+    // If the modified slot can alter inheritance relationships,
+    // we need to remove all cached values for the given object.
+    // Three situations are concerned:
+    //  - the modified slot is "delegate"
+    //  - the modified slot is "lookup"
+    //  - there is a lookup method in the given object that possibly
+    //    uses the given slot to compute inheritance
+    if (slotName == RXSymbol_delegate_o || slotName == RXSymbol_lookup_o ||
+        RXObject_node(object, RXSymbol_lookup_o) != NULL) {
+        // TODO remove all entries for object
+    }
 }
 
 RXObject_t* RXCache_valueForEntry(RXObject_t* object, RXObject_t* slotName) {
