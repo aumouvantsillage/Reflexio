@@ -8,7 +8,7 @@ void RXCache_setup(void);
 
 void RXCache_addEntry(RXObject_t* object, RXObject_t* slotName, RXObject_t* value);
 
-void RXCache_removeSlotName(RXObject_t* slotName);
+void RXCache_removeEntry(RXObject_t* object, RXObject_t* slotName);
 
 RXObject_t* RXCache_valueForEntry(RXObject_t* object, RXObject_t* slotName);
 

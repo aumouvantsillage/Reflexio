@@ -74,7 +74,7 @@ void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value)
     }
     node->value = value;
 #ifdef RX_CACHE_ENABLE
-    RXCache_removeSlotName(slotName);
+    RXCache_removeEntry(self, slotName);
 #endif
 }
 
@@ -156,7 +156,7 @@ RXObject_t* RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName) {
         RXObject_coreData(self).slots = eina_rbtree_inline_remove(RXObject_coreData(self).slots, (Eina_Rbtree*)node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), NULL);
         free(node);
 #ifdef RX_CACHE_ENABLE
-        RXCache_removeSlotName(slotName);
+        RXCache_removeEntry(self, slotName);
 #endif
         return value;
     }

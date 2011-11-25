@@ -22,7 +22,7 @@ void RXCache_addEntry(RXObject_t* object, RXObject_t* slotName, RXObject_t* valu
     eina_hash_add(sub, &object, value);
 }
 
-void RXCache_removeSlotName(RXObject_t* slotName) {
+void RXCache_removeEntry(RXObject_t* object, RXObject_t* slotName) {
     eina_hash_del_by_key(RXCache_data, &slotName);
 }
 
