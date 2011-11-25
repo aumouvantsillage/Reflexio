@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 2.8)
 project(Reflectio)
 
 option(DEBUG "Add debug info and evaluate assertions" ON)
+option(CACHE "Use method cache" ON)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake-extensions/ )
 
@@ -18,6 +19,10 @@ else(DEBUG)
     # No debug info, do not execute asserts
     add_definitions(-DNDEBUG)
 endif(DEBUG)
+
+if(CACHE)
+    add_definitions(-DRX_CACHE_ENABLE)
+endif(CACHE)
 
 add_subdirectory(vm)
 add_subdirectory(tools)
