@@ -55,11 +55,11 @@ enum {
 /*
  * Create an object type t from a plain C type c.
  */
-#define RXObject_defineType(t, c) \
+#define RXObject_defineType(name, declarations) \
     typedef struct { \
         RXObject_declaration; \
-        c payload; \
-    } t
+        declarations \
+    } name
 
 /*
  * Core object type.

@@ -3,15 +3,17 @@
 
 // Private -------------------------------------------------------------
 
-RXObject_defineType(RXFile_t, FILE*);
+RXObject_defineType(RXFile_t,
+    FILE* handle;
+);
 
-#define RXFile_payload(self) ((RXFile_t*)self)->payload
+#define RXFile_handle(self) ((RXFile_t*)self)->handle
 
 static RXObject_t* RXFile_spawn(RXObject_t* self, FILE* f) {
     RXObject_t* result = RXObject_allocateType(RXFile_t);
     RXObject_initialize(result);
     RXObject_setDelegate(result, self);
-    RXFile_payload(result) = f;
+    RXFile_handle(result) = f;
     return result;
 }
 
@@ -28,7 +30,7 @@ static RXObject_t* RXFile_open(const char* fileName, const char* flags) {
 // Methods -------------------------------------------------------------
 
 RXNativeMethod_define(RXFile, spawn) {
-    return RXFile_spawn(self, RXFile_payload(self));
+    return RXFile_spawn(self, RXFile_handle(self));
 }
 
 /*
@@ -63,7 +65,7 @@ RXNativeMethod_define(RXFile, openForWriting) {
  * Close the current file.
  */
 RXNativeMethod_define(RXFile, close) {
-    fclose(RXFile_payload(self));
+    fclose(RXFile_handle(self));
 }
 
 // Public --------------------------------------------------------------

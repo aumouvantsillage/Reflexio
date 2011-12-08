@@ -3,18 +3,20 @@
 
 // Private -------------------------------------------------------------
 
-RXObject_defineType(RXList_t, Eina_List*);
+RXObject_defineType(RXList_t,
+    Eina_List* first;
+);
 
-#define RXList_payload(self) ((RXList_t*)self)->payload
+#define RXList_first(self) ((RXList_t*)self)->first
 
 // Methods -------------------------------------------------------------
 
 RXNativeMethod_define(RXList, spawn) {
-    return RXList_spawn(self, RXList_payload(self));
+    return RXList_spawn(self, RXList_first(self));
 }
 
 RXNativeMethod_define(RXList, with) {
-    RXObject_t* result = RXList_spawn(self, RXList_payload(self));
+    RXObject_t* result = RXList_spawn(self, RXList_first(self));
     for (int i = 0; i < argumentCount; i ++) {
         RXList_append(result, RXExpression_valueOfArgumentAt(i, context));
     }
@@ -46,7 +48,7 @@ RXNativeMethod_define(RXList, asString) {
 }
 
 RXNativeMethod_define(RXList, asBoolean) {
-    return RXList_payload(self) != NULL
+    return RXList_first(self) != NULL
         ? RXBoolean_true_o
         : RXBoolean_false_o;
 }
@@ -56,7 +58,7 @@ RXNativeMethod_define(RXList, print) {
     Eina_List* iter;
     RXObject_t* data;
     bool sep = false;
-    EINA_LIST_FOREACH(RXList_payload(self), iter, data) {
+    EINA_LIST_FOREACH(RXList_first(self), iter, data) {
         if (sep) {
             fputs(", ", stdout);
         }
@@ -71,7 +73,7 @@ RXNativeMethod_define(RXList, print) {
 RXNativeMethod_define(RXList, append) {
     if (argumentCount > 0) {
         RXObject_t* item = RXExpression_valueOfArgumentAt(0, context);
-        RXList_payload(self) = eina_list_append(RXList_payload(self), item);
+        RXList_first(self) = eina_list_append(RXList_first(self), item);
         // TODO mark new object in the same reachability as self
         assert(!eina_error_get());
     }
@@ -86,7 +88,7 @@ RXNativeMethod_define(RXList, concat) {
 RXNativeMethod_define(RXList, prepend) {
     if (argumentCount > 0) {
         RXObject_t* item = RXExpression_valueOfArgumentAt(0, context);
-        RXList_payload(self) = eina_list_prepend(RXList_payload(self), item);
+        RXList_first(self) = eina_list_prepend(RXList_first(self), item);
         // TODO mark new object in the same reachability as self
     }
     return self;
@@ -131,7 +133,7 @@ RXNativeMethod_define(RXList, last) {
 }
 
 RXNativeMethod_define(RXList, first) {
-    RXObject_t* data = eina_list_data_get(RXList_payload(self));
+    RXObject_t* data = eina_list_data_get(RXList_first(self));
     return data != NULL
         ? data
         : RXNil_o;
@@ -140,7 +142,7 @@ RXNativeMethod_define(RXList, first) {
 RXNativeMethod_define(RXList, at) {
     if (argumentCount > 0) {
         RXObject_t* index = RXExpression_valueOfArgumentAt(0, context);
-        RXObject_t* data = eina_list_nth(RXList_payload(self), *(int*)index);
+        RXObject_t* data = eina_list_nth(RXList_first(self), *(int*)index);
         return data != NULL ? data : RXNil_o;
     }
     else {
@@ -150,11 +152,11 @@ RXNativeMethod_define(RXList, at) {
 }
 
 RXNativeMethod_define(RXList, count) {
-    return RXInteger_spawn(RXInteger_o, eina_list_count(RXList_payload(self)));
+    return RXInteger_spawn(RXInteger_o, eina_list_count(RXList_first(self)));
 }
 
 RXNativeMethod_define(RXList, isEmpty) {
-    return RXList_payload(self) != NULL
+    return RXList_first(self) != NULL
         ? RXBoolean_true_o
         : RXBoolean_false_o;
 }
@@ -193,7 +195,7 @@ RXObject_t* RXList_spawn(RXObject_t* self, Eina_List* list) {
     RXObject_t* result = RXObject_allocateType(RXList_t);
     RXObject_initialize(result);
     RXObject_setDelegate(result, self);
-    RXList_payload(result) = eina_list_clone(list);
+    RXList_first(result) = eina_list_clone(list);
     return result;
 }
 
@@ -202,11 +204,11 @@ int RXList_count(const RXObject_t* self) {
 }
 
 void RXList_append(RXObject_t* self, RXObject_t* obj) {
-    RXList_payload(self) = eina_list_append(RXList_payload(self), obj);
+    RXList_first(self) = eina_list_append(RXList_first(self), obj);
 }
 
 RXObject_t* RXList_at(RXObject_t* self, int index) {
-    return eina_list_nth(RXList_payload(self), index);
+    return eina_list_nth(RXList_first(self), index);
 }
 
 void RXList_setup(void) {

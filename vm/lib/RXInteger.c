@@ -3,9 +3,11 @@
 
 // Private -------------------------------------------------------------
 
-RXObject_defineType(RXInteger_t, int);
+RXObject_defineType(RXInteger_t,
+    int value;
+);
 
-#define RXInteger_payload(self) ((RXInteger_t*)self)->payload
+#define RXInteger_value(self) ((RXInteger_t*)self)->value
 
 // Methods -------------------------------------------------------------
 
@@ -27,7 +29,7 @@ RXNativeMethod_define(RXInteger, print) {
 }
 
 RXNativeMethod_define(RXInteger, asBoolean) {
-    return RXInteger_payload(self)
+    return RXInteger_value(self)
         ? RXBoolean_true_o
         : RXBoolean_false_o;
 }
@@ -41,7 +43,7 @@ RXObject_t* RXInteger_spawn(RXObject_t* self, int value) {
     RXObject_t* result = RXObject_allocateType(RXInteger_t);
     RXObject_initialize(result);
     RXObject_setDelegate(result, self);
-    RXInteger_payload(result) = value;
+    RXInteger_value(result) = value;
     return result;
 }
 

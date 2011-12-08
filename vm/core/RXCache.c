@@ -36,10 +36,10 @@ void RXCache_removeEntry(RXObject_t* object, RXObject_t* slotName) {
     //  - the modified slot is "lookup"
     //  - there is a lookup method in the given object that possibly
     //    uses the given slot to compute inheritance
-    if (slotName == RXSymbol_delegate_o || slotName == RXSymbol_lookup_o ||
+/*    if (slotName == RXSymbol_delegate_o || slotName == RXSymbol_lookup_o ||
         RXObject_node(object, RXSymbol_lookup_o) != NULL) {
         // TODO remove all entries for object
-    }
+    } */
 }
 
 RXObject_t* RXCache_valueForEntry(RXObject_t* object, RXObject_t* slotName) {
