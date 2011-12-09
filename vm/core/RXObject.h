@@ -2,72 +2,67 @@
 #ifndef __RX_CORE_OBJECT_H__
 #define __RX_CORE_OBJECT_H__
 
-#include <stdint.h>
-#include <Eina.h>
+#include <stdlib.h>
+
+typedef struct RXObject_s RXObject_t;
 
 /*
- * Common data for all objects.
+ * Create an object type with the given name and fields.
+ *
+ * This example create a struct type with fields x and y.
+ * The resulting struct includes the virtual table for object methods.
+ *
+ * RXObject_defineType(Point_t,
+ *      int x;
+ *      int y;
+ * );
  */
-typedef struct {
-    Eina_Rbtree* slots;
-    uint32_t flags;
-} RXObjectCoreData_t;
-
-enum {
-    RXObject_flagIsLookingUp = 1,
-    RXObject_flagIsNativeMethod = 2,
-    RXObject_flagIsSearchingDelegates = 4
-};
-
-/*
- * Call this macro at the beginning of a struct
- * representing an object type.
- *
- * Example:
- *
- * typedef struct {
- *    // Core object data
- *    RXObject_declaration;
- *    // Payload
- *    int x;
- *    int y;
- * } PointObject_t;
- *
- * Object data is transparent for interoperability with plain C functions.
- * If a C function expects data of this type:
- *
- * typedef struct {
- *    int x;
- *    int y;
- * } Point_t;
- *
- * You can define a compatible object type like this:
- *
- * typedef struct {
- *    RXObject_declaration;
- *    Point_t payload;
- * } PointObject_t;
- *
- * See macro RXObject_defineType.
- */
-#define RXObject_declaration RXObjectCoreData_t __coreData__[0]
+#define RXObject_defineType(name, fields) \
+    typedef struct RX##name##_s { \
+        RXObject_t* __vtable__[0]; \
+        fields \
+    } RX##name##_t
 
 /*
- * Create an object type t from a plain C type c.
+ * Allocate memory for a new object with a given amount of payload bytes.
+ * This macro allocates memory for the core object data and the payload.
  */
-#define RXObject_defineType(name, declarations) \
-    typedef struct { \
-        RXObject_declaration; \
-        declarations \
-    } name
+RXObject_t* RXObject_allocateSize(const size_t size);
 
 /*
- * Core object type.
+ * Allocate memory for a new object with type t.
+ * This macro allocates memory for the core object data and the payload.
  */
-typedef struct {
-    RXObject_declaration;
-    // Payload: empty
-}  RXObject_t;
+#define RXObject_allocateType(t) \
+    RXObject_allocateSize(sizeof(t))
+
+/*
+ * Deallocate memory for a previously allocated object.
+ */
+void RXObject_deallocate(RXObject_t* self);
+
+/*
+ * Initialize a newly allocated object.
+ * A new object has an empty slot list.
+ */
+void RXObject_initialize(RXObject_t* self);
+
+/*
+ * Prepare the given object to be deleted.
+ * This function removes all slots, but does not deallocate the object itself.
+ * See RXObject_deallocate.
+ */
+void RXObject_finalize(RXObject_t* self);
+
+/*
+ * Create a new object.
+ */
+RXObject_t* RXObject_new(void);
+
+/*
+ * Create a new object with the given object as delegate.
+ */
+RXObject_t* RXObject_spawn(RXObject_t* self);
 
 /*
  * Assign a value to a slot of the given object.
@@ -83,17 +78,29 @@ void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate);
 /*
  * Return the value of a slot in the given object.
  */
-RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName);
+RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* name);
 
 /*
  * Delete a slot with the given name from the given object.
  * Return the value of the deleted slot.
  */
-RXObject_t* RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName);
+RXObject_t* RXObject_deleteSlot(RXObject_t* self, RXObject_t* name);
 
 /*
  * Respond to a message.
  */
 RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, RXObject_t* context, int argumentCount);
+
+/*
+ * Core object type.
+ */
+RXObject_defineType(Object,
+    /* Empty */
+);
+
+/*
+ * Accessor to the VTable of a given object.
+ */
+#define RXObject_vtable(self) (self)->__vtable__[-1]
 
 #endif
