@@ -12,12 +12,11 @@ static Eina_Hash* RXSymbol_all;
 /*
  * Core object type.
  */
-typedef struct {
-    RXObject_declaration;
+RXObject_defineType(RXSymbol_t,
     /* Payload: a character string
      * allocated to the appropriate size when creating a new symbol. */
-    char payload[0];
-} RXSymbol_t;
+    char chars[0];
+);
 
 // Public --------------------------------------------------------------
 

@@ -20,54 +20,27 @@ enum {
 };
 
 /*
- * Call this macro at the beginning of a struct
- * representing an object type.
+ * Create an object type.
  *
- * Example:
+ * Example: a point type with native attributes x and y.
  *
- * typedef struct {
- *    // Core object data
- *    RXObject_declaration;
- *    // Payload
- *    int x;
- *    int y;
- * } PointObject_t;
- *
- * Object data is transparent for interoperability with plain C functions.
- * If a C function expects data of this type:
- *
- * typedef struct {
- *    int x;
- *    int y;
- * } Point_t;
- *
- * You can define a compatible object type like this:
- *
- * typedef struct {
- *    RXObject_declaration;
- *    Point_t payload;
- * } PointObject_t;
- *
- * See macro RXObject_defineType.
- */
-#define RXObject_declaration RXObjectCoreData_t __coreData__[0]
-
-/*
- * Create an object type t from a plain C type c.
+ * RXObject_defineType(Point_t,
+ *      int x;
+ *      int y;
+ * );
  */
 #define RXObject_defineType(name, declarations) \
     typedef struct { \
-        RXObject_declaration; \
+        RXObjectCoreData_t __coreData__[0]; \
         declarations \
     } name
 
 /*
  * Core object type.
  */
-typedef struct {
-    RXObject_declaration;
-    // Payload: empty
-}  RXObject_t;
+RXObject_defineType(RXObject_t,
+    /* Empty */
+);
 
 /*
  * Assign a value to a slot of the given object.
