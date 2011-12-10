@@ -9,9 +9,15 @@
  */
 static Eina_Hash* RXSymbol_all;
 
-RXObject_defineType(Symbol,
-    char chars[0]; // Correct number of characters allocated when creating a new symbol
-);
+/*
+ * Core object type.
+ */
+typedef struct {
+    RXObject_declaration;
+    /* Payload: a character string
+     * allocated to the appropriate size when creating a new symbol. */
+    char payload[0];
+} RXSymbol_t;
 
 // Public --------------------------------------------------------------
 

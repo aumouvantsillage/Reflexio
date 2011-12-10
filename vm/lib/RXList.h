@@ -3,7 +3,6 @@
 #define __RX_LIB_LIST_H__
 
 #include <core/RXObject.h>
-#include <Eina.h>
 
 extern RXObject_t* RXList_o;
 extern RXObject_t* RXSymbol_List_o;

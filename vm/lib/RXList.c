@@ -1,11 +1,9 @@
 
 #include "RXLib.h"
-#include <stdbool.h>
-#include <assert.h>
 
 // Private -------------------------------------------------------------
 
-RXObject_defineType(List,
+RXObject_defineType(RXList_t,
     Eina_List* first;
 );
 
