@@ -3,7 +3,7 @@
 
 // Private -------------------------------------------------------------
 
-RXObject_defineType(RXInteger_t,
+RXObject_defineType(Integer,
     int value;
 );
 

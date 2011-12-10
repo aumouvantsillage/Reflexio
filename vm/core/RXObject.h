@@ -4,34 +4,24 @@
 
 #include <stdlib.h>
 
+typedef struct RXObject_s RXObject_t;
+
 /*
  * Create an object type with the given name and fields.
  *
  * This example create a struct type with fields x and y.
  * The resulting struct includes the virtual table for object methods.
  *
- * RXObject_defineType(RXPoint_t,
+ * RXObject_defineType(Point_t,
  *      int x;
  *      int y;
  * );
  */
 #define RXObject_defineType(name, fields) \
-    typedef struct __struct_##name { \
-        struct __struct_RXObject_t* __vtable__[0]; \
+    typedef struct RX##name##_s { \
+        RXObject_t* __vtable__[0]; \
         fields \
-    } name
-
-/*
- * Core object type.
- */
-RXObject_defineType(RXObject_t,
-    /* Empty */
-);
-
-/*
- * Accessor to the VTable of a given object.
- */
-#define RXObject_vtable(self) (self)->__vtable__[-1]
+    } RX##name##_t
 
 /*
  * Allocate memory for a new object with a given amount of payload bytes.
@@ -100,5 +90,17 @@ RXObject_t* RXObject_deleteSlot(RXObject_t* self, RXObject_t* name);
  * Respond to a message.
  */
 RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, RXObject_t* context, int argumentCount);
+
+/*
+ * Core object type.
+ */
+RXObject_defineType(Object,
+    /* Empty */
+);
+
+/*
+ * Accessor to the VTable of a given object.
+ */
+#define RXObject_vtable(self) (self)->__vtable__[-1]
 
 #endif

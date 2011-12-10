@@ -7,7 +7,7 @@
 /*
  * A native method is an object with a reference to a C function.
  */
-RXObject_defineType(RXNativeMethod_t,
+RXObject_defineType(NativeMethod,
     RXNativeMethodBody_t body;
 );
 

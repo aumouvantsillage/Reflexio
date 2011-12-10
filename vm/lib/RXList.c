@@ -5,7 +5,7 @@
 
 // Private -------------------------------------------------------------
 
-RXObject_defineType(RXList_t,
+RXObject_defineType(List,
     Eina_List* first;
 );
 
