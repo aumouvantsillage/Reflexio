@@ -3,7 +3,7 @@
 
 // Private--------------------------------------------------------------
 
-RXObject_defineType(Slot,
+RXObject_defineType(RXSlot_t,
     RXNativeMethodBody_t getter;
     RXObject_t* value;
 );

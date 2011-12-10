@@ -9,7 +9,7 @@
  */
 static Eina_Hash* RXSymbol_all;
 
-RXObject_defineType(Symbol,
+RXObject_defineType(RXSymbol_t,
     char chars[0]; // Correct number of characters allocated when creating a new symbol
 );
 

@@ -13,7 +13,7 @@
  * of associations between names and methods.
  * Associations are implemented as a red-black tree.
  */
-RXObject_defineType(VTable,
+RXObject_defineType(RXVTable_t,
     Eina_Rbtree* methods;
 );
 

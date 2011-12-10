@@ -3,7 +3,7 @@
 
 // Private -------------------------------------------------------------
 
-RXObject_defineType(File,
+RXObject_defineType(RXFile_t,
     FILE* handle;
 );
 
