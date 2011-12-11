@@ -36,7 +36,7 @@ static RXObject_t* RXClosure_spawn(RXObject_t* isMethod, RXObject_t* context, in
  * Returns:
  *  - a new closure with slot isMethod set to true
  */
-RXNativeMethod_define(RXObject, method) {
+RXNativeMethod_define(RXProtoObject, method) {
     return RXClosure_spawn(RXBoolean_true_o, context, argumentCount);    
 }
 
@@ -50,7 +50,7 @@ RXNativeMethod_define(RXObject, method) {
  * Returns:
  *  - a new closure with slot isMethod set to false
  */
-RXNativeMethod_define(RXObject, block) {
+RXNativeMethod_define(RXProtoObject, block) {
     return RXClosure_spawn(RXBoolean_false_o, context, argumentCount);    
 }
 
@@ -143,8 +143,8 @@ void RXClosure_setup(void) {
     RXObject_setSlot(RXClosure_o, RXSymbol_isMethod_o, RXBoolean_false_o);
     
     RXNativeMethod_attach(RXClosure, activate);
-    RXNativeMethod_attach(RXObject, method);
-    RXNativeMethod_attach(RXObject, block);
+    RXNativeMethod_attach(RXProtoObject, method);
+    RXNativeMethod_attach(RXProtoObject, block);
     
     RXSymbol_Closure_o = RXSymbol_symbolForCString("Closure");
     RXObject_setSlot(RXLobby_o, RXSymbol_Closure_o, RXClosure_o);

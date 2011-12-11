@@ -15,7 +15,7 @@
  * Returns:
  *  - self
  */
-RXNativeMethod_define(RXObject, valueInContext) {
+RXNativeMethod_define(RXProtoObject, valueInContext) {
     return self;
 }
 
@@ -33,7 +33,7 @@ RXNativeMethod_define(RXObject, valueInContext) {
  *
  *  a(b, c) ; d(e,f)
  */
-RXNativeMethod_define(RXObject, closeStatement) {
+RXNativeMethod_define(RXProtoObject, closeStatement) {
     return context;
 }
 
@@ -148,15 +148,15 @@ void RXExpression_setup(void) {
 
     RXExpression_o = RXList_spawn(RXList_o, NULL);
     
-    RXNativeMethod_attach(RXObject, valueInContext);
+    RXNativeMethod_attach(RXProtoObject, valueInContext);
     RXNativeMethod_attach(RXExpression, valueInContext);
     RXNativeMethod_attach(RXExpression, asString);
     RXNativeMethod_attach(RXExpression, fromFile);
     RXNativeMethod_attach(RXExpression, fromString);
     
     // Method closeStatement is also bound to symbol ";"    
-    RXObject_setSlot(RXObject_o, RXSymbol_semicolon_o,
-        RXNativeMethod_attach(RXObject, closeStatement)
+    RXObject_setSlot(RXProtoObject_o, RXSymbol_semicolon_o,
+        RXNativeMethod_attach(RXProtoObject, closeStatement)
     );
     
     RXSymbol_Expression_o = RXSymbol_symbolForCString("Expression");

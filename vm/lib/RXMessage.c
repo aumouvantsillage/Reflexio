@@ -3,7 +3,7 @@
 
 // Methods -------------------------------------------------------------
 
-RXNativeMethod_define(RXObject, valueOnObjectInContext) {
+RXNativeMethod_define(RXProtoObject, valueOnObjectInContext) {
     return self;
 }
 
@@ -79,7 +79,7 @@ void RXMessage_setup(void) {
     // and and empty argument list
     RXObject_setSlot(RXMessage_o, RXSymbol_name_o, RXSymbol_nil_o);
 
-    RXNativeMethod_attach(RXObject, valueOnObjectInContext);
+    RXNativeMethod_attach(RXProtoObject, valueOnObjectInContext);
     RXNativeMethod_attach(RXMessage, valueOnObjectInContext);
     RXNativeMethod_attach(RXMessage, asSource);
     
