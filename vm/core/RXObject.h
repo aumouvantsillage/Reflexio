@@ -10,8 +10,10 @@
  */
 typedef struct {
     Eina_Rbtree* slots;
-    struct __struct_RXObject_t* delegate;
-    uint32_t flags;
+    union {
+        struct __struct_RXObject_t* delegate;
+        intptr_t flags;
+    };
 } RXObjectCoreData_t;
 
 enum {

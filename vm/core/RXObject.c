@@ -93,7 +93,8 @@ RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
 #endif
     
     if (result == RXNil_o && slotName != RXSymbol_lookup_o && !RXObject_isLookingUp(self)) {
-        // If a lookup method exists in the receiver, send an "activate" message to that method
+        // If a lookup method exists in the receiver'delegate chain,
+        // send an "activate" message to that method
         RXObject_t* lookupMethod = RXObject_valueOfSlot(self, RXSymbol_lookup_o);
         if (lookupMethod != RXNil_o) {
             // lookupMethod activate(self, slotName)
@@ -109,7 +110,7 @@ RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
         // If the delegate of the receiver is not nil,
         // recursively look up in the corresponding object.
         // TODO prevent cycles in the delegate chain
-        RXObject_t* delegate = RXObject_coreData(self).delegate;
+        RXObject_t* delegate = RXObject_delegate(self);
         if (delegate != RXNil_o) {
             result = RXObject_valueOfSlot(delegate, slotName);
         }
