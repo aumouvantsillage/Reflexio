@@ -61,14 +61,16 @@ void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value,
 #ifdef RX_CACHE_ENABLE
     // Modifying the lookup method invalidates all cached slots
     // from the current object 
-    if (slotName == RXSymbol_lookup_o) {
-        RXObject_setDirty(self);
-    }
-    
-    // Modifying a non-cached slot invalidates all cached slots with
-    // the same name in all other objects.
-    if (node != NULL && !cached) {
-        RXCache_setDirty(slotName);
+    if (!cached) {
+        if (slotName == RXSymbol_lookup_o) {
+            RXObject_setDirty(self);
+        }
+        
+        // Modifying a non-cached slot invalidates all cached slots with
+        // the same name in all other objects.
+        if (node != NULL && !cached) {
+            RXCache_setDirty(slotName);
+        }
     }
 #endif
 
