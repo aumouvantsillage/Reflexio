@@ -5,7 +5,6 @@ set(VM_SRC
     core/RXObject.c
     core/RXSymbol.c
     core/RXNativeMethod.c
-    core/RXCache.c
     lib/RXObject.c
     lib/RXSymbol.c
     lib/RXBoolean.c

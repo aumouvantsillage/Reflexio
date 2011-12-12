@@ -6,7 +6,7 @@ option(CACHE "Use method cache" ON)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake-extensions/ )
 
-add_definitions(-std=gnu99 -D_GNU_SOURCE)
+add_definitions(-std=gnu99 -D_GNU_SOURCE -O2)
 
 find_package(Eina)
 include_directories(${EINA_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/vm ${PROJECT_SOURCE_DIR}/vm )

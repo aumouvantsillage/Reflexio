@@ -2,6 +2,8 @@
 #ifndef __RX_CORE_H__
 #define __RX_CORE_H__
 
+#define RX_INLINE __attribute__((always_inline)) inline static
+
 #include "RXObject.h"
 
 extern RXObject_t* RXLobby_o;
@@ -23,7 +25,6 @@ extern RXObject_t* RXSymbol_NativeMethod_o;
 #include "RXSymbol.h"
 #include "RXNativeMethod.h"
 #include "RXNativeMethod_inline.h"
-#include "RXCache.h"
 
 void RXCore_setup(void);
 void RXCore_clean(void);

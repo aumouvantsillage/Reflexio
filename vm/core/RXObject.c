@@ -1,23 +1,38 @@
 
 #include "RXCore.h"
-#include "RXCache.h"
 #include <inttypes.h>
-
-#ifndef RX_CACHE_ENABLE
-#warning Flag RX_CACHE_ENABLE not defined: method cache is disabled.
-#endif
 
 // Private -------------------------------------------------------------
 
-inline static bool RXObject_isLookingUp(const RXObject_t* self) {
+#ifdef RX_CACHE_ENABLE
+    static Eina_Hash* RXCache_data;
+    typedef unsigned RXCacheVersion_t;
+#else
+    #warning Flag RX_CACHE_ENABLE not defined: method cache is disabled.
+#endif
+
+/*
+ * Node type for Red-Black binary trees containing object slots.
+ */
+typedef struct {
+    EINA_RBTREE;
+    RXObject_t* key;
+    RXObject_t* value;
+#ifdef RX_CACHE_ENABLE
+    bool cached;
+    RXCacheVersion_t version;
+#endif
+} RXObjectNode_t;
+
+RX_INLINE bool RXObject_isLookingUp(const RXObject_t* self) {
     return (RXObject_coreData(self).flags & RXObject_flagIsLookingUp) != 0;
 }
 
-inline static void RXObject_setIsLookingUp(RXObject_t* self) { 
+RX_INLINE void RXObject_setIsLookingUp(RXObject_t* self) { 
     RXObject_coreData(self).flags |= RXObject_flagIsLookingUp;
 }
 
-inline static void RXObject_clearIsLookingUp(RXObject_t* self) {
+RX_INLINE void RXObject_clearIsLookingUp(RXObject_t* self) {
     RXObject_coreData(self).flags &= ~RXObject_flagIsLookingUp;
 }
 
@@ -37,12 +52,33 @@ static Eina_Rbtree_Direction RXObject_compareNodes(const RXObjectNode_t *left, c
         : EINA_RBTREE_RIGHT; 
 }
 
-static inline RXObjectNode_t* RXObject_node(const RXObject_t* self, const RXObject_t* slotName) {
+RX_INLINE RXObjectNode_t* RXObject_node(const RXObject_t* self, const RXObject_t* slotName) {
     return (RXObjectNode_t*)eina_rbtree_inline_lookup(RXObject_coreData(self).slots, slotName, 0, EINA_RBTREE_CMP_KEY_CB(RXObject_compareKeys), NULL);
 }
 
 #ifdef RX_CACHE_ENABLE
-static void RXObject_setDirty(const RXObject_t* self) {
+RX_INLINE RXCacheVersion_t RXCache_addSlotName(RXObject_t* slotName) {
+    RXCacheVersion_t* version = eina_hash_find(RXCache_data, &slotName);
+    if (version == NULL) {
+        version = malloc(sizeof(RXCacheVersion_t));
+        *version = 0;
+        eina_hash_add(RXCache_data, &slotName, version);
+    }
+    return *version;
+}
+
+RX_INLINE RXCacheVersion_t RXCache_version(RXObject_t* slotName) {
+    return *(RXCacheVersion_t*)eina_hash_find(RXCache_data, &slotName);
+}
+
+RX_INLINE void RXCache_setDirty(RXObject_t* slotName) {
+    RXCacheVersion_t* version = eina_hash_find(RXCache_data, &slotName);
+    if (version != NULL) {
+        (*version)++;
+    }
+}
+
+RX_INLINE void RXObject_setDirty(const RXObject_t* self) {
     Eina_Iterator* iter = eina_rbtree_iterator_prefix(RXObject_coreData(self).slots);
     RXObjectNode_t* node;
     while(eina_iterator_next(iter, (void**)&node)) {
@@ -50,6 +86,10 @@ static void RXObject_setDirty(const RXObject_t* self) {
             RXCache_setDirty(node->key);
         }
     }
+}
+
+RX_INLINE void RXCache_removeSlotName(RXObject_t* slotName) {
+    eina_hash_del_by_key(RXCache_data, &slotName);
 }
 #endif
 
@@ -210,4 +250,16 @@ RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, RXObje
         RXNativeMethod_pop(argumentCount);
         return RXNil_o;
     }
+}
+
+void RXObject_setup(void) {
+#ifdef RX_CACHE_ENABLE
+    RXCache_data = eina_hash_pointer_new(EINA_FREE_CB(free));
+#endif
+}
+
+void RXObject_clean(void) {
+#ifdef RX_CACHE_ENABLE
+    eina_hash_free(RXCache_data);
+#endif
 }

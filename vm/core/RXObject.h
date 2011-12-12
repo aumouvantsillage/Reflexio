@@ -45,21 +45,6 @@ RXObject_defineType(RXObject_t,
     /* Empty */
 );
 
-#include "RXCache.h"
-
-/*
- * Node type for Red-Black binary trees containing object slots.
- */
-typedef struct {
-    EINA_RBTREE;
-    RXObject_t* key;
-    RXObject_t* value;
-#ifdef RX_CACHE_ENABLE
-    bool cached;
-    RXCacheVersion_t version;
-#endif
-} RXObjectNode_t;
-
 /*
  * Assign a value to a slot of the given object.
  */
@@ -86,5 +71,8 @@ RXObject_t* RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName);
  * Respond to a message.
  */
 RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, RXObject_t* context, int argumentCount);
+
+void RXObject_setup(void);
+void RXObject_clean(void);
 
 #endif
