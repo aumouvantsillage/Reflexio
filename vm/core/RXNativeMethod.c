@@ -16,12 +16,13 @@ RXObject_defineType(RXNativeMethod_t,
 RXObject_t** RXNativeMethod_stackBottom;
 RXObject_t** RXNativeMethod_stackTop;
 
-RXObject_t* RXNativeMethod_new(RXNativeMethodBody_t body) {
-    RXObject_t* self = RXObject_allocateType(RXNativeMethod_t);
-    RXObject_initialize(self);
-    RXObject_setIsNativeMethod(self);
-    ((RXNativeMethod_t*)self)->body = body;
-    return self;
+RXObject_t* RXNativeMethod_spawn(RXObject_t* self, RXNativeMethodBody_t body) {
+    RXObject_t* result = RXObject_allocateType(RXNativeMethod_t);
+    RXObject_initialize(result);
+    RXObject_setIsNativeMethod(result);
+    ((RXNativeMethod_t*)result)->body = body;
+    RXObject_setDelegate(result, self);
+    return result;
 }
 
 void RXNativeMethod_setup(void) {

@@ -40,9 +40,8 @@ typedef RXObject_t* (*RXNativeMethodBody_t) (RXObject_t* self, RXObject_t* conte
  * RXNativeMethod_attach(MyType, someMessage)
  */
 #define RXNativeMethod_attach(type, name) ({ \
-    RXObject_t* method = RXNativeMethod_new(RXNativeMethod_functionName(type, name)); \
+    RXObject_t* method = RXNativeMethod_spawn(RXNativeMethod_o, RXNativeMethod_functionName(type, name)); \
     RXObject_setSlot(type##_o, RXSymbol_symbolForCString(#name), method); \
-    RXObject_setSlot(method, RXSymbol_delegate_o, RXNativeMethod_o); \
     method; \
 })
 
@@ -55,6 +54,6 @@ void RXNativeMethod_clean(void);
  *
  * Use macro RXNativeMethod_attach to create a method and attach it to an object.
  */
-RXObject_t* RXNativeMethod_new(RXNativeMethodBody_t body);
+RXObject_t* RXNativeMethod_spawn(RXObject_t* self, RXNativeMethodBody_t body);
 
 #endif

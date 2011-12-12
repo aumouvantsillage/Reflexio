@@ -41,7 +41,7 @@ RXObject_t* RXSymbol_symbolForCString(const char* str) {
     RXObject_t* symbol = eina_hash_find(RXSymbol_all, str);
     if(symbol == NULL) {
         symbol = RXSymbol_new(str);
-        RXObject_setSlot(symbol, RXSymbol_delegate_o, RXSymbol_o);
+        RXObject_setDelegate(symbol, RXSymbol_o);
     }
     return symbol;
 }

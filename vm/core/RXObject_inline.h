@@ -52,6 +52,11 @@ inline static RXObject_t* RXObject_new(void) {
     return self;
 }
 
+inline static void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate) {
+    // TODO prevent cycles in the delegate chain when changing an already assigned delegate
+    RXObject_coreData(self).delegate = delegate;
+}
+
 /*
  * Allocate and initialize a new object.
  * Set the delegate slot of the new object to self.

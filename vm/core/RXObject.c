@@ -66,11 +66,6 @@ void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value)
 #endif
 }
 
-void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate) {
-    // TODO prevent cycles in the delegate chain when changing an already assigned delegate
-    RXObject_setSlot(self, RXSymbol_delegate_o, delegate);
-}
-
 /*
  * Default slot lookup method.
  *
@@ -110,13 +105,13 @@ RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
         }
     }
 
-    if (result == RXNil_o && slotName != RXSymbol_delegate_o) {
-        // If a delegate slot exists in the receiver and the delegate is not nil,
+    if (result == RXNil_o) {
+        // If the delegate of the receiver is not nil,
         // recursively look up in the corresponding object.
         // TODO prevent cycles in the delegate chain
-        RXObjectNode_t* node = RXObject_node(self, RXSymbol_delegate_o);
-        if (node != NULL && node->value != RXNil_o) {
-            result =  RXObject_valueOfSlot(node->value, slotName);
+        RXObject_t* delegate = RXObject_coreData(self).delegate;
+        if (delegate != RXNil_o) {
+            result = RXObject_valueOfSlot(delegate, slotName);
         }
     }
     

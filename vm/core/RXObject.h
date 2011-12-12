@@ -10,6 +10,7 @@
  */
 typedef struct {
     Eina_Rbtree* slots;
+    struct __struct_RXObject_t* delegate;
     uint32_t flags;
 } RXObjectCoreData_t;
 
@@ -29,7 +30,7 @@ enum {
  * );
  */
 #define RXObject_defineType(name, declarations) \
-    typedef struct { \
+    typedef struct __struct_##name { \
         RXObjectCoreData_t __coreData__[0]; \
         declarations \
     } name
@@ -50,7 +51,7 @@ void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value)
  * Assign a delegate object to self.
  * If the delegate has a lookup method, it is copied into self.
  */
-void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate);
+inline static void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate);
 
 /*
  * Return the value of a slot in the given object.

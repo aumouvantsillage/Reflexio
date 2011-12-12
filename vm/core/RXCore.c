@@ -14,7 +14,6 @@ RXObject_t* RXSymbol_NativeMethod_o;
 
 RXObject_t* RXSymbol_o;
 RXObject_t* RXSymbol_activate_o;
-RXObject_t* RXSymbol_delegate_o;
 RXObject_t* RXSymbol_lookup_o;
 RXObject_t* RXSymbol_respondTo_o;
 
@@ -31,23 +30,17 @@ void RXCore_setup(void) {
 
     // Creating core objects
     RXNil_o = RXObject_new();
-    RXProtoObject_o = RXObject_new();
-    RXLobby_o = RXObject_new();
-    RXObject_o = RXObject_new();
-    RXSymbol_o = RXSymbol_new("Symbol");
-    RXNativeMethod_o = RXNativeMethod_new(RXNativeMethod_functionName(RXNativeMethod, default));
+    RXObject_setDelegate(RXNil_o, RXNil_o);
     
-    // Setting delegates
-    RXSymbol_delegate_o = RXSymbol_new("delegate");
+    RXProtoObject_o = RXObject_spawn(RXNil_o);
+    RXLobby_o = RXObject_spawn(RXProtoObject_o);
+    RXObject_o = RXObject_spawn(RXLobby_o);
 
-    RXObject_setSlot(RXNil_o, RXSymbol_delegate_o, RXNil_o);
-    RXObject_setSlot(RXProtoObject_o, RXSymbol_delegate_o, RXNil_o);
-    RXObject_setSlot(RXLobby_o, RXSymbol_delegate_o, RXProtoObject_o);
-    RXObject_setSlot(RXObject_o, RXSymbol_delegate_o, RXLobby_o);   
-    RXObject_setSlot(RXSymbol_o, RXSymbol_delegate_o, RXObject_o);
-    RXObject_setSlot(RXSymbol_delegate_o, RXSymbol_delegate_o, RXSymbol_o);
-    RXObject_setSlot(RXNativeMethod_o, RXSymbol_delegate_o, RXObject_o);
-
+    RXSymbol_o = RXSymbol_new("Symbol");
+    RXObject_setDelegate(RXSymbol_o, RXObject_o);
+    
+    RXNativeMethod_o = RXNativeMethod_spawn(RXObject_o, RXNativeMethod_functionName(RXNativeMethod, default));
+    
     // Registering core objects in the lobby
     RXSymbol_nil_o = RXSymbol_symbolForCString("nil");
     RXSymbol_ProtoObject_o = RXSymbol_symbolForCString("ProtoObject");
