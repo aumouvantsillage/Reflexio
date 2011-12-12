@@ -21,18 +21,6 @@ inline static void RXObject_clearIsLookingUp(RXObject_t* self) {
     RXObject_coreData(self).flags &= ~RXObject_flagIsLookingUp;
 }
 
-inline static bool RXObject_isSearchingDelegates(const RXObject_t* self) {
-    return (RXObject_coreData(self).flags & RXObject_flagIsSearchingDelegates) != 0;
-}
-
-inline static void RXObject_setIsSearchingDelegates(RXObject_t* self) { 
-    RXObject_coreData(self).flags |= RXObject_flagIsSearchingDelegates;
-}
-
-inline static void RXObject_clearIsSearchingDelegates(RXObject_t* self) {
-    RXObject_coreData(self).flags &= ~RXObject_flagIsSearchingDelegates;
-}
-
 /*
  * Node type for Red-Black binary trees containing
  * object slots.
@@ -79,6 +67,7 @@ void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value)
 }
 
 void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate) {
+    // TODO prevent cycles in the delegate chain when changing an already assigned delegate
     RXObject_setSlot(self, RXSymbol_delegate_o, delegate);
     RXObjectNode_t* node = RXObject_node(delegate, RXSymbol_lookup_o);
     if (node != NULL) {
@@ -96,26 +85,21 @@ void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate) {
 RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
     RXObject_t* result = RXNil_o;
 
-    // Looking in the current object is disabled when searching the delegate chain.
-    // It is allowed when using a custom lookup method, so that the body of the lookup method
-    // can access slots of the current object. 
-    if (!RXObject_isSearchingDelegates(self)) {
-        // Look up in the own slots of the current object
-        RXObjectNode_t* node = RXObject_node(self, slotName);
-        if (node != NULL) {
-            return node->value;
-        }
+    // Look up in the own slots of the current object
+    RXObjectNode_t* node = RXObject_node(self, slotName);
+    if (node != NULL) {
+        return node->value;
+    }
         
 #ifdef RX_CACHE_ENABLE
-        // If not found, look up in the cache
-        if (result == RXNil_o) {
-            result = RXCache_valueForEntry(self, slotName);
-            if (result != RXNil_o) {
-                return result;
-            }
+    // If not found, look up in the cache
+    if (result == RXNil_o) {
+        result = RXCache_valueForEntry(self, slotName);
+        if (result != RXNil_o) {
+            return result;
         }
-#endif
     }
+#endif
     
     if (result == RXNil_o && slotName != RXSymbol_lookup_o && !RXObject_isLookingUp(self)) {
         // If a lookup method exists in the receiver, send an "activate" message to that method
@@ -130,13 +114,13 @@ RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
         }
     }
 
-    if (result == RXNil_o && slotName != RXSymbol_delegate_o && !RXObject_isSearchingDelegates(self)) {
-        // If a delegate slot exists in the receiver, recursively look up in the corresponding object
+    if (result == RXNil_o && slotName != RXSymbol_delegate_o) {
+        // If a delegate slot exists in the receiver and the delegate is not nil,
+        // recursively look up in the corresponding object.
+        // TODO prevent cycles in the delegate chain
         RXObjectNode_t* node = RXObject_node(self, RXSymbol_delegate_o);
-        if (node != NULL) {
-            RXObject_setIsSearchingDelegates(self);
+        if (node != NULL && node->value != RXNil_o) {
             result =  RXObject_valueOfSlot(node->value, slotName);
-            RXObject_clearIsSearchingDelegates(self);
         }
     }
     

@@ -15,8 +15,7 @@ typedef struct {
 
 enum {
     RXObject_flagIsLookingUp = 1,
-    RXObject_flagIsNativeMethod = 2,
-    RXObject_flagIsSearchingDelegates = 4
+    RXObject_flagIsNativeMethod = 2
 };
 
 /*
