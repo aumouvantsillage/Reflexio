@@ -69,10 +69,6 @@ void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value)
 void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate) {
     // TODO prevent cycles in the delegate chain when changing an already assigned delegate
     RXObject_setSlot(self, RXSymbol_delegate_o, delegate);
-    RXObjectNode_t* node = RXObject_node(delegate, RXSymbol_lookup_o);
-    if (node != NULL) {
-        RXObject_setSlot(self, RXSymbol_lookup_o, node->value);
-    }
 }
 
 /*
@@ -103,13 +99,13 @@ RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
     
     if (result == RXNil_o && slotName != RXSymbol_lookup_o && !RXObject_isLookingUp(self)) {
         // If a lookup method exists in the receiver, send an "activate" message to that method
-        RXObjectNode_t* node = RXObject_node(self, RXSymbol_lookup_o);
-        if (node != NULL) {
+        RXObject_t* lookupMethod = RXObject_valueOfSlot(self, RXSymbol_lookup_o);
+        if (lookupMethod != RXNil_o) {
             // lookupMethod activate(self, slotName)
             RXNativeMethod_push(slotName);
             RXNativeMethod_push(self);
             RXObject_setIsLookingUp(self);
-            result = RXObject_respondTo(node->value, RXSymbol_activate_o, RXNil_o, 2);
+            result = RXObject_respondTo(lookupMethod, RXSymbol_activate_o, RXNil_o, 2);
             RXObject_clearIsLookingUp(self);
         }
     }
