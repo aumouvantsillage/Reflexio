@@ -23,6 +23,7 @@ extern RXObject_t* RXSymbol_NativeMethod_o;
 #include "RXSymbol.h"
 #include "RXNativeMethod.h"
 #include "RXNativeMethod_inline.h"
+#include "RXCache.h"
 
 void RXCore_setup(void);
 void RXCore_clean(void);

@@ -24,7 +24,9 @@ RXNativeMethod_define(RXNativeMethod, default) {
 }
 
 void RXCore_setup(void) {
+#ifdef RX_CACHE_ENABLE
     RXCache_setup();
+#endif
     RXSymbol_setup();
     RXNativeMethod_setup();
 
@@ -46,13 +48,14 @@ void RXCore_setup(void) {
     RXSymbol_ProtoObject_o = RXSymbol_symbolForCString("ProtoObject");
     RXSymbol_Lobby_o = RXSymbol_symbolForCString("Lobby");
     RXSymbol_Object_o = RXSymbol_symbolForCString("Object");
+    RXSymbol_NativeMethod_o = RXSymbol_symbolForCString("NativeMethod");
 
-    RXObject_setSlot(RXLobby_o, RXSymbol_nil_o, RXNil_o);
-    RXObject_setSlot(RXLobby_o, RXSymbol_ProtoObject_o, RXProtoObject_o);
-    RXObject_setSlot(RXLobby_o, RXSymbol_Lobby_o, RXLobby_o);
-    RXObject_setSlot(RXLobby_o, RXSymbol_Object_o, RXObject_o);
-    RXObject_setSlot(RXLobby_o, RXSymbol_o, RXSymbol_o);
-    RXObject_setSlot(RXLobby_o, RXSymbol_NativeMethod_o, RXNativeMethod_o);
+    RXObject_setSlot(RXLobby_o, RXSymbol_nil_o, RXNil_o, false);
+    RXObject_setSlot(RXLobby_o, RXSymbol_ProtoObject_o, RXProtoObject_o, false);
+    RXObject_setSlot(RXLobby_o, RXSymbol_Lobby_o, RXLobby_o, false);
+    RXObject_setSlot(RXLobby_o, RXSymbol_Object_o, RXObject_o, false);
+    RXObject_setSlot(RXLobby_o, RXSymbol_o, RXSymbol_o, false);
+    RXObject_setSlot(RXLobby_o, RXSymbol_NativeMethod_o, RXNativeMethod_o, false);
     
     // Creating symbols for core methods
     RXSymbol_activate_o = RXSymbol_symbolForCString("activate");
@@ -63,5 +66,7 @@ void RXCore_setup(void) {
 void RXCore_clean(void) {
     RXNativeMethod_clean();
     RXSymbol_clean();
+#ifdef RX_CACHE_ENABLE
     RXCache_clean();
+#endif
 }

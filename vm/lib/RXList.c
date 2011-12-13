@@ -240,5 +240,5 @@ void RXList_setup(void) {
     RXNativeMethod_attach(RXList, exists);
 
     RXSymbol_List_o = RXSymbol_symbolForCString("List");
-    RXObject_setSlot(RXLobby_o, RXSymbol_List_o, RXList_o);
+    RXObject_setSlot(RXLobby_o, RXSymbol_List_o, RXList_o, false);
 }

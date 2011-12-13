@@ -156,9 +156,10 @@ void RXExpression_setup(void) {
     
     // Method closeStatement is also bound to symbol ";"    
     RXObject_setSlot(RXProtoObject_o, RXSymbol_semicolon_o,
-        RXNativeMethod_attach(RXProtoObject, closeStatement)
+        RXNativeMethod_attach(RXProtoObject, closeStatement),
+        false
     );
     
     RXSymbol_Expression_o = RXSymbol_symbolForCString("Expression");
-    RXObject_setSlot(RXLobby_o, RXSymbol_Expression_o, RXExpression_o);
+    RXObject_setSlot(RXLobby_o, RXSymbol_Expression_o, RXExpression_o, false);
 }

@@ -16,10 +16,10 @@ static RXObject_t* RXClosure_spawn(RXObject_t* isMethod, RXObject_t* context, in
     RXObject_t* body = RXNativeMethod_argumentAt(argumentCount - 1);
     
     RXObject_t* result = RXObject_spawn(RXClosure_o);
-    RXObject_setSlot(result, RXSymbol_context_o, context);
-    RXObject_setSlot(result, RXSymbol_body_o, body);
-    RXObject_setSlot(result, RXSymbol_parameters_o, parameterList);
-    RXObject_setSlot(result, RXSymbol_isMethod_o, isMethod);
+    RXObject_setSlot(result, RXSymbol_context_o, context, false);
+    RXObject_setSlot(result, RXSymbol_body_o, body, false);
+    RXObject_setSlot(result, RXSymbol_parameters_o, parameterList, false);
+    RXObject_setSlot(result, RXSymbol_isMethod_o, isMethod, false);
     
     return result;
 }
@@ -71,16 +71,16 @@ RXNativeMethod_define(RXClosure, activate) {
     RXObject_t* localContext = RXObject_spawn(RXObject_valueOfSlot(self, RXSymbol_context_o));
 
     // We keep a reference to the calling context for arguments of the closure execution.
-    RXObject_setSlot(localContext, RXSymbol_context_o, context);
+    RXObject_setSlot(localContext, RXSymbol_context_o, context, false);
     
     // The locals object has a named reference to itself, if there is
     // a need to pass it as an argument in a message.
-    RXObject_setSlot(localContext, RXSymbol_locals_o, localContext);
+    RXObject_setSlot(localContext, RXSymbol_locals_o, localContext, false);
 
     // If the closure defines a method, assign slot "self" with the first argument.
     // Otherwise, the first argument is ignored.
     if (RXObject_valueOfSlot(self, RXSymbol_isMethod_o) == RXBoolean_true_o && argumentCount > 0) {
-        RXObject_setSlot(localContext, RXSymbol_self_o, RXExpression_valueOfArgumentAt(0, context));
+        RXObject_setSlot(localContext, RXSymbol_self_o, RXExpression_valueOfArgumentAt(0, context), false);
     }
 
     // Get the list of parameters of the current closure.
@@ -90,7 +90,7 @@ RXNativeMethod_define(RXClosure, activate) {
 
     // Process the arguments of the closure execution
     RXObject_t* argumentList = RXList_spawn(RXList_o, NULL);
-    RXObject_setSlot(localContext, RXSymbol_arguments_o, argumentList);
+    RXObject_setSlot(localContext, RXSymbol_arguments_o, argumentList, false);
     for(int i = 1; i < argumentCount; i ++) {
         // Raw argument expressions are put into an argument list
         RXList_append(argumentList, RXNativeMethod_argumentAt(i));
@@ -98,10 +98,10 @@ RXNativeMethod_define(RXClosure, activate) {
             RXObject_t* parameter = RXList_at(parameterList, i - 1);
             // Parameters whose name start with '$' are not evaluated
             if (*(char*)parameter == '$') {
-                RXObject_setSlot(localContext, parameter, RXNativeMethod_argumentAt(i));
+                RXObject_setSlot(localContext, parameter, RXNativeMethod_argumentAt(i), false);
             }
             else {
-                RXObject_setSlot(localContext, parameter, RXExpression_valueOfArgumentAt(i, context));
+                RXObject_setSlot(localContext, parameter, RXExpression_valueOfArgumentAt(i, context), false);
             }
         }
     }
@@ -137,15 +137,15 @@ void RXClosure_setup(void) {
     RXSymbol_block_o = RXSymbol_symbolForCString("block");
     
     RXClosure_o = RXObject_spawn(RXObject_o);
-    RXObject_setSlot(RXClosure_o, RXSymbol_parameters_o, RXList_spawn(RXList_o, NULL));
-    RXObject_setSlot(RXClosure_o, RXSymbol_context_o, RXNil_o);
-    RXObject_setSlot(RXClosure_o, RXSymbol_body_o, RXList_spawn(RXExpression_o, NULL));
-    RXObject_setSlot(RXClosure_o, RXSymbol_isMethod_o, RXBoolean_false_o);
+    RXObject_setSlot(RXClosure_o, RXSymbol_parameters_o, RXList_spawn(RXList_o, NULL), false);
+    RXObject_setSlot(RXClosure_o, RXSymbol_context_o, RXNil_o, false);
+    RXObject_setSlot(RXClosure_o, RXSymbol_body_o, RXList_spawn(RXExpression_o, NULL), false);
+    RXObject_setSlot(RXClosure_o, RXSymbol_isMethod_o, RXBoolean_false_o, false);
     
     RXNativeMethod_attach(RXClosure, activate);
     RXNativeMethod_attach(RXProtoObject, method);
     RXNativeMethod_attach(RXProtoObject, block);
     
     RXSymbol_Closure_o = RXSymbol_symbolForCString("Closure");
-    RXObject_setSlot(RXLobby_o, RXSymbol_Closure_o, RXClosure_o);
+    RXObject_setSlot(RXLobby_o, RXSymbol_Closure_o, RXClosure_o, false);
 }

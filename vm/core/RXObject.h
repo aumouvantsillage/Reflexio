@@ -3,6 +3,7 @@
 #define __RX_CORE_OBJECT_H__
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <Eina.h>
 
 /*
@@ -44,16 +45,31 @@ RXObject_defineType(RXObject_t,
     /* Empty */
 );
 
+#include "RXCache.h"
+
+/*
+ * Node type for Red-Black binary trees containing object slots.
+ */
+typedef struct {
+    EINA_RBTREE;
+    RXObject_t* key;
+    RXObject_t* value;
+#ifdef RX_CACHE_ENABLE
+    bool cached;
+    RXCacheVersion_t version;
+#endif
+} RXObjectNode_t;
+
 /*
  * Assign a value to a slot of the given object.
  */
-void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value);
+void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value, bool cached);
 
 /*
  * Assign a delegate object to self.
  * If the delegate has a lookup method, it is copied into self.
  */
-inline static void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate);
+void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate);
 
 /*
  * Return the value of a slot in the given object.

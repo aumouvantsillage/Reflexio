@@ -41,7 +41,7 @@ typedef RXObject_t* (*RXNativeMethodBody_t) (RXObject_t* self, RXObject_t* conte
  */
 #define RXNativeMethod_attach(type, name) ({ \
     RXObject_t* method = RXNativeMethod_spawn(RXNativeMethod_o, RXNativeMethod_functionName(type, name)); \
-    RXObject_setSlot(type##_o, RXSymbol_symbolForCString(#name), method); \
+    RXObject_setSlot(type##_o, RXSymbol_symbolForCString(#name), method, false); \
     method; \
 })
 

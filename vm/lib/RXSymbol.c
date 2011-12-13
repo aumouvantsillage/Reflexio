@@ -58,6 +58,4 @@ void RXSymbol_libSetup(void) {
     RXNativeMethod_attach(RXSymbol, asSource);
     RXNativeMethod_attach(RXSymbol, print);
     RXNativeMethod_attach(RXSymbol, println);
-
-    RXObject_setSlot(RXLobby_o, RXSymbol_o, RXSymbol_o);
 }

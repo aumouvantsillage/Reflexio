@@ -45,7 +45,7 @@ void RXNumber_setup(void) {
     RXNativeMethod_attach(RXNumber, print);
 
     RXSymbol_Number_o = RXSymbol_symbolForCString("Number");
-    RXObject_setSlot(RXLobby_o, RXSymbol_Number_o, RXNumber_o);
+    RXObject_setSlot(RXLobby_o, RXSymbol_Number_o, RXNumber_o, false);
 }
 
 void RXNumber_clean(void) {

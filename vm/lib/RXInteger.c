@@ -57,5 +57,5 @@ void RXInteger_setup(void) {
     RXNativeMethod_attach(RXInteger, print);
     RXNativeMethod_attach(RXInteger, asBoolean);
 
-    RXObject_setSlot(RXLobby_o, RXSymbol_Integer_o, RXInteger_o);
+    RXObject_setSlot(RXLobby_o, RXSymbol_Integer_o, RXInteger_o, false);
 }

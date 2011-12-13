@@ -32,7 +32,7 @@ RXNativeMethod_define(RXProtoObject, setSlot) {
         RXObject_t* value = argumentCount > 1
             ? RXExpression_valueOfArgumentAt(1, context)
             : RXNil_o;
-        RXObject_setSlot(self, slotName, value);
+        RXObject_setSlot(self, slotName, value, false);
     }
     return self;
 }

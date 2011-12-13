@@ -77,12 +77,12 @@ void RXMessage_setup(void) {
     
     // The common message delegate has "nil" as message name
     // and and empty argument list
-    RXObject_setSlot(RXMessage_o, RXSymbol_name_o, RXSymbol_nil_o);
+    RXObject_setSlot(RXMessage_o, RXSymbol_name_o, RXSymbol_nil_o, false);
 
     RXNativeMethod_attach(RXProtoObject, valueOnObjectInContext);
     RXNativeMethod_attach(RXMessage, valueOnObjectInContext);
     RXNativeMethod_attach(RXMessage, asSource);
     
     RXSymbol_Message_o = RXSymbol_symbolForCString("Message");
-    RXObject_setSlot(RXLobby_o, RXSymbol_Message_o, RXMessage_o);
+    RXObject_setSlot(RXLobby_o, RXSymbol_Message_o, RXMessage_o, false);
 }

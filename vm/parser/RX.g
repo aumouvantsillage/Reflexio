@@ -32,7 +32,7 @@ options {
 
 	static RXObject_t* RXParser_appendMessageWithName(RXObject_t* expr, RXObject_t* name) {
 		RXObject_t* msg = RXList_spawn(RXMessage_o, NULL);
-		RXObject_setSlot(msg, RXSymbol_name_o, name);
+		RXObject_setSlot(msg, RXSymbol_name_o, name, false);
 		RXList_append(expr, msg);
 		return msg;
 	}

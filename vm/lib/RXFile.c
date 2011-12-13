@@ -82,5 +82,5 @@ void RXFile_setup(void) {
     RXNativeMethod_attach(RXFile, close);
 
     RXSymbol_File_o = RXSymbol_symbolForCString("File");
-    RXObject_setSlot(RXLobby_o, RXSymbol_File_o, RXFile_o);
+    RXObject_setSlot(RXLobby_o, RXSymbol_File_o, RXFile_o, false);
 }

@@ -23,7 +23,7 @@ void Reflexio_setup(int argc, char* argv[]) {
     for (int i = 1; i < argc; i ++) {
         RXList_append(argumentList, RXSymbol_symbolForCString(argv[i]));
     }
-    RXObject_setSlot(RXLobby_o, RXSymbol_arguments_o, argumentList);
+    RXObject_setSlot(RXLobby_o, RXSymbol_arguments_o, argumentList, false);
 }
 
 void Reflexio_clean(void) {

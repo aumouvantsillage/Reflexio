@@ -22,16 +22,6 @@ inline static void RXObject_clearIsLookingUp(RXObject_t* self) {
 }
 
 /*
- * Node type for Red-Black binary trees containing
- * object slots.
- */
-typedef struct {
-    EINA_RBTREE;
-    RXObject_t* key;
-    RXObject_t* value;
-} RXObjectNode_t;
-
-/*
  * Key comparison callback used during slot lookup.
  */
 static int RXObject_compareKeys(const RXObjectNode_t *node, const RXObject_t *key, int length, void *data) {
@@ -51,18 +41,64 @@ static inline RXObjectNode_t* RXObject_node(const RXObject_t* self, const RXObje
     return (RXObjectNode_t*)eina_rbtree_inline_lookup(RXObject_coreData(self).slots, slotName, 0, EINA_RBTREE_CMP_KEY_CB(RXObject_compareKeys), NULL);
 }
 
+#ifdef RX_CACHE_ENABLE
+static void RXObject_setDirty(const RXObject_t* self) {
+    Eina_Iterator* iter = eina_rbtree_iterator_prefix(RXObject_coreData(self).slots);
+    RXObjectNode_t* node;
+    while(eina_iterator_next(iter, (void**)&node)) {
+        if (node->cached) {
+            RXCache_setDirty(node->key);
+        }
+    }
+}
+#endif
+
 // Public --------------------------------------------------------------
 
-void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value) {
+void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value, bool cached) {
     RXObjectNode_t* node = RXObject_node(self, slotName);
+    
+#ifdef RX_CACHE_ENABLE
+    // Modifying the lookup method invalidates all cached slots
+    // from the current object 
+    if (slotName == RXSymbol_lookup_o) {
+        RXObject_setDirty(self);
+    }
+    
+    // Modifying a non-cached slot invalidates all cached slots with
+    // the same name in all other objects.
+    if (node != NULL && !cached) {
+        RXCache_setDirty(slotName);
+    }
+#endif
+
+    // Create a new node if none was found for the given name
     if (node == NULL) {
         node = malloc(sizeof(RXObjectNode_t));
-        RXObject_coreData(self).slots = eina_rbtree_inline_insert(RXObject_coreData(self).slots, (Eina_Rbtree*)node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), slotName);
+        RXObject_coreData(self).slots = eina_rbtree_inline_insert(
+            RXObject_coreData(self).slots,
+            (Eina_Rbtree*)node,
+            EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes),
+            slotName);
         node->key = slotName;
     }
+    
     node->value = value;
+    
 #ifdef RX_CACHE_ENABLE
-    RXCache_removeEntry(self, slotName);
+    node->cached = cached;
+    if (cached) {
+        node->version = RXCache_addSlotName(slotName);
+    }
+#endif
+}
+
+void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate) {
+    // TODO prevent cycles in the delegate chain when changing an already assigned delegate
+    RXObject_coreData(self).delegate = (RXObject_t*)((intptr_t)delegate | RXObject_coreData(self).flags & 3);
+#ifdef RX_CACHE_ENABLE
+    // Modifying the delegate invalidates all cached slots from the current object
+    RXObject_setDirty(self);
 #endif
 }
 
@@ -76,22 +112,17 @@ void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value)
 RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
     RXObject_t* result = RXNil_o;
 
-    // Look up in the own slots of the current object
+    // Look up in the own slots of the current object.
+    // If cache is enable, return non-dirty slot values only.
     RXObjectNode_t* node = RXObject_node(self, slotName);
-    if (node != NULL) {
+    if (node != NULL
+#ifdef RX_CACHE_ENABLE
+        && (!node->cached || node->cached && node->version == RXCache_version(slotName))
+#endif
+    ) {
         return node->value;
     }
-        
-#ifdef RX_CACHE_ENABLE
-    // If not found, look up in the cache
-    if (result == RXNil_o) {
-        result = RXCache_valueForEntry(self, slotName);
-        if (result != RXNil_o) {
-            return result;
-        }
-    }
-#endif
-    
+
     if (result == RXNil_o && slotName != RXSymbol_lookup_o && !RXObject_isLookingUp(self)) {
         // If a lookup method exists in the receiver'delegate chain,
         // send an "activate" message to that method
@@ -117,9 +148,8 @@ RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
     }
     
 #ifdef RX_CACHE_ENABLE
-    if (result != RXNil_o) {
-        RXCache_addEntry(self, slotName, result);
-    }
+    // Create or modify a cached slot in the current object
+    RXObject_setSlot(self, slotName, result, true);
 #endif
 
     return result;
@@ -132,7 +162,7 @@ RXObject_t* RXObject_deleteSlot(RXObject_t* self, RXObject_t* slotName) {
         RXObject_coreData(self).slots = eina_rbtree_inline_remove(RXObject_coreData(self).slots, (Eina_Rbtree*)node, EINA_RBTREE_CMP_NODE_CB(RXObject_compareNodes), NULL);
         free(node);
 #ifdef RX_CACHE_ENABLE
-        RXCache_removeEntry(self, slotName);
+        RXCache_setDirty(slotName);
 #endif
         return value;
     }
