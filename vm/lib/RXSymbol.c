@@ -51,6 +51,30 @@ RXNativeMethod_define(RXSymbol, println) {
     return self;
 }
 
+RXNativeMethod_define(RXSymbol, concat) {
+    // Initial length is the length of the receiver
+    int len = strlen((char*)self);
+    
+    // Collect argument values and compute total length.
+    // Each argument is converted to a string using its asString method.
+    char* args[argumentCount];
+    for (int i = 0; i < argumentCount; i ++) {
+        args[i] = (char*)RXObject_respondTo(RXExpression_valueOfArgumentAt(i, context), RXSymbol_asString_o, RXNil_o, 0);
+        len += strlen(args[i]);
+    }
+    
+    // Allocate and fill a temporary string
+    char* cstr = malloc(len + 1);
+    for (int i = 0; i < argumentCount; i ++) {
+        strcat(cstr, args[i]);
+    }
+    
+    // Convert the temporary into a symbol, free it and return
+    RXObject_t* result = RXSymbol_symbolForCString(cstr);
+    free(cstr);
+    return result;
+}
+
 // Public --------------------------------------------------------------
 
 void RXSymbol_libSetup(void) {
@@ -58,4 +82,5 @@ void RXSymbol_libSetup(void) {
     RXNativeMethod_attach(RXSymbol, asSource);
     RXNativeMethod_attach(RXSymbol, print);
     RXNativeMethod_attach(RXSymbol, println);
+    RXNativeMethod_attach(RXSymbol, concat);
 }
