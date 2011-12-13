@@ -94,12 +94,14 @@ void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value,
 }
 
 void RXObject_setDelegate(RXObject_t* self, RXObject_t* delegate) {
-    // TODO prevent cycles in the delegate chain when changing an already assigned delegate
-    RXObject_coreData(self).delegate = (RXObject_t*)((intptr_t)delegate | RXObject_coreData(self).flags & 3);
 #ifdef RX_CACHE_ENABLE
     // Modifying the delegate invalidates all cached slots from the current object
-    RXObject_setDirty(self);
+    if (RXObject_delegate(self) != NULL) {
+        RXObject_setDirty(self);
+    }
 #endif
+    // TODO prevent cycles in the delegate chain when changing an already assigned delegate
+    RXObject_coreData(self).delegate = (RXObject_t*)((intptr_t)delegate | RXObject_coreData(self).flags & 3);
 }
 
 /*
