@@ -170,6 +170,59 @@ RXNativeMethod_define(RXProtoObject, if) {
     }
 }
 
+RXNativeMethod_define(RXProtoObject, while) {
+    RXObject_t* result = RXNil_o;
+    
+    if (argumentCount > 0) {
+        RXObject_t* condition = RXNativeMethod_argumentAt(0);
+        RXObject_t* body = RXNil_o;
+        if (argumentCount > 1) {
+            body = RXNativeMethod_argumentAt(1);
+        }
+        
+        while(true) {
+            RXNativeMethod_push(context);
+            RXObject_t* conditionValue = RXObject_respondTo(condition, RXSymbol_valueInContext_o, RXNil_o, 1);
+            if (RXObject_respondTo(conditionValue, RXSymbol_asBoolean_o, RXNil_o, 0) == RXBoolean_false_o) {
+                break;
+            }
+
+            if (argumentCount > 1) {
+                RXNativeMethod_push(context);
+                result = RXObject_respondTo(body, RXSymbol_valueInContext_o, RXNil_o, 1);
+            }
+        }
+    }
+    else {
+        // TODO infinite loop?
+        return RXNil_o;
+    }
+}
+
+RXNativeMethod_define(RXProtoObject, equal) {
+    if (argumentCount > 0) {
+        RXObject_t* other = RXExpression_valueOfArgumentAt(0, context);
+        return self == other
+            ? RXBoolean_true_o
+            : RXBoolean_false_o;
+    }
+    else {
+        return RXBoolean_false_o;
+    }
+}
+
+RXNativeMethod_define(RXProtoObject, notEqual) {
+    if (argumentCount > 0) {
+        RXObject_t* other = RXExpression_valueOfArgumentAt(0, context);
+        return self != other
+            ? RXBoolean_true_o
+            : RXBoolean_false_o;
+    }
+    else {
+        return RXBoolean_false_o;
+    }
+}
+
 // Public --------------------------------------------------------------
 
 RXObject_t* RXSymbol_spawn_o;
@@ -201,6 +254,9 @@ void RXObject_libSetup(void) {
     RXNativeMethod_attach(RXProtoObject, println);
     RXNativeMethod_attach(RXProtoObject, respondTo);
     RXNativeMethod_attach(RXProtoObject, if);
+    RXNativeMethod_attach(RXProtoObject, while);
+    RXNativeMethod_attach(RXProtoObject, equal);
+    RXNativeMethod_attach(RXProtoObject, notEqual);
     
     RXObject_setSlot(RXNil_o, RXSymbol_asString_o, RXSymbol_nil_o, false);
 }
