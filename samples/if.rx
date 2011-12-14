@@ -1,0 +1,15 @@
+
+printTruthiness = method(x,
+    x print
+    if (x,
+        " is truthy" println,
+        " is falsy" println
+    )
+)
+
+printTruthiness(0)
+printTruthiness(12)
+printTruthiness(true)
+printTruthiness(false)
+printTruthiness(List spawn)
+printTruthiness(List with(1,2,3))
