@@ -54,7 +54,7 @@ RXNativeMethod_define(RXList, asBoolean) {
 }
 
 RXNativeMethod_define(RXList, print) {
-    fputs("list(", stdout);
+    fputs("List with(", stdout);
     Eina_List* iter;
     RXObject_t* data;
     bool sep = false;
@@ -68,6 +68,7 @@ RXNativeMethod_define(RXList, print) {
         RXObject_respondTo(data, RXSymbol_print_o, RXNil_o, 0);
     }
     fputs(")", stdout);
+    return self;
 }
 
 RXNativeMethod_define(RXList, append) {
@@ -83,6 +84,7 @@ RXNativeMethod_define(RXList, append) {
 RXNativeMethod_define(RXList, concat) {
     assert(argumentCount >= 1);
     // TODO RXList concat
+    return RXNil_o;
 }
 
 RXNativeMethod_define(RXList, prepend) {
@@ -98,6 +100,7 @@ RXNativeMethod_define(RXList, insertAt) {
     assert(argumentCount >= 2);
     // TODO RXList insertAt
     // TODO mark new object in the same reachability as self
+    return self;
 }
 
 RXNativeMethod_define(RXList, replaceAt) {
@@ -105,31 +108,37 @@ RXNativeMethod_define(RXList, replaceAt) {
     // TODO RXList insertAt
     // TODO mark new object in the same reachability as self
     // TODO mark replaced object as possibly collectable
+    return self;
 }
 
 RXNativeMethod_define(RXList, removeLast) {
     // TODO RXList removeLast
     // TODO mark removed object as possibly collectable
+    return self;
 }
 
 RXNativeMethod_define(RXList, removeFirst) {
     // TODO RXList removeLast
     // TODO mark removed object as possibly collectable
+    return self;
 }
 
 RXNativeMethod_define(RXList, removeAt) {
     assert(argumentCount >= 1);
     // TODO RXList removeAt
     // TODO mark removed object as possibly collectable
+    return self;
 }
 
 RXNativeMethod_define(RXList, removeAll) {
     // TODO RXList removeAll
     // TODO mark removed objects as possibly collectable
+    return self;
 }
 
 RXNativeMethod_define(RXList, last) {
     // TODO RXList last
+    return self;
 }
 
 RXNativeMethod_define(RXList, first) {
@@ -164,26 +173,31 @@ RXNativeMethod_define(RXList, isEmpty) {
 RXNativeMethod_define(RXList, select) {
     assert(argumentCount >= 2);
     // TODO RXList select
+    return self;
 }
 
 RXNativeMethod_define(RXList, collect) {
     assert(argumentCount >= 2);
     // TODO RXList collect
+    return self;
 }
 
 RXNativeMethod_define(RXList, forEach) {
     assert(argumentCount >= 2);
     // TODO RXList forEach
+    return self;
 }
 
 RXNativeMethod_define(RXList, forAll) {
     assert(argumentCount >= 2);
     // TODO RXList forAll
+    return self;
 }
 
 RXNativeMethod_define(RXList, exists) {
     assert(argumentCount >= 2);
     // TODO RXList exists
+    return self;
 }
 
 // Public --------------------------------------------------------------
