@@ -161,7 +161,7 @@ RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
     RXObjectNode_t* node = RXObject_node(self, slotName);
     if (node != NULL
 #ifdef RX_CACHE_ENABLE
-        && (!node->cached || node->cached && node->version == RXCache_version(slotName))
+        && (!node->cached || node->version == RXCache_version(slotName))
 #endif
     ) {
         return node->value;
