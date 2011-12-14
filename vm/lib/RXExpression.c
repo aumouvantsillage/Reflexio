@@ -146,6 +146,7 @@ void RXExpression_setup(void) {
     RXSymbol_fromFile_o = RXSymbol_symbolForCString("fromFile");
     RXSymbol_fromString_o = RXSymbol_symbolForCString("fromString");
 
+    // TODO replace List with Array
     RXExpression_o = RXList_spawn(RXList_o, NULL);
     
     RXNativeMethod_attach(RXProtoObject, valueInContext);

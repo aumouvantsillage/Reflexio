@@ -11,4 +11,7 @@ extern RXObject_t* RXSymbol_valueOnObjectInContext_o;
 
 void RXMessage_setup(void);
 
+// TODO replace List with Array
+#define RXMessage_spawn RXList_spawn
+
 #endif

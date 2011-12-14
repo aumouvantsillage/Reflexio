@@ -31,7 +31,7 @@ options {
 	}
 
 	static RXObject_t* RXParser_appendMessageWithName(RXObject_t* expr, RXObject_t* name) {
-		RXObject_t* msg = RXList_spawn(RXMessage_o, NULL);
+		RXObject_t* msg = RXMessage_spawn(RXMessage_o, NULL);
 		RXObject_setSlot(msg, RXSymbol_name_o, name, false);
 		RXList_append(expr, msg);
 		return msg;
@@ -39,7 +39,7 @@ options {
 	
 	static RXObject_t* RXParser_appendOperation(RXObject_t* expr, RXObject_t* name) {
 		RXObject_t* msg = RXParser_appendMessageWithName(expr, name);
-		RXObject_t* arg = RXList_spawn(RXExpression_o, NULL);
+		RXObject_t* arg = RXExpression_spawn(RXExpression_o, NULL);
 		RXList_append(msg, arg);
 		return arg;
 	}
@@ -54,7 +54,7 @@ options {
 }
 
 file returns[RXObject_t* expr]:
-	{ expr = RXList_spawn(RXExpression_o, NULL); }
+	{ expr = RXExpression_spawn(RXExpression_o, NULL); }
 	expression[expr] EOF
 	;
 
@@ -81,7 +81,7 @@ assignment[RXObject_t* expr]
 	assignment_prefix[expr] IDENTIFIER '=' NL* {
 		RXObject_t* msg = RXParser_appendMessageWithName(expr, RXSymbol_setSlot_o);
 		RXList_append(msg, RXSymbol_symbolForCString($IDENTIFIER.text->chars));
-		arg = RXList_spawn(RXExpression_o, NULL);
+		arg = RXExpression_spawn(RXExpression_o, NULL);
 		RXList_append(msg, arg);
 	} or_expression[arg]
   	;
@@ -193,7 +193,7 @@ argument_list[RXObject_t* msg]:
 argument[RXObject_t* msg]
 	@init { RXObject_t* arg; } :
 	{
-		arg = RXList_spawn(RXExpression_o, NULL);
+		arg = RXExpression_spawn(RXExpression_o, NULL);
 		RXList_append(msg, arg);
 	}
    	expression[arg]

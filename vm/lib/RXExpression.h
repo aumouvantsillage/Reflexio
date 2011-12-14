@@ -11,6 +11,9 @@ extern RXObject_t* RXSymbol_fromString_o;
 
 void RXExpression_setup();
 
+// TODO replace List with Array
+#define RXExpression_spawn RXList_spawn
+
 RXObject_t* RXExpression_valueOfArgumentAt(int index, RXObject_t* context);
 
 #endif

@@ -5,6 +5,7 @@
 
 static RXObject_t* RXClosure_spawn(RXObject_t* isMethod, RXObject_t* context, int argumentCount) {
     // Fill parameter list
+    // TODO replace List with Array
     RXObject_t* parameterList = RXList_spawn(RXList_o, NULL);
     for (int i = 0; i < argumentCount - 1; i ++) {
         RXObject_t* expression = RXNativeMethod_argumentAt(i);
@@ -89,6 +90,7 @@ RXNativeMethod_define(RXClosure, activate) {
     int parameterCount = RXList_count(parameterList);
 
     // Process the arguments of the closure execution
+    // TODO replace List with Array
     RXObject_t* argumentList = RXList_spawn(RXList_o, NULL);
     RXObject_setSlot(localContext, RXSymbol_arguments_o, argumentList, false);
     for(int i = 1; i < argumentCount; i ++) {
@@ -137,9 +139,10 @@ void RXClosure_setup(void) {
     RXSymbol_block_o = RXSymbol_symbolForCString("block");
     
     RXClosure_o = RXObject_spawn(RXObject_o);
+    // TODO replace List with Array
     RXObject_setSlot(RXClosure_o, RXSymbol_parameters_o, RXList_spawn(RXList_o, NULL), false);
     RXObject_setSlot(RXClosure_o, RXSymbol_context_o, RXNil_o, false);
-    RXObject_setSlot(RXClosure_o, RXSymbol_body_o, RXList_spawn(RXExpression_o, NULL), false);
+    RXObject_setSlot(RXClosure_o, RXSymbol_body_o, RXExpression_spawn(RXExpression_o, NULL), false);
     RXObject_setSlot(RXClosure_o, RXSymbol_isMethod_o, RXBoolean_false_o, false);
     
     RXNativeMethod_attach(RXClosure, activate);

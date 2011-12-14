@@ -73,6 +73,7 @@ void RXMessage_setup(void) {
     RXSymbol_name_o = RXSymbol_symbolForCString("name");
     RXSymbol_valueOnObjectInContext_o = RXSymbol_symbolForCString("valueOnObjectInContext");
     
+    // TODO replace List with Array
     RXMessage_o = RXList_spawn(RXList_o, NULL);
     
     // The common message delegate has "nil" as message name
