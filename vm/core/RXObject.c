@@ -108,7 +108,7 @@ void RXObject_setSlot(RXObject_t* self, RXObject_t* slotName, RXObject_t* value,
         
         // Modifying a non-cached slot invalidates all cached slots with
         // the same name in all other objects.
-        if (node != NULL && !cached) {
+        if (node != NULL) {
             RXCache_setDirty(slotName);
         }
     }
