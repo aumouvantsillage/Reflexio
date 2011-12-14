@@ -137,12 +137,37 @@ RXNativeMethod_define(RXProtoObject, println) {
     return self;
 }
 
+// TODO provide a method "methodNotFound" in core
+// TODO respondTo should be the reflective version of function respondTo
 RXNativeMethod_define(RXProtoObject, respondTo) {
     RXObject_t* messageName = argumentCount > 0
         ? RXExpression_valueOfArgumentAt(0, context)
         : RXSymbol_nil_o;
     fprintf(stderr, "No method found for message \"%s\"\n", messageName);
     exit(EXIT_FAILURE);
+}
+
+RXNativeMethod_define(RXProtoObject, if) {
+    if (argumentCount > 1) {
+        RXObject_t* condition = RXObject_respondTo(
+            RXExpression_valueOfArgumentAt(0, context),
+            RXSymbol_asBoolean_o,
+            RXNil_o,
+            0
+        );
+        if (condition == RXBoolean_true_o) {
+            return RXExpression_valueOfArgumentAt(1, context);
+        }
+        else if (argumentCount > 2) {
+            return RXExpression_valueOfArgumentAt(2, context);
+        }
+        else {
+            return RXNil_o;
+        }
+    }
+    else {
+        return RXNil_o;
+    }
 }
 
 // Public --------------------------------------------------------------
@@ -175,6 +200,9 @@ void RXObject_libSetup(void) {
     RXNativeMethod_attach(RXProtoObject, print);
     RXNativeMethod_attach(RXProtoObject, println);
     RXNativeMethod_attach(RXProtoObject, respondTo);
+    RXNativeMethod_attach(RXProtoObject, if);
+    
+    RXObject_setSlot(RXNil_o, RXSymbol_asString_o, RXSymbol_nil_o, false);
 }
 
 void RXObject_libClean(void) {

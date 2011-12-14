@@ -28,11 +28,13 @@ void RXBoolean_setup(void) {
 
     RXBoolean_true_o = RXObject_spawn(RXBoolean_o);
     RXObject_setSlot(RXBoolean_true_o, RXSymbol_asString_o, RXSymbol_true_o, false);
+    RXObject_setSlot(RXBoolean_true_o, RXSymbol_asBoolean_o, RXBoolean_true_o, false);
     RXObject_setSlot(RXLobby_o, RXSymbol_true_o, RXBoolean_true_o, false);
     RXObject_setSlot(RXObject_o, RXSymbol_asBoolean_o, RXBoolean_true_o, false);
     
     RXBoolean_false_o = RXObject_spawn(RXBoolean_o);
     RXObject_setSlot(RXBoolean_false_o, RXSymbol_asString_o, RXSymbol_false_o, false);
+    RXObject_setSlot(RXBoolean_false_o, RXSymbol_asBoolean_o, RXBoolean_false_o, false);
     RXObject_setSlot(RXLobby_o, RXSymbol_false_o, RXBoolean_false_o, false);
     RXObject_setSlot(RXNil_o, RXSymbol_asBoolean_o, RXBoolean_false_o, false);
 }
