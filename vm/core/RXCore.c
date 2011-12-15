@@ -14,7 +14,7 @@ RXObject_t* RXSymbol_NativeMethod_o;
 RXObject_t* RXSymbol_o;
 RXObject_t* RXSymbol_activate_o;
 RXObject_t* RXSymbol_lookup_o;
-RXObject_t* RXSymbol_respondTo_o;
+RXObject_t* RXSymbol_forward_o;
 
 RXObject_t* RXNativeMethod_o;
 
@@ -57,7 +57,7 @@ void RXCore_setup(void) {
     // Creating symbols for core methods
     RXSymbol_activate_o = RXSymbol_symbolForCString("activate");
     RXSymbol_lookup_o = RXSymbol_symbolForCString("lookup");
-    RXSymbol_respondTo_o = RXSymbol_symbolForCString("respondTo");
+    RXSymbol_forward_o = RXSymbol_symbolForCString("forward");
 }
 
 void RXCore_clean(void) {

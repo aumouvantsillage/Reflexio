@@ -190,7 +190,7 @@ RXObject_t* RXObject_valueOfSlot(RXObject_t* self, RXObject_t* slotName) {
             result = RXObject_valueOfSlot(delegate, slotName);
         }
     }
-    
+
 #ifdef RX_CACHE_ENABLE
     // Create or modify a cached slot in the current object
     RXObject_setSlot(self, slotName, result, true);
@@ -240,9 +240,9 @@ RXObject_t* RXObject_respondTo(RXObject_t* self, RXObject_t* messageName, RXObje
         }
     }
     // If no method has been found and the current message is not "respondTo"
-    else if (messageName != RXSymbol_respondTo_o) {
+    else if (messageName != RXSymbol_forward_o) {
         RXNativeMethod_push(messageName);
-        return RXObject_respondTo(self, RXSymbol_respondTo_o, context, argumentCount + 1);
+        return RXObject_respondTo(self, RXSymbol_forward_o, context, argumentCount + 1);
     }
     // If no method has been found and the current message is not "activate",
     // return nil

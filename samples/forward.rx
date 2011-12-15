@@ -4,7 +4,7 @@ x = Object spawn
 // Comment this line to trigger error
 // x doSomethingWith(1, 2, 3)
 
-x respondTo = method(name,
+x forward = method(name,
     "Trying to do \"" print
     name print
     "\" with " print

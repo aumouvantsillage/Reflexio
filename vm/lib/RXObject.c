@@ -137,14 +137,17 @@ RXNativeMethod_define(RXProtoObject, println) {
     return self;
 }
 
-// TODO provide a method "methodNotFound" in core
-// TODO respondTo should be the reflective version of function respondTo
-RXNativeMethod_define(RXProtoObject, respondTo) {
+RXNativeMethod_define(RXProtoObject, forward) {
     RXObject_t* messageName = argumentCount > 0
         ? RXExpression_valueOfArgumentAt(0, context)
         : RXSymbol_nil_o;
     fprintf(stderr, "No method found for message \"%s\"\n", messageName);
     exit(EXIT_FAILURE);
+}
+
+RXNativeMethod_define(RXProtoObject, respondTo) {
+    // TODO implement respondTo
+    return self;
 }
 
 RXNativeMethod_define(RXProtoObject, if) {
@@ -252,6 +255,7 @@ void RXObject_libSetup(void) {
     RXNativeMethod_attach(RXProtoObject, asSource);
     RXNativeMethod_attach(RXProtoObject, print);
     RXNativeMethod_attach(RXProtoObject, println);
+    RXNativeMethod_attach(RXProtoObject, forward);
     RXNativeMethod_attach(RXProtoObject, respondTo);
     RXNativeMethod_attach(RXProtoObject, if);
     RXNativeMethod_attach(RXProtoObject, while);
