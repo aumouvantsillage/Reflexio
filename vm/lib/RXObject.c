@@ -145,11 +145,6 @@ RXNativeMethod_define(RXProtoObject, forward) {
     exit(EXIT_FAILURE);
 }
 
-RXNativeMethod_define(RXProtoObject, respondTo) {
-    // TODO implement respondTo
-    return self;
-}
-
 RXNativeMethod_define(RXProtoObject, if) {
     if (argumentCount > 1) {
         RXObject_t* condition = RXObject_respondTo(
@@ -256,7 +251,6 @@ void RXObject_libSetup(void) {
     RXNativeMethod_attach(RXProtoObject, print);
     RXNativeMethod_attach(RXProtoObject, println);
     RXNativeMethod_attach(RXProtoObject, forward);
-    RXNativeMethod_attach(RXProtoObject, respondTo);
     RXNativeMethod_attach(RXProtoObject, if);
     RXNativeMethod_attach(RXProtoObject, while);
     RXNativeMethod_attach(RXProtoObject, equal);
